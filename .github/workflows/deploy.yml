@@ -31,14 +31,14 @@ jobs:
         restore-keys: |
                 ${{ runner.os }}-gradle-
 
-#    - name: Make application.yml
-#      run: |
-#        cd ./src/main
-#        mkdir resources
-#        cd ./resources
-#        touch ./application.yml
-#        echo "${{ secrets.APPLICATION }}" > ./application.yml
-#      shell: bash
+    - name: Make application.yml
+      run: |
+        cd ./src/main
+        mkdir resources
+        cd ./resources
+        touch ./application.yml
+        echo "${{ secrets.APPLICATION }}" > ./application.yml
+      shell: bash
 
     - name: Gradle 권한 부여
       run: chmod +x gradlew
@@ -52,6 +52,7 @@ jobs:
         mkdir deploy
         cp ./docker/docker-compose.blue.yml ./deploy/
         cp ./docker/docker-compose.green.yml ./deploy/
+        cp ./docker/redis-docker.yml ./deploy/
         cp ./appspec.yml ./deploy/
         cp ./docker/Dockerfile ./deploy/
         cp ./scripts/*.sh ./deploy/
