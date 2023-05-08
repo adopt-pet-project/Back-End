@@ -1,4 +1,4 @@
-package example.pipe.cicd.constant;
+package com.adoptpet.server.commons.util;
 
 public abstract class ConstantUtil {
 

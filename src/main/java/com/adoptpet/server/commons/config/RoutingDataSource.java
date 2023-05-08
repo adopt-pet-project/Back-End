@@ -1,4 +1,4 @@
-package example.pipe.cicd.config;
+package com.adoptpet.server.commons.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;

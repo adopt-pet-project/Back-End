@@ -1,4 +1,4 @@
-package example.pipe.cicd.config;
+package com.adoptpet.server.commons.config;
 
 import static example.pipe.cicd.constant.ConstantUtil.*;
 import com.zaxxer.hikari.HikariDataSource;

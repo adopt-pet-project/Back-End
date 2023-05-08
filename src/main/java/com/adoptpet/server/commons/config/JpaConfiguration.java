@@ -1,4 +1,4 @@
-package example.pipe.cicd.config;
+package com.adoptpet.server.commons.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

@@ -1,4 +1,4 @@
-package example.pipe.cicd.config;
+package com.adoptpet.server.commons.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
