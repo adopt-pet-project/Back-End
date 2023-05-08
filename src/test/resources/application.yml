@@ -1,0 +1,23 @@
+spring:
+  profiles:
+    active: test
+
+#  datasource:
+#    url: jdbc:h2:tcp://localhost/~/test
+#    username:
+#    password:
+
+  jpa:
+      hibernate:
+        ddl-auto: update
+      properties:
+        hibernate:
+          #show_sql: true
+          format_sql: true
+
+logging.level:
+  org:
+    hibernate:
+      SQL: debug
+      type.descriptor.sql.BasicBinder: trace
+    springframework.jdbc : debug

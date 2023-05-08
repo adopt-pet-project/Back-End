@@ -1,0 +1,35 @@
+version: 0.0
+
+# Deploy 대상 서버의 운영체제를 표시
+os: linux
+
+# 코드 파일 전송과 관련된 설정
+files:
+  # 코드 파일의 소스 경로
+  - source: /
+    # 코드 파일의 대상 경로 -> /home/ec2-user/app 디렉토리로 파일을 복사한다.
+    destination: /home/ec2-user/app
+    # 대상 경로에 이미 파일이 존재하는 경우, 덮어쓰기를 허용할지 여부
+    overwrite: yes
+
+# 파일 및 디렉토리 권한에 관련된 설정
+permissions:
+  # 권한을 설정할 대상 경로
+  - object: /
+    # 모든 파일 및 디렉토리를 의미
+    pattern: "**"
+    # 파일 및 디렉토리의 소유자를 ec2-user로 설정
+    owner: ec2-user
+    # 파일 및 디렉토리의 그룹을 ec2-user로 설정
+    group: ec2-user
+
+# Deploy 전후에 실행할 스크립트 또는 명령에 관련된 설정
+hooks:
+  # 애플리케이션 시작시 실행할 스크립트 또는 명령에 관련된 설정
+  ApplicationStart:
+    # 실행할 스크립트 또는 명령의 위치
+    - location: deploy.sh
+      # 스크립트 또는 명령 실행의 제한 시간을 설정
+      timeout: 60
+      # CodeDeploy 중 실행되는 스크립트 또는 명령을 실행할 사용자를 지정
+      runas: ec2-user
