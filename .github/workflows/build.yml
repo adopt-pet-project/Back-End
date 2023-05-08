@@ -39,7 +39,7 @@ jobs:
           cd ./resources
           touch ./application.yml
           echo "${{ secrets.APPLICATION }}" > ./application.yml
-          shell: bash 
+          shell: bash  
 
       - name: Gradle 권한 부여
         run: chmod +x gradlew
