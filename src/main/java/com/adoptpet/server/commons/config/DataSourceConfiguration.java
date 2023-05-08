@@ -1,6 +1,6 @@
 package com.adoptpet.server.commons.config;
 
-import static example.pipe.cicd.constant.ConstantUtil.*;
+import static com.adoptpet.server.commons.util.ConstantUtil.*;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
