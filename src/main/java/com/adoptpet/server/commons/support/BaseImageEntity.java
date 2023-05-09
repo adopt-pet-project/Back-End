@@ -1,4 +1,4 @@
-package com.adoptpet.server.commons.domain;
+package com.adoptpet.server.commons.support;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseImageEntity {
+public abstract class BaseImageEntity{
 
-    @CreatedDate
+    @CreatedDate //생성일자 자동입력
     @Column(name = "reg_date")
     private LocalDateTime regDate;
 
