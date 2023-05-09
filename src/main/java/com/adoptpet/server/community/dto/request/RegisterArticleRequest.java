@@ -25,6 +25,7 @@ public class RegisterArticleRequest {
                 .title(this.title)
                 .content(this.content)
                 .regId(this.regId)
+                .modId(this.regId)
                 .visibleYn(visible)
                 .build();
     }
