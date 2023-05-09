@@ -5,27 +5,27 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "DECLARATION_IMAGE")
-public class DeclarationImage {
+public class ReportImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "picture_no")
     private Integer pictureNo;
 
-    @Column(name = "decl_no", nullable = false)
+    @Column(name = "decl_no")
     private Integer declNo;
 
-    @Column(name = "reg_date", nullable = false)
+    @Column(name = "reg_date")
     private LocalDateTime regDate;
 
-    @Column(name = "reg_id", nullable = false, length = 50)
+    @Column(name = "reg_id")
     private String regId;
 
-    @Column(name = "image_url", nullable = false, length = 255)
+    @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "image_name", nullable = false, length = 255)
+    @Column(name = "image_name")
     private String imageName;
 
-    @Column(name = "image_type", nullable = false, length = 20)
+    @Column(name = "image_type")
     private String imageType;
 }
