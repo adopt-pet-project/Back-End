@@ -1,30 +1,35 @@
 package com.adoptpet.server.community.domain;
 
+import com.adoptpet.server.commons.domain.BaseImageEntity;
+
 import javax.persistence.*;
-import java.time.LocalDateTime;
+
+import static javax.persistence.FetchType.*;
+
 @Entity
 @Table(name = "COMMUNITY_IMAGE")
-public class CommunityImage {
+public class CommunityImage extends BaseImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "picture_no")
     private Integer pictureNo;
 
-    @Column(name = "article_no", nullable = false)
-    private Integer articleNo;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "article_no")
+    private Community community;
 
-    @Column(name = "reg_date", nullable = false)
-    private LocalDateTime regDate;
+    //== 연관관계 메서드 ==//
+    public void addCommunity(Community community){
+        this.community = community;
+        community.getArticleImage(this);
+    }
 
-    @Column(name = "reg_id", nullable = false, length = 50)
-    private String regId;
+    //== 생성 메서드 ==//
 
-    @Column(name = "image_url", nullable = false, length = 255)
-    private String imageUrl;
+    //== 조회 메서드 ==//
 
-    @Column(name = "image_name", nullable = false, length = 255)
-    private String imageName;
+    //== 수정 메서드 ==//
 
-    @Column(name = "image_type", nullable = false, length = 20)
-    private String imageType;
+    //== 비즈니스 로직 ==//
+
 }
