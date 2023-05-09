@@ -1,6 +1,6 @@
 package com.adoptpet.server.community.domain;
 
-import com.adoptpet.server.commons.domain.BaseImageEntity;
+import com.adoptpet.server.commons.support.BaseImageEntity;
 
 import javax.persistence.*;
 
