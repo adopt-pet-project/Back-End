@@ -1,7 +1,5 @@
 package com.adoptpet.server.adopt.domain;
 
-import com.adoptpet.server.community.domain.Category;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -64,9 +62,5 @@ public class Adopt {
 
     @Column(name = "blind_yn")
     private Integer blindYn;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_no")
-    private Category category;
 
 }
