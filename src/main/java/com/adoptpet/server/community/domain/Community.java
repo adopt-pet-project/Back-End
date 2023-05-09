@@ -1,9 +1,11 @@
 package com.adoptpet.server.community.domain;
 
 
+import com.adoptpet.server.community.dto.request.RegisterArticleRequest;
 import com.adoptpet.server.user.domain.Member;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -13,6 +15,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "COMMUNITY")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Community {
     @Id
@@ -27,7 +30,7 @@ public class Community {
     private String content;
 
     @Column(name = "view_cnt")
-    private Integer viewCount = 0;
+    private Integer viewCount;
 
     @Column(name = "reg_date")
     private LocalDateTime regDate;
@@ -115,6 +118,9 @@ public class Community {
         this.communityImages.add(communityImage);
     }
 
+    public void addModeDate(LocalDateTime dateTime){
+        this.modDate = dateTime;
+    }
 
     //== 생성 메서드 ==//
 
@@ -123,4 +129,15 @@ public class Community {
     //== 수정 메서드 ==//
 
     //== 비즈니스 로직 ==//
+
+//    public Community createArticle(RegisterArticleRequest request){
+//        Community community = request.toEntity();
+//
+//        LocalDateTime regDate = community.getRegDate();
+//
+//        community.addModeDate(regDate);
+//
+//        return community;
+//    }
+
 }
