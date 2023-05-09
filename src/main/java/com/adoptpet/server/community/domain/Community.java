@@ -1,6 +1,7 @@
 package com.adoptpet.server.community.domain;
 
 
+import com.adoptpet.server.commons.support.BaseTimeEntity;
 import com.adoptpet.server.community.dto.request.RegisterArticleRequest;
 import com.adoptpet.server.user.domain.Member;
 import lombok.AccessLevel;
@@ -17,7 +18,7 @@ import java.util.List;
 @Table(name = "COMMUNITY")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Community {
+public class Community extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "article_no")
@@ -31,12 +32,6 @@ public class Community {
 
     @Column(name = "view_cnt")
     private Integer viewCount;
-
-    @Column(name = "reg_date")
-    private LocalDateTime regDate;
-
-    @Column(name = "mod_date")
-    private LocalDateTime modDate;
 
     @Column(name = "reg_id")
     private String regId;
@@ -84,8 +79,6 @@ public class Community {
         this.title = title;
         this.content = content;
         this.viewCount = viewCount;
-        this.regDate = regDate;
-        this.modDate = modDate;
         this.regId = regId;
         this.modId = modId;
         this.visibleYn = visibleYn;
@@ -118,9 +111,6 @@ public class Community {
         this.communityImages.add(communityImage);
     }
 
-    public void addModeDate(LocalDateTime dateTime){
-        this.modDate = dateTime;
-    }
 
     //== 생성 메서드 ==//
 
@@ -129,15 +119,5 @@ public class Community {
     //== 수정 메서드 ==//
 
     //== 비즈니스 로직 ==//
-
-//    public Community createArticle(RegisterArticleRequest request){
-//        Community community = request.toEntity();
-//
-//        LocalDateTime regDate = community.getRegDate();
-//
-//        community.addModeDate(regDate);
-//
-//        return community;
-//    }
 
 }
