@@ -9,7 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
-
+@Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class) //entity 이벤트 발생시 처리. 시간에 대한 값을 자동으로 입력
 public abstract class BaseTimeEntity {
