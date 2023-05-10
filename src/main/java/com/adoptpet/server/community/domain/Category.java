@@ -1,6 +1,9 @@
 package com.adoptpet.server.community.domain;
 
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -8,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "CATEGORY")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category {
 
     @Id

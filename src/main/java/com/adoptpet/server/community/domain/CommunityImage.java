@@ -1,6 +1,8 @@
 package com.adoptpet.server.community.domain;
 
 import com.adoptpet.server.commons.support.BaseImageEntity;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -8,6 +10,7 @@ import static javax.persistence.FetchType.*;
 
 @Entity
 @Table(name = "COMMUNITY_IMAGE")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommunityImage extends BaseImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

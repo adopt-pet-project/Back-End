@@ -2,6 +2,8 @@ package com.adoptpet.server.community.domain;
 
 
 import com.adoptpet.server.user.domain.Member;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,6 +12,7 @@ import static javax.persistence.FetchType.*;
 
 @Entity
 @Table(name = "ARTICLE_HEART")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ArticleHeart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
