@@ -1,18 +1,13 @@
 package com.adoptpet.server.community.dto;
 
 import com.adoptpet.server.community.domain.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
-@Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommunityDto {
-
-    private Integer articleNo;
 
     private String title;
 
