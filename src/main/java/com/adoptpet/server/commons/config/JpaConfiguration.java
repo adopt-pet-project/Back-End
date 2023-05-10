@@ -3,6 +3,7 @@ package com.adoptpet.server.commons.config;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -14,6 +15,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement // 트랜잭션 관리 기능을 활성화하는 애너테이션
+@Profile("local")
 public class JpaConfiguration {
 
 

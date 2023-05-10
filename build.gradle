@@ -48,8 +48,6 @@ dependencies {
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
 
-	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
-
     annotationProcessor 'org.projectlombok:lombok'
 
     testCompileOnly 'org.projectlombok:lombok'
@@ -57,6 +55,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     testImplementation 'org.springframework.security:spring-security-test'
+
+    implementation "io.jsonwebtoken:jjwt:0.9.1"
 
     //Spring REST Docs Extensions
     asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
