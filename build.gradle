@@ -60,6 +60,10 @@ dependencies {
 
     //Spring REST Docs Extensions
     asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+
+    ///map struct
+    compileOnly "org.mapstruct:mapstruct:1.5.3.Final"
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.5.3.Final"
 }
 
 
