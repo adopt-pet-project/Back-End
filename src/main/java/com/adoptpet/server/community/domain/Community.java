@@ -2,7 +2,6 @@ package com.adoptpet.server.community.domain;
 
 
 import com.adoptpet.server.commons.support.BaseTimeEntity;
-import com.adoptpet.server.community.dto.request.RegisterArticleRequest;
 import com.adoptpet.server.user.domain.Member;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +37,8 @@ public class Community extends BaseTimeEntity {
     @Column(name = "mod_id")
     private String modId;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "visible_yn")
+    @Convert(converter = VisibleYnEnum.VisibleConverter.class)
     private VisibleYnEnum visibleYn;
 
     @Enumerated(EnumType.ORDINAL)
@@ -73,9 +71,8 @@ public class Community extends BaseTimeEntity {
 
     @Builder
     public Community(String title, String content, Integer viewCount,
-                     LocalDateTime regDate, LocalDateTime modDate, String regId,
-                     String modId, VisibleYnEnum visibleYn, LogicalDelEnum logicalDel,
-                     BlindYnEnum blindYn) {
+                     String regId, String modId, VisibleYnEnum visibleYn,
+                     LogicalDelEnum logicalDel, BlindYnEnum blindYn) {
         this.title = title;
         this.content = content;
         this.viewCount = viewCount;
