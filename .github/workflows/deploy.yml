@@ -37,6 +37,10 @@ jobs:
         mkdir resources
         cd ./resources
         touch ./application.yml
+        touch ./application-oauth.yml
+        touch ./application-app.yml
+        echo "${{ secrets.APPLICATION_OAUTH }}" > ./application-oauth.yml
+        echo "${{ secrets.APPLICATION_APP }}" > ./application-app.yml
         echo "${{ secrets.APPLICATION }}" > ./application.yml
       shell: bash
 
