@@ -1,7 +1,7 @@
-package com.adoptpet.server.adopt.service;
+package com.adoptpet.server.user.service;
 
-import com.adoptpet.server.adopt.repository.MemberRepository;
 import com.adoptpet.server.user.domain.Member;
+import com.adoptpet.server.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

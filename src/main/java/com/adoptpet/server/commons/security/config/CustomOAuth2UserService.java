@@ -1,7 +1,7 @@
 package com.adoptpet.server.commons.security.config;
 
-import com.adoptpet.server.adopt.repository.MemberRepository;
-import com.adoptpet.server.adopt.service.MemberService;
+import com.adoptpet.server.user.repository.MemberRepository;
+import com.adoptpet.server.user.service.MemberService;
 import com.adoptpet.server.user.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,6 @@ import java.util.Optional;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         //  1번
@@ -60,7 +59,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
 
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_MANAGER")),
                 memberAttribute, "email");
     }
 }

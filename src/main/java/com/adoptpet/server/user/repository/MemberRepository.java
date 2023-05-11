@@ -1,4 +1,4 @@
-package com.adoptpet.server.adopt.repository;
+package com.adoptpet.server.user.repository;
 
 import com.adoptpet.server.user.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
