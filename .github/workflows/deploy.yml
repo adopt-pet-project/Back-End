@@ -37,7 +37,18 @@ jobs:
         mkdir resources
         cd ./resources
         touch ./application.yml
-        echo "${{ secrets.APPLICATION }}" > ./application.yml
+        touch ./application-aws.yml
+        touch ./application-oauth.yml
+        touch ./application-app.yml
+        echo "$APPLICATION_OAUTH" > ./application-oauth.yml
+        echo "$APPLICATION_APP" > ./application-app.yml
+        echo "$APPLICATION" > ./application.yml
+        echo "$APPLICATION_AWS" > ./application-aws.yml
+      env:
+        APPLICATION_OAUTH: ${{ secrets.APPLICATION_OAUTH }}
+        APPLICATION_APP: ${{ secrets.APPLICATION_APP }}
+        APPLICATION: ${{ secrets.APPLICATION }}
+        APPLICATION_AWS: ${{ secrets.APPLICATION_AWS }}
       shell: bash
 
     - name: Gradle 권한 부여

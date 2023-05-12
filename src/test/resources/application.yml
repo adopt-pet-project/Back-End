@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    active: test
+
+
+  datasource:
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    jdbc-url: jdbc:h2:tcp://localhost/~/querydsl
+
+  redis:
+    host: localhost
+    port: 6379

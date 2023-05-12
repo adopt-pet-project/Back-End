@@ -3,6 +3,7 @@ package com.adoptpet.server.commons.config;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -14,7 +15,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement // 트랜잭션 관리 기능을 활성화하는 애너테이션
-//@EnableJpaRepositories(basePackages = {"example.pipe.cicd.repository"}) // JPA 리포지토리를 활성화하는 애너테이션이다.
+@Profile("local")
 public class JpaConfiguration {
 
 
@@ -29,7 +30,7 @@ public class JpaConfiguration {
         // DataSource를 주입받은 dataSource로 설정한다.
         entityManagerFactory.setDataSource(dataSource);
         // JPA 엔티티 클래스가 포함된 패키지를 설정한다.
-        entityManagerFactory.setPackagesToScan("example.pipe.cicd");
+        entityManagerFactory.setPackagesToScan("com.adoptpet.server");
         // JPA 벤더 어뎁터를 설정한다.
         entityManagerFactory.setJpaVendorAdapter(jpaVendorAdapter());
         // 영속성 유닛의 이름을 entityManager로 설정한다.
