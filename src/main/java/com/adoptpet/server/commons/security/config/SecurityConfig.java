@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .antMatchers("/").permitAll() // 루트 경로는 모두 허용
                 .antMatchers("/token/**").permitAll() // 토큰 발급을 위한 경로는 모두 허용
                 .antMatchers("/login").permitAll() // 로그인 경로는 모두 허용
+                .antMatchers("/oauth2/**").permitAll() // OAuth2 관련 경로는 모두 허용
                 .antMatchers("/user/**").hasAnyRole("MANAGER", "USER") // 회원 페이지는 회원(USER) 또는 관리자(MANAGER) 권한이 있어야 접근 가능
                 .antMatchers("/admin/**").hasRole("MANAGER") // 관리자 페이지는 관리자(MANAGER) 권한이 있어야 접근 가능
                 .anyRequest().authenticated() // 그 외의 모든 요청은 인증이 필요하다.
