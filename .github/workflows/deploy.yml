@@ -77,7 +77,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: S3에 프로젝트 업로드
+    - name: S3에 프로젝트 업로드 
       run: |
         aws s3 cp \
         --region ap-northeast-2 \
