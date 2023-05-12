@@ -18,10 +18,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@Profile("local")
+@Profile("local") // Profile이 local인 경우에만 설정이 동작한다.
 public class SecurityConfig {
-
-
     private final MyAuthenticationSuccessHandler oAuth2LoginSuccessHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final JwtAuthFilter jwtAuthFilter;
@@ -29,40 +27,43 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .httpBasic().disable()
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .httpBasic().disable() // HTTP 기본 인증을 비활성화
+                .csrf().disable() // CSRF 보호 기능 비활성화
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션관리 정책을 STATELESS(세션이 있으면 쓰지도 않고, 없으면 만들지도 않는다)
                 .and()
-                .authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers("/token/**").permitAll()
-                .antMatchers("/login").permitAll()
-                .antMatchers("/user/**").hasAnyRole("MANAGER", "USER")
-                .antMatchers("/admin/**").hasRole("MANAGER")
-                .anyRequest().authenticated()
+                .authorizeRequests() // 요청에 대한 인증 설정
+                .antMatchers("/").permitAll() // 루트 경로는 모두 허용
+                .antMatchers("/token/**").permitAll() // 토큰 발급을 위한 경로는 모두 허용
+                .antMatchers("/login").permitAll() // 로그인 경로는 모두 허용
+                .antMatchers("/user/**").hasAnyRole("MANAGER", "USER") // 회원 페이지는 회원(USER) 또는 관리자(MANAGER) 권한이 있어야 접근 가능
+                .antMatchers("/admin/**").hasRole("MANAGER") // 관리자 페이지는 관리자(MANAGER) 권한이 있어야 접근 가능
+                .anyRequest().authenticated() // 그 외의 모든 요청은 인증이 필요하다.
                 .and()
-                .oauth2Login().loginPage("/login")
-                .userInfoEndpoint().userService(customOAuth2UserService)
+                .oauth2Login().loginPage("/login") // OAuth2 로그인 설정 및 로그인 페이지를 지정
+                .userInfoEndpoint().userService(customOAuth2UserService) // OAuth2 로그인시 사용자 정보를 가져오는 엔드포인트와 사용자 서비스를 설정
                 .and()
-                .successHandler(oAuth2LoginSuccessHandler);
+                .successHandler(oAuth2LoginSuccessHandler); // OAuth2 로그인 성공시 처리할 핸들러를 지정해준다.
 
 
 
+        // JWT 인증 필터를 UsernamePasswordAuthenticationFilter 앞에 추가한다.
         return http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
 
     @Bean
+    // CORS 설정
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedMethod("*");
-        configuration.setAllowCredentials(true);
+        configuration.addAllowedOrigin("http://localhost:3000"); // CORS 허용할 오리진 추가
+        configuration.addAllowedMethod("*"); // 모든 HTTP 메서드 허용
+        configuration.addAllowedMethod("*"); // 모든 헤더 허용
+        configuration.setAllowCredentials(true); // 자격 증명 허용 설정
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", configuration); // 모든 경로에 대해 CORS 구성 적용
         return source;
     }
 

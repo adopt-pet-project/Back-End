@@ -19,7 +19,9 @@ public class RefreshTokenService {
 
     @Transactional
     public void removeRefreshToken(String accessToken) {
-        repository.findByAccessToken(accessToken)
-                .ifPresent(repository::delete);
+        RefreshToken token = repository.findByAccessToken(accessToken)
+                .orElseThrow(IllegalArgumentException::new);
+
+        repository.delete(token);
     }
 }
