@@ -30,18 +30,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final List<String> EXCLUDE_URL_PATTERN = List.of(
       "/token/**",
       "/login",
-      "/oauth2/**"      
+      "/oauth2/**",
+      "/favicon.ico"
     );
 
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String pathName = request.getServletPath();
+        String pathName = request.getRequestURI();
         return EXCLUDE_URL_PATTERN.stream().anyMatch(url -> {
-            if (url.endsWith("/**")) {
-                return pathName.startsWith(url.substring(0, url.length() - 3));
+            if (url.contains(pathName)) {
+                return true;
             } else {
-                return url.equalsIgnoreCase(pathName);
+                return false;
             }
         });
     }
@@ -50,11 +51,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         log.info("어디서 온 요청 ? = {}", request.getRequestURI());
-
-        if (request.getRequestURI().contains("/token/")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         log.info("토큰 발급시에도 하니?");
 
