@@ -11,7 +11,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.PostConstruct;
 import java.util.Base64;
 import java.util.Date;
@@ -24,6 +23,7 @@ public class JwtUtil {
     private final JwtProperties jwtProperties;
     private final RefreshTokenService tokenService;
     private String secretKey;
+
     @PostConstruct
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(jwtProperties.getSecret().getBytes());
@@ -63,9 +63,9 @@ public class JwtUtil {
                 .compact();
     }
 
+
     public String generateAccessToken(String email, String role) {
         long tokenPeriod = 1000L * 60L * 30L;
-//        long tokenPeriod = 1000L * 10L;
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("role", role);
         log.info("Claims = {}", claims);
@@ -89,11 +89,12 @@ public class JwtUtil {
     public boolean verifyToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser()
-                    .setSigningKey(secretKey)
-                    .parseClaimsJws(token);
+                    .setSigningKey(secretKey) // 비밀키를 설정하여 파싱한다.
+                    .parseClaimsJws(token);  // 주어진 토큰을 파싱하여 Claims 객체를 얻는다.
+            // 토큰의 만료 시간과 현재 시간비교
             return claims.getBody()
                     .getExpiration()
-                    .after(new Date());
+                    .after(new Date());  // 만료 시간이 현재 시간 이후인지 확인하여 유효성 검사 결과를 반환
         } catch (Exception e) {
             log.error("토큰 파싱 중 에러 발생!");
             log.error("에러 발생 토큰 = {}", token);
@@ -111,4 +112,5 @@ public class JwtUtil {
     public String getRole(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("role", String.class);
     }
+
 }

@@ -2,6 +2,8 @@ package com.adoptpet.server.commons.security.filter;
 
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.security.service.JwtUtil;
+import com.adoptpet.server.user.domain.Member;
+import com.adoptpet.server.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,11 +25,12 @@ import java.util.List;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final MemberRepository memberRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        if (request.getRequestURI().equals("/token/refresh")) {
+        if (request.getRequestURI().contains("/token/")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -41,17 +44,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         if (atc != null && jwtUtil.verifyToken(atc)) {
-            String email = jwtUtil.getUid(atc);
-            String role = jwtUtil.getRole(atc);
 
-            // DB연동을 안했으니 이메일 정보로 유저를 만들어주겠습니다
+            Member findMember = memberRepository.findByEmail(jwtUtil.getUid(atc))
+                    .orElseThrow(IllegalStateException::new);
+
             SecurityUserDto userDto = SecurityUserDto.builder()
-                    .email(email)
-                    .role(role)
+                    .memberNo(findMember.getMemberNo())
+                    .email(findMember.getEmail())
+                    .role("ROLE_".concat(findMember.getUserRole()))
                     .name("이름이에용")
                     .picture("프로필 이미지에요").build();
 
-            log.info("ROLE - ATC = {}", role);
 
             Authentication auth = getAuthentication(userDto);
             SecurityContextHolder.getContext().setAuthentication(auth);

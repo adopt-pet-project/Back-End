@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Table(name = "MEMBER")
 @AllArgsConstructor @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DynamicInsert
+@DynamicInsert @Getter
 @ToString
 public class Member {
 

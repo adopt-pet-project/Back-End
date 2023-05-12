@@ -1,10 +1,8 @@
 package com.adoptpet.server.adopt.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -16,6 +14,21 @@ public class TestController {
     public String user() {
         log.info("user = {}", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         return "userPage!!";
+    }
+
+    @PutMapping("/user")
+    public String put() {
+        return "putUser";
+    }
+
+    @PostMapping("/user")
+    public String post() {
+        return "postUser";
+    }
+
+    @DeleteMapping("/user")
+    public String delete() {
+        return "deleteUser";
     }
 
     @GetMapping("/admin")
