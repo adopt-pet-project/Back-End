@@ -359,4 +359,4 @@ render.experimental.xml
 google-services.json
 *.hprof
 /src/main/resources/*.yml
-/ser/test/resources/*.yml
+/src/test/resources/*.yml
