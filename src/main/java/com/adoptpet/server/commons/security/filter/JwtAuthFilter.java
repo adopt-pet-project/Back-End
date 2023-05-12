@@ -30,10 +30,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        log.info("어디서 온 요청 ? = {}", request.getRequestURI());
+
         if (request.getRequestURI().contains("/token/")) {
             filterChain.doFilter(request, response);
             return;
         }
+
+        log.info("토큰 발급시에도 하니?");
 
         String atc = request.getHeader("Authorization");
 
