@@ -1,6 +1,5 @@
 package com.adoptpet.server.commons.security.config;
 
-import com.adoptpet.server.user.repository.MemberRepository;
 import com.adoptpet.server.user.service.MemberService;
 import com.adoptpet.server.user.domain.Member;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
