@@ -25,7 +25,7 @@ public class AwsS3config {
 
         return (AmazonS3Client) AmazonS3ClientBuilder.standard()
                 .withRegion(awsS3Properties.getRegion())
-                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))// 인증 자격을 제공할 객체 설정
+                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials)) // 인증 자격을 제공할 객체 설정
                 .build();
     }
 }
