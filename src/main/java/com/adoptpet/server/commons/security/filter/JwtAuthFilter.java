@@ -27,25 +27,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
 
-    private final List<String> EXCLUDE_URL_PATTERN = List.of(
-      "/token/**",
-      "/login",
-      "/oauth2/**",
-      "/favicon.ico"
-    );
-
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String pathName = request.getRequestURI();
-        return EXCLUDE_URL_PATTERN.stream().anyMatch(url -> {
-            if (url.contains(pathName)) {
-                return true;
-            } else {
-                return false;
-            }
-        });
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
