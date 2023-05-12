@@ -32,7 +32,7 @@ jobs:
                 ${{ runner.os }}-gradle-
 
     - name: Make application.yml
-      run:
+      run: |
         cd ./src/main
         mkdir resources
         cd ./resources
