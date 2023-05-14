@@ -27,14 +27,24 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
 
+    // 인증이 되지 않아도 접근이 가능해야 하는 URL 패턴은 JWT 토큰을 검사하지 않는다.
+    private final List<String> excludePath = List.of(
+        "/",
+        "/token/logout",
+        "/token/refresh"
+    );
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String requestPath = request.getRequestURI();
+
+        // excludePath와 하나라도 일치하는 경우 검사를 통과한다.
+        return excludePath.stream()
+                .anyMatch(requestPath::equals);
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
-        log.info("어디서 온 요청 ? = {}", request.getRequestURI());
-
-        log.info("토큰 발급시에도 하니?");
-
         String atc = request.getHeader("Authorization");
 
 

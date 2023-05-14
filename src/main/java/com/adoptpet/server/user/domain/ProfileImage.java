@@ -1,32 +1,18 @@
 package com.adoptpet.server.user.domain;
 
+import com.adoptpet.server.commons.support.BaseImageEntity;
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "PROFILE_IMAGE")
-public class ProfileImage {
+public class ProfileImage extends BaseImageEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "picture_no")
     private Integer pictureNo;
 
-    @Column(name = "member_no", nullable = false)
+    @Column(name = "member_no", unique = true)
     private Integer memberNo;
 
-    @Column(name = "reg_date", nullable = false)
-    private LocalDateTime regDate;
-
-    @Column(name = "reg_id", nullable = false)
-    private String regId;
-
-    @Column(name = "image_url", nullable = false)
-    private String imageUrl;
-
-    @Column(name = "image_name", nullable = false)
-    private String imageName;
-
-    @Column(name = "image_type", nullable = false)
-    private String imageType;
 }
