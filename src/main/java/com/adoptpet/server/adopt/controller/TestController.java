@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.*;
 public class TestController {
 
 
+    @GetMapping("/")
+    public String main() {
+        return "main page!";
+    }
 
     @GetMapping("/user")
     public String user() {
