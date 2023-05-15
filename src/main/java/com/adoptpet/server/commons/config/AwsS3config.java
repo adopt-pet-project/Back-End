@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 @EnableConfigurationProperties(value = AwsS3Properties.class)
@@ -18,6 +19,7 @@ public class AwsS3config {
     private final AwsS3Properties awsS3Properties;
 
     @Bean
+    @Primary
     public AmazonS3Client amazonS3Client() {
 
         // AWS의 기본 인증 자격을 생성하는 BasicAWSCredentials 객체 생성
