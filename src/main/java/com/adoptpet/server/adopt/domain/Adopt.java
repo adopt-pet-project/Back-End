@@ -1,11 +1,19 @@
 package com.adoptpet.server.adopt.domain;
 
+import com.adoptpet.server.commons.support.BaseTimeEntity;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "ADOPT")
-public class Adopt {
+@DynamicInsert @Getter
+@AllArgsConstructor @Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Adopt extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sale_no")
@@ -20,39 +28,31 @@ public class Adopt {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "age", nullable = false)
-    private Integer age;
+    @Column(name = "age")
+    private String age;
 
-    @Column(name = "gender", nullable = false)
-    private String gender;
+    @Column(name = "gender")
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
-    @Column(name = "kind", nullable = false, length = 100)
+    @Column(name = "kind")
     private String kind;
 
-    @Column(name = "address", nullable = false)
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "address")
     private String address;
 
-    @Column(name = "latitude", nullable = false)
+    @Column(name = "latitude")
     private Float latitude;
 
-    @Column(name = "longitude", nullable = false)
+    @Column(name = "longitude")
     private Float longitude;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private AdoptStatus status;
-
-    @Column(name = "reg_date", nullable = false)
-    private LocalDateTime regDate;
-
-    @Column(name = "reg_id", nullable = false, length = 50)
-    private String regId;
-
-    @Column(name = "mod_date", nullable = false)
-    private LocalDateTime modDate;
-
-    @Column(name = "mod_id", nullable = false, length = 50)
-    private String modId;
 
     @Column(name = "visible_yn")
     private String visibleYn;
@@ -62,5 +62,23 @@ public class Adopt {
 
     @Column(name = "blind_yn")
     private Integer blindYn;
+
+    @Column(name = "reg_id")
+    private String regId;
+
+    @Column(name = "mod_id")
+    private String modId;
+
+    @OneToMany(mappedBy = "adopt", fetch = FetchType.LAZY)
+    private List<AdoptBookmark> adoptBookmarks = new ArrayList<>();
+
+    public void addRegIdAndModId(String regId, String modId) {
+        addRegId(regId);
+        this.modId = modId;
+    }
+
+    public void addRegId(String regId) {
+        this.regId = regId;
+    }
 
 }

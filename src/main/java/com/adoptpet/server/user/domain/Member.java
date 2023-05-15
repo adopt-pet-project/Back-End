@@ -1,9 +1,12 @@
 package com.adoptpet.server.user.domain;
 
+import com.adoptpet.server.adopt.domain.AdoptBookmark;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "MEMBER")
@@ -46,5 +49,8 @@ public class Member {
 //
 //    @Column(name = "passmod_date", nullable = false)
 //    private LocalDateTime passModDate;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<AdoptBookmark> adoptBookmarkList = new ArrayList<>();
 
 }
