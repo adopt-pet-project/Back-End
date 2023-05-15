@@ -7,7 +7,7 @@ import com.adoptpet.server.user.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,14 +22,14 @@ public class AuthController {
     private final RefreshTokenService tokenService;
     private final JwtUtil jwtUtil;
 
-    @GetMapping("token/logout")
+    @PostMapping("token/logout")
     public ResponseEntity<Void> logout(@RequestHeader("Authorization") final String accessToken) {
         // 엑세스 토큰으로 현재 Redis 정보 삭제
         tokenService.removeRefreshToken(accessToken);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/token/refresh")
+    @PostMapping("/token/refresh")
     public ResponseEntity<String> refresh(@RequestHeader("Authorization") final String accessToken) {
 
         // 액세스 토큰으로 Refresh 토큰 객체를 조회

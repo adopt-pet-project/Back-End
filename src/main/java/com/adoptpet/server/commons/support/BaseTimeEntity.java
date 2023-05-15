@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 public abstract class BaseTimeEntity {
 
     @CreatedDate//생성일시 자동입력
-    @Column(name = "leg_date")
-    private LocalDateTime legDate;
+    @Column(name = "reg_date")
+    private LocalDateTime regDate;
 
     @LastModifiedDate
     @Column(name = "mod_date")
