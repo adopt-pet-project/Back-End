@@ -26,7 +26,7 @@ public class RegisterArticleRequest {
     @Length(max = 100)
     private String title;
 
-    @JsonProperty("context")
+    @JsonProperty("content")
     @NotBlank
     private String content;
 
