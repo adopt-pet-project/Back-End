@@ -73,26 +73,5 @@ public class Community extends BaseTimeEntity {
         this.blindYn = blindYn;
     }
 
-    //== 연관관계 메서드 ==//
-    public void getComment(Comment comment){
-        this.comments.add(comment);
-    }
-
-    public void getArticleHeart(ArticleHeart articleHeart) {
-        this.articleHearts.add(articleHeart);
-    }
-
-    public void getArticleBookmark(ArticleBookmark articleBookMark) {
-        this.articleBookmarks.add(articleBookMark);
-    }
-
-
-    //== 생성 메서드 ==//
-
-    //== 조회 메서드 ==//
-
-    //== 수정 메서드 ==//
-
-    //== 비즈니스 로직 ==//
 
 }
