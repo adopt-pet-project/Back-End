@@ -53,19 +53,11 @@ public class AdoptResponseDto {
 
     @Getter
     @Setter
+    @AllArgsConstructor
     public static class Context {
         private String context;
         private long bookmark;
         private long chat;
-
-        public Context(String context) {
-            this.context = context;
-        }
-
-        public void addCount(long bookmark, long chat) {
-            this.bookmark= bookmark;
-            this.chat = chat;
-        }
     }
 
     @Getter
