@@ -1,11 +1,11 @@
 package com.adoptpet.server.community.service;
 
 import com.adoptpet.server.community.domain.Community;
+import com.adoptpet.server.community.dto.ArticleDetailInfo;
 import com.adoptpet.server.community.dto.CommunityDto;
-import com.adoptpet.server.community.mapper.CreateArticleMapper;
-import com.adoptpet.server.community.repository.CategoryRepository;
+import com.adoptpet.server.community.repository.CommunityQDslRepository;
+import com.adoptpet.server.community.service.mapper.CreateArticleMapper;
 import com.adoptpet.server.community.repository.CommunityRepository;
-import com.adoptpet.server.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,8 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommunityService {
 
     private final CommunityRepository communityRepository;
-    private final CategoryRepository categoryRepository;
-    private final MemberRepository memberRepository;
+    private final CommunityQDslRepository communityQDslRepository;
+    @Transactional
+    public void readArticle(Integer articleNo){
+        ArticleDetailInfo articleDetail = communityQDslRepository.findArticleDetail(articleNo);
+    }
+
 
     /**
     * 게시글 생성 메서드
