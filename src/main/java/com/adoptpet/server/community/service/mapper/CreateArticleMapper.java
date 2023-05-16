@@ -1,4 +1,4 @@
-package com.adoptpet.server.community.mapper;
+package com.adoptpet.server.community.service.mapper;
 
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.dto.CommunityDto;
