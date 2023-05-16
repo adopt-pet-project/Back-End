@@ -61,9 +61,8 @@ public class Community extends BaseTimeEntity {
     private List<ArticleBookmark> articleBookmarks = new ArrayList<>();
 
     @Builder
-    public Community(String title, String content, Integer viewCount,
-                     String regId, String modId, VisibleYnEnum visibleYn,
-                     LogicalDelEnum logicalDel, BlindYnEnum blindYn) {
+    public Community(Integer categoryNo, String title, String content, Integer viewCount, String regId, String modId, VisibleYnEnum visibleYn, LogicalDelEnum logicalDel, BlindYnEnum blindYn) {
+        this.categoryNo = categoryNo;
         this.title = title;
         this.content = content;
         this.viewCount = viewCount;
@@ -74,26 +73,5 @@ public class Community extends BaseTimeEntity {
         this.blindYn = blindYn;
     }
 
-    //== 연관관계 메서드 ==//
-    public void getComment(Comment comment){
-        this.comments.add(comment);
-    }
-
-    public void getArticleHeart(ArticleHeart articleHeart) {
-        this.articleHearts.add(articleHeart);
-    }
-
-    public void getArticleBookmark(ArticleBookmark articleBookMark) {
-        this.articleBookmarks.add(articleBookMark);
-    }
-
-
-    //== 생성 메서드 ==//
-
-    //== 조회 메서드 ==//
-
-    //== 수정 메서드 ==//
-
-    //== 비즈니스 로직 ==//
 
 }

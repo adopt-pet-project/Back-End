@@ -1,4 +1,4 @@
-package com.adoptpet.server.community.mapper;
+package com.adoptpet.server.community.service.mapper;
 
 import org.mapstruct.*;
 
