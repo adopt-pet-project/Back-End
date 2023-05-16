@@ -2,7 +2,6 @@ package com.adoptpet.server.community.domain;
 
 
 import com.adoptpet.server.commons.support.BaseTimeEntity;
-import com.adoptpet.server.user.domain.Member;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,10 +21,13 @@ public class Community extends BaseTimeEntity {
     @Column(name = "article_no")
     private Integer articleNo;
 
-    @Column(name = "title")
+    @Column(name = "category_no",nullable = false)
+    private Integer categoryNo;
+
+    @Column(name = "title",nullable = false, length = 100)
     private String title;
 
-    @Column(name = "content")
+    @Column(name = "content",nullable = false)
     private String content;
 
     @Column(name = "view_cnt")
@@ -49,22 +51,11 @@ public class Community extends BaseTimeEntity {
     @Column(name = "blind_yn")
     private BlindYnEnum blindYn;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_no")
-    private Member member;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_no")
-    private Category category;
-
     @OneToMany(mappedBy = "community")
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "community")
     private List<ArticleHeart> articleHearts = new ArrayList<>();
-
-    @OneToMany(mappedBy = "community")
-    private List<CommunityImage> communityImages = new ArrayList<>();
 
     @OneToMany(mappedBy = "community")
     private List<ArticleBookmark> articleBookmarks = new ArrayList<>();
@@ -84,14 +75,6 @@ public class Community extends BaseTimeEntity {
     }
 
     //== 연관관계 메서드 ==//
-    public void addMember(Member member){
-        this.member = member;
-    }
-
-    public void addCategory(Category category){
-        this.category = category;
-    }
-
     public void getComment(Comment comment){
         this.comments.add(comment);
     }
@@ -102,10 +85,6 @@ public class Community extends BaseTimeEntity {
 
     public void getArticleBookmark(ArticleBookmark articleBookMark) {
         this.articleBookmarks.add(articleBookMark);
-    }
-
-    public void getArticleImage(CommunityImage communityImage) {
-        this.communityImages.add(communityImage);
     }
 
 
