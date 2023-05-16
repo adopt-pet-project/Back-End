@@ -3,15 +3,19 @@ package com.adoptpet.server.adopt.service;
 import static com.adoptpet.server.adopt.domain.QAdoptImage.*;
 
 import static com.adoptpet.server.adopt.domain.QAdopt.*;
+
+import static com.adoptpet.server.adopt.domain.QAdoptBookmark.*;
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
 import static com.adoptpet.server.user.domain.QMember.*;
 
 import static com.adoptpet.server.user.domain.QProfileImage.*;
+
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -50,7 +54,20 @@ public class AdoptQueryService {
                             adopt.kind
                     ),
                     Projections.constructor(AdoptResponseDto.Context.class,
-                            adopt.content
+                            adopt.content,
+                            // select subQuery를 이용하여 집계함수를 사용
+                            ExpressionUtils.as(
+                                    JPAExpressions.select(adoptBookmark.count())
+                                            .from(adoptBookmark)
+                                            .where(adoptBookmark.adopt.saleNo.eq(saleNo))
+                                            , "bookmark"
+                            ),
+                            ExpressionUtils.as(
+                                    JPAExpressions.select(adoptBookmark.count())
+                                            .from(adoptBookmark)
+                                            .where(adoptBookmark.adopt.saleNo.eq(saleNo))
+                                    , "chat"
+                            )
                     ),
                     Projections.constructor(AdoptResponseDto.Author.class,
                             member.nickname,

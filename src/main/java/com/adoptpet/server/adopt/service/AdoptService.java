@@ -6,9 +6,14 @@ import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
 import com.adoptpet.server.adopt.repository.AdoptBookmarkRepository;
 import com.adoptpet.server.adopt.repository.AdoptImageRepository;
 import com.adoptpet.server.adopt.repository.AdoptRepository;
+import com.adoptpet.server.commons.security.dto.SecurityUserDto;
+import com.adoptpet.server.user.domain.Member;
+import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -19,6 +24,7 @@ public class AdoptService {
     private final AdoptBookmarkRepository adoptBookmarkRepository;
     private final AdoptQueryService queryService;
     private final AdoptBookmarkRepository bookmarkRepository;
+    private final MemberService memberService;
 
     public Adopt findBySaleNo(Integer saleNo) {
         return adoptRepository.findById(saleNo)
@@ -32,15 +38,22 @@ public class AdoptService {
 
     @Transactional
     public void updateAdoptImageSaleNo(Integer[] imageNoArr, Integer saleNo) {
-        // 분양 이미지 테이블의 saleNo 값을 분양 테이블의 saleNo 값으로 업데이트 해준다.
-        for (Integer imageNo : imageNoArr) {
-            adoptImageRepository.updateAdoptImageSaleNo(saleNo, imageNo);
+        if (!Objects.isNull(imageNoArr)) {
+            // 분양 이미지 테이블의 saleNo 값을 분양 테이블의 saleNo 값으로 업데이트 해준다.
+            for (Integer imageNo : imageNoArr) {
+                adoptImageRepository.updateAdoptImageSaleNo(saleNo, imageNo);
+            }
         }
     }
 
     @Transactional
-    public AdoptBookmark insertAdoptBookmark(AdoptBookmark bookmark) {
-        return adoptBookmarkRepository.save(bookmark);
+    public AdoptBookmark insertAdoptBookmark(SecurityUserDto dto, Integer saleNo) {
+        // 회원의 정보와 현재 분양 게시글의 정보를 가져온다.
+        Adopt adopt = findBySaleNo(saleNo);
+        Member member = memberService.findByMemberNo(dto.getMemberNo());
+        // 외래키 업데이트를 위해 관심 분양 게시글 엔티티에 회원과 분양 게시글 엔티티를 셋팅해준다.
+        AdoptBookmark adoptBookmark = new AdoptBookmark(dto.getEmail(), adopt, member);
+        return adoptBookmarkRepository.save(adoptBookmark);
     }
 
     public AdoptResponseDto readAdopt(Integer saleNo) {
@@ -50,12 +63,6 @@ public class AdoptService {
         String[] images = queryService.selectAdoptImages(saleNo).toArray(String[]::new);
         // 현재 비어있는 responseDto의 이미지 필드의 값을 채워준다.
         responseDto.addImages(images);
-        // 현재 분양 게시글과 관련이 있는 관심 카운트와 채팅 카운트를 조회한다.
-        long bookmarkCount = bookmarkRepository.countAdoptBookmark(saleNo);
-        // TODO: 채팅 구현시 수정 현재 1개로 하드코딩
-        long chatCount = 1;
-        // 관심 카운트와 채팅 카운트를 모두 넣어준다.
-        responseDto.getContext().addCount(bookmarkCount,chatCount);
         return responseDto;
     }
 

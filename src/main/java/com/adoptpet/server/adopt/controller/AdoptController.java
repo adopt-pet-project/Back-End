@@ -60,20 +60,13 @@ public class AdoptController {
     @PostMapping("/adopt/bookmark")
     public ResponseEntity<Void> addBookMark(@RequestBody @Valid AdoptBookmarkRequestDto requestDto, BindingResult bindingResult) {
 
+        // requestDto 유효성 검사 실패시 400번 에러를 내려준다.
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().build();
         }
 
-        // 유저의 정보를 가져온다.
-        SecurityUserDto userDto = SecurityUtils.getUser();
-        // 회원의 정보와 현재 분양 게시글의 정보를 가져온다.
-        Adopt adopt = adoptService.findBySaleNo(requestDto.getSaleNo());
-        Member member = memberService.findByMemberNo(userDto.getMemberNo());
-        // 외래키 업데이트를 위해 관심 분양 게시글 엔티티에 회원과 분양 게시글 엔티티를 셋팅해준다.
-        AdoptBookmark adoptBookmark = new AdoptBookmark(userDto.getEmail(), adopt, member);
-
         // 관심 분양 게시글 등록
-        adoptService.insertAdoptBookmark(adoptBookmark);
+        adoptService.insertAdoptBookmark(SecurityUtils.getUser(), requestDto.getSaleNo());
 
         return ResponseEntity.ok().build();
     }
