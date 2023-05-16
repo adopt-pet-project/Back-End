@@ -61,9 +61,8 @@ public class Community extends BaseTimeEntity {
     private List<ArticleBookmark> articleBookmarks = new ArrayList<>();
 
     @Builder
-    public Community(String title, String content, Integer viewCount,
-                     String regId, String modId, VisibleYnEnum visibleYn,
-                     LogicalDelEnum logicalDel, BlindYnEnum blindYn) {
+    public Community(Integer categoryNo, String title, String content, Integer viewCount, String regId, String modId, VisibleYnEnum visibleYn, LogicalDelEnum logicalDel, BlindYnEnum blindYn) {
+        this.categoryNo = categoryNo;
         this.title = title;
         this.content = content;
         this.viewCount = viewCount;

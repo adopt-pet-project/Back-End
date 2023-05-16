@@ -33,7 +33,7 @@ public enum VisibleYnEnum {
 
     @JsonCreator// JSON을 deserialize 할 때 해당 메서드를 이용해 값을 변환
     public static VisibleYnEnum from(String value){
-        return Optional.ofNullable(CODE_MAP.get(value))
+        return Optional.ofNullable(CODE_MAP.get(value.toUpperCase()))
                 .orElseThrow(()-> new IllegalArgumentException("Invalid value"));
     }
 
