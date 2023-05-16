@@ -1,8 +1,14 @@
 package com.adoptpet.server.user.domain;
 
 import com.adoptpet.server.commons.support.BaseImageEntity;
+import lombok.*;
+
 import javax.persistence.*;
 
+@Builder
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
 @Table(name = "PROFILE_IMAGE")
 public class ProfileImage extends BaseImageEntity {

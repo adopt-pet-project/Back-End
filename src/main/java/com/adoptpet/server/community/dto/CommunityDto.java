@@ -3,11 +3,16 @@ package com.adoptpet.server.community.dto;
 import com.adoptpet.server.community.domain.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommunityDto {
+
+    private Integer categoryNo;
 
     private String title;
 
@@ -24,4 +29,8 @@ public class CommunityDto {
     private LogicalDelEnum logicalDel;
 
     private BlindYnEnum blindYn;
+
+    private List<CommunityImage> communityImages = new ArrayList<>();
+
+
 }
