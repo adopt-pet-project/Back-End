@@ -37,14 +37,5 @@ public class Notice {
     @Column(name = "mod_id")
     private String modId;
 
-    //== 연관관계 메서드 ==//
-
-    //== 생성 메서드 ==//
-
-    //== 조회 메서드 ==//
-
-    //== 수정 메서드 ==//
-
-    //== 비즈니스 로직 ==//
 
 }
