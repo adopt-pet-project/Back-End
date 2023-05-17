@@ -23,7 +23,6 @@ public class AdoptService {
     private final AdoptImageRepository adoptImageRepository;
     private final AdoptBookmarkRepository adoptBookmarkRepository;
     private final AdoptQueryService queryService;
-    private final AdoptBookmarkRepository bookmarkRepository;
     private final MemberService memberService;
 
     public Adopt findBySaleNo(Integer saleNo) {

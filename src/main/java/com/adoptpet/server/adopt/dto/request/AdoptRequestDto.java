@@ -42,7 +42,6 @@ public class AdoptRequestDto {
     @NotNull
     private Float longitude;
 
-    @NotNull
     private Integer[] imgNo;
 
 
