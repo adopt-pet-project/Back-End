@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .antMatchers("/admin/**").hasRole("MANAGER") // 관리자 페이지는 관리자(MANAGER) 권한이 있어야 접근 가능
                 .anyRequest().authenticated() // 그 외의 모든 요청은 인증이 필요하다.
                 .and()
-                .oauth2Login().loginPage("http://localhost:3000/login") // OAuth2 로그인 설정 및 로그인 페이지를 지정
+                .oauth2Login() // OAuth2 로그인 설정시작
                 .userInfoEndpoint().userService(customOAuth2UserService) // OAuth2 로그인시 사용자 정보를 가져오는 엔드포인트와 사용자 서비스를 설정
                 .and()
                 .failureHandler(oAuth2LoginFailureHandler) // OAuth2 로그인 실패시 처리할 핸들러를 지정해준다.
@@ -59,7 +59,7 @@ public class SecurityConfig {
     // CORS 설정
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000"); // CORS 허용할 오리진 추가
+        configuration.addAllowedOrigin("http://15.164.216.101/"); // CORS 허용할 오리진 추가
         configuration.addAllowedMethod("*"); // 모든 HTTP 메서드 허용
         configuration.addAllowedMethod("*"); // 모든 헤더 허용
         configuration.setAllowCredentials(true); // 자격 증명 허용 설정
