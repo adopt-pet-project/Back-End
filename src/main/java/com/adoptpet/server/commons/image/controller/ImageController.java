@@ -1,5 +1,7 @@
 package com.adoptpet.server.commons.image.controller;
 
+import com.adoptpet.server.commons.image.dto.ImageInfoDto;
+import com.adoptpet.server.commons.image.dto.response.ImageUploadResponse;
 import com.adoptpet.server.commons.image.service.AwsS3Service;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
@@ -27,16 +29,16 @@ public class ImageController {
      * @return I
     **/
     @PostMapping(value = "",consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<Integer> uploadImage(
+    public ResponseEntity<ImageUploadResponse> uploadImage(
             @RequestPart(name = "imageFile") MultipartFile image,
             @RequestPart(name = "type") String type){
 
         // 현재 회원의 인증 객체를 가져온다.
         SecurityUserDto user = SecurityUtils.getUser();
 
-        Integer savedImageNo = awsS3Service.upload(image, user.getEmail(), type);
+        ImageInfoDto imageInfo = awsS3Service.upload(image, user.getEmail(), type);
 
-        return ResponseEntity.ok(savedImageNo);
+        return ResponseEntity.ok(imageInfo.toResponse());
     }
 
     /**
