@@ -1,5 +1,6 @@
 package com.adoptpet.server.commons.image.service;
 
+import com.adoptpet.server.adopt.domain.AdoptImage;
 import com.adoptpet.server.adopt.repository.AdoptImageRepository;
 import com.adoptpet.server.commons.image.ImageTypeEnum;
 import com.adoptpet.server.community.domain.CommunityImage;
@@ -7,7 +8,7 @@ import com.adoptpet.server.community.repository.CommunityImageRepository;
 import com.adoptpet.server.user.domain.ProfileImage;
 import com.adoptpet.server.user.repository.ProfileImageRepository;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,18 +34,76 @@ public class AwsS3Service {
 
     private static String DOT = ".";
 
+    private static ResponseStatusException NOT_FOUND_EXCEPTION =
+            new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found imageNo");
+
+    private static ResponseStatusException INVALID_TYPE_EXCEPTION =
+            new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid type");
+
 
     @Transactional
-    public String delete(ImageTypeEnum type, String fileName){
-        String path = type.getPath();
+    public String delete(String type, Integer imageNo){
+        // 타입 분류를 위해 enum 생성
+        ImageTypeEnum typeEnum = ImageTypeEnum.from(type.toLowerCase());
 
-        // 경로와 파일이름을 합쳐 S3 key name을 얻음
-        String keyName = getKeyName(path, fileName);
+        String result;
+        String imageUrl;
 
-        /*
-           S3 이미지 삭제 요청
-           성공시 result = success, 실패시 result = file not found
-         */
+
+        switch (typeEnum){
+            case ADOPT:
+                // image 조회
+                AdoptImage adoptImg = adoptImageRepository.findById(imageNo)
+                        .orElseThrow(() -> NOT_FOUND_EXCEPTION);
+                imageUrl = adoptImg.getImageUrl();
+
+                // DB 이미지 정보 제거
+                adoptImageRepository.delete(adoptImg);
+                break;
+            case COMMUNITY:
+                // image 조회
+                CommunityImage communityImg = communityImageRepository.findById(imageNo)
+                        .orElseThrow(() -> NOT_FOUND_EXCEPTION);
+                imageUrl = communityImg.getImageUrl();
+
+                // DB 이미지 정보 제거
+                communityImageRepository.delete(communityImg);
+                break;
+            case PROFILE:
+                // image 조회
+                ProfileImage profileImg = profileImageRepository.findById(imageNo)
+                        .orElseThrow(() -> NOT_FOUND_EXCEPTION);
+                imageUrl = profileImg.getImageUrl();
+
+                // DB 이미지 정보 제거
+                profileImageRepository.delete(profileImg);
+            default:
+                throw INVALID_TYPE_EXCEPTION;
+        }
+
+        // S3 이미지 파일 삭제 요청
+        result = deleteFileByUrl(typeEnum, imageUrl);
+        return result;
+
+    }
+
+
+
+    /**
+    * S3 File delete method
+     * @param typeEnum : keyName Prefix(path) 제공
+     * @param imageUrl : S3 image URL
+     * @return String : 성공시 result = success, 실패시 result = file not found
+    **/
+    private String deleteFileByUrl(ImageTypeEnum typeEnum, String imageUrl) {
+
+        // URL 에서 파일명 추출
+        String fileName = extractFileName(imageUrl);
+
+        // 타입과 파일명을 합쳐 keyName 구성
+        String keyName = getKeyName(typeEnum.getType(),fileName);
+
+        // keyName으로 S3에 delete request
         String result = awsS3Repository.deleteFile(keyName);
 
         return result;
@@ -55,7 +114,6 @@ public class AwsS3Service {
      * 전달받은 MultipartFile을 AwsS3 버킷에 업로드
      *
      * @param file        : 업로드할 MultipartFile
-     * @param parentNo    : 이미지의 부모 pk
      * @param regId       : 작성자 email id
      * @param type        : 이미지 분류 코드
      * @return Integer    : 저장된 이미지의 id
@@ -63,7 +121,10 @@ public class AwsS3Service {
      * @throws ResponseStatusException  : 파일 업로드가 실패한 경우 예외가 발생
      */
     @Transactional
-    public Integer upload(MultipartFile file, Integer parentNo, String regId, ImageTypeEnum type) {
+    public Integer upload(MultipartFile file, String regId, String type) {
+
+        // 타입 분류를 위해 enum 생성
+        ImageTypeEnum typeEnum = ImageTypeEnum.from(type.toLowerCase());
 
         // 업로드할 파일에 대한 메타데이터 생성
         ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -79,81 +140,98 @@ public class AwsS3Service {
         try (InputStream inputStream = file.getInputStream()){
 
             // 경로와 파일이름을 합쳐 S3 key name을 얻음
-            final String keyName = getKeyName(type.getPath(), fileName);
+            final String keyName = getKeyName(typeEnum.getPath(), fileName);
             log.info("keyName : {}" , keyName);
 
             URL responseUrl = awsS3Repository.uploadFile(objectMetadata, inputStream, fileName ,keyName);
 
             // Server DB에 upload된 image 정보 저장
-            Integer savedImageNo = saveImageData(regId, parentNo, type, responseUrl, imageName);
+            Integer savedImageNo = saveImage(regId, typeEnum, responseUrl, imageName);
 
             // 저장된 이미지 PK 반환
             return savedImageNo;
 
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패하셨습니다");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
         }
     }
 
 
+
+
     //== 타입별 분류 후 데이터베이스 저장  ==//
-    private Integer saveImageData(String regId, Integer parentNo, ImageTypeEnum type, URL responseUrl, String imageName){
+    private Integer saveImage(String regId, ImageTypeEnum type, URL responseUrl, String imageName){
 
         String imageUrl = combineUrls(type.getPath(), responseUrl);
         String extension = extractExtension(responseUrl.getFile());
+
+        SaveImageData saveImageData = SaveImageData.builder()
+                .regId(regId)
+                .imageUrl(imageUrl)
+                .imageName(imageName)
+                .extension(extension)
+                .build();
 
         int savedImageNo;
 
         switch (type) {
             case COMMUNITY:
-                savedImageNo = savedCommunityImage(regId, parentNo, imageName, imageUrl, extension);
+                savedImageNo = saveCommunityImage(saveImageData);
                 break;
             case PROFILE:
-                savedImageNo = savedProfileImage(regId,parentNo,imageName,imageUrl,extension);
+                savedImageNo = saveProfileImage(saveImageData);
                 break;
             case ADOPT:
-                savedImageNo = 0;
+                savedImageNo = saveAdoptImage(saveImageData);
                 break;
             default:
-                throw new IllegalArgumentException("Invalid type");
+               throw INVALID_TYPE_EXCEPTION;
         }
 
         return savedImageNo;
     }
 
+
     //== 게시글이미지 정보 저장 ==//
-    private Integer savedCommunityImage(String regId, Integer articleNo, String imageName, String imageUrl, String type) {
-        CommunityImage community =
-                CommunityImage.builder()
-                .articleNo(articleNo)
+    private Integer saveCommunityImage(SaveImageData imageData) {
+        CommunityImage community = CommunityImage.builder()
                 .build();
 
-        community.addRagId(regId);
-        community.addImageUrl(imageUrl);
-        community.addImageName(imageName);
-        community.addImageType(type);
+        community.addRagId(imageData.getRegId());
+        community.addImageUrl(imageData.getImageUrl());
+        community.addImageName(imageData.getImageName());
+        community.addImageType(imageData.getExtension());
 
         CommunityImage save = communityImageRepository.save(community);
         return save.getPictureNo();
     }
     
     //== 프로필이미지 정보 저장 ==//
-    private Integer savedProfileImage(String regId, Integer memberNo, String imageName, String imageUrl, String type) {
+    private Integer saveProfileImage(SaveImageData imageData) {
         ProfileImage profile = ProfileImage.builder()
-                .memberNo(memberNo)
                 .build();
 
-        profile.addRagId(regId);
-        profile.addImageUrl(imageUrl);
-        profile.addImageName(imageName);
-        profile.addImageType(type);
+        profile.addRagId(imageData.getRegId());
+        profile.addImageUrl(imageData.getImageUrl());
+        profile.addImageName(imageData.getImageName());
+        profile.addImageType(imageData.getExtension());
 
         ProfileImage save = profileImageRepository.save(profile);
         return save.getPictureNo();
     }
 
-    private void savedAdoptImage(String regId, Integer saleNo, String imageName, String imageUrl, String type) {
+    private Integer saveAdoptImage(SaveImageData imageData) {
+        AdoptImage image = AdoptImage.builder()
+                .build();
 
+        image.addRagId(imageData.getRegId());
+        image.addImageUrl(imageData.getImageUrl());
+        image.addImageName(imageData.getImageName());
+        image.addImageType(imageData.getExtension());
+
+        AdoptImage save = adoptImageRepository.save(image);
+
+        return save.getPictureNo();
     }
 
     //== URL 결합 메서드 ==//
@@ -203,9 +281,22 @@ public class AwsS3Service {
        return fileName.substring(fileName.indexOf(DOT) + 1);
     }
 
+    //== image URL 파일명 추출 메서드 ==//
+    private String extractFileName(String imageUrl){
 
+        String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
 
+        return fileName;
+    }
 
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    private static class SaveImageData {
 
-
+        String regId;
+        String imageName;
+        String imageUrl;
+        String extension;
+    }
 }
