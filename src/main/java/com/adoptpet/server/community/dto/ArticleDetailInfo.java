@@ -1,12 +1,10 @@
 package com.adoptpet.server.community.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
+@ToString
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,6 +20,5 @@ public class ArticleDetailInfo {
     private LocalDateTime regDate; // community
     private String profile; // profileImage
     private String content; // community
-    private List<String> image; // articleImage
 
 }

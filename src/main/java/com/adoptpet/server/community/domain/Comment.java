@@ -2,6 +2,7 @@ package com.adoptpet.server.community.domain;
 
 import com.adoptpet.server.user.domain.Member;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Entity
 @Table(name = "COMMENT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -40,8 +42,8 @@ public class Comment {
     @Column(name = "mod_id")
     private String modId;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "visible_yn")
+    @Convert(converter = VisibleYnEnum.VisibleConverter.class)
     private VisibleYnEnum visibleYn;
 
     @Enumerated(EnumType.ORDINAL)

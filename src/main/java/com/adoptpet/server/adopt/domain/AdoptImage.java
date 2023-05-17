@@ -2,13 +2,16 @@ package com.adoptpet.server.adopt.domain;
 
 import com.adoptpet.server.commons.support.BaseImageEntity;
 import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
+@Getter
 @Entity
 @Table(name = "ADOPT_IMAGE")
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AdoptImage extends BaseImageEntity {
     @Id
@@ -29,5 +32,10 @@ public class AdoptImage extends BaseImageEntity {
         addImageType(type);
         this.saleNo = saleNo;
     }
-
+  
+    @Builder
+    public AdoptImage(Integer pictureNo, Integer saleNo) {
+        this.pictureNo = pictureNo;
+        this.saleNo = saleNo;
+    }
 }

@@ -1,5 +1,7 @@
 package com.adoptpet.server.adopt.controller;
 
+
+import com.adoptpet.server.adopt.dto.request.AdoptBookmarkRequestDto;
 import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
@@ -38,6 +40,7 @@ public class AdoptController {
 
         // 새로운 분양글을 저장한다.
         adoptService.insertAdopt(adoptDto, user);
+
 
         return ResponseEntity.ok().build();
 
