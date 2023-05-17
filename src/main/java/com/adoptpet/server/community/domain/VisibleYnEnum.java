@@ -3,6 +3,7 @@ package com.adoptpet.server.community.domain;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
@@ -12,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@NoArgsConstructor(force = true)
 public enum VisibleYnEnum {
     VISIBLE("Y"),
     UNVISIBLE("N");
@@ -31,7 +33,7 @@ public enum VisibleYnEnum {
 
     @JsonCreator// JSON을 deserialize 할 때 해당 메서드를 이용해 값을 변환
     public static VisibleYnEnum from(String value){
-        return Optional.ofNullable(CODE_MAP.get(value))
+        return Optional.ofNullable(CODE_MAP.get(value.toUpperCase()))
                 .orElseThrow(()-> new IllegalArgumentException("Invalid value"));
     }
 

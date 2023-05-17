@@ -2,7 +2,6 @@ package com.adoptpet.server.community.domain;
 
 
 import com.adoptpet.server.commons.support.BaseTimeEntity;
-import com.adoptpet.server.user.domain.Member;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,10 +21,13 @@ public class Community extends BaseTimeEntity {
     @Column(name = "article_no")
     private Integer articleNo;
 
-    @Column(name = "title")
+    @Column(name = "category_no",nullable = false)
+    private Integer categoryNo;
+
+    @Column(name = "title",nullable = false, length = 100)
     private String title;
 
-    @Column(name = "content")
+    @Column(name = "content",nullable = false)
     private String content;
 
     @Column(name = "view_cnt")
@@ -49,14 +51,6 @@ public class Community extends BaseTimeEntity {
     @Column(name = "blind_yn")
     private BlindYnEnum blindYn;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_no")
-    private Member member;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_no")
-    private Category category;
-
     @OneToMany(mappedBy = "community")
     private List<Comment> comments = new ArrayList<>();
 
@@ -64,15 +58,11 @@ public class Community extends BaseTimeEntity {
     private List<ArticleHeart> articleHearts = new ArrayList<>();
 
     @OneToMany(mappedBy = "community")
-    private List<CommunityImage> communityImages = new ArrayList<>();
-
-    @OneToMany(mappedBy = "community")
     private List<ArticleBookmark> articleBookmarks = new ArrayList<>();
 
     @Builder
-    public Community(String title, String content, Integer viewCount,
-                     String regId, String modId, VisibleYnEnum visibleYn,
-                     LogicalDelEnum logicalDel, BlindYnEnum blindYn) {
+    public Community(Integer categoryNo, String title, String content, Integer viewCount, String regId, String modId, VisibleYnEnum visibleYn, LogicalDelEnum logicalDel, BlindYnEnum blindYn) {
+        this.categoryNo = categoryNo;
         this.title = title;
         this.content = content;
         this.viewCount = viewCount;
@@ -83,38 +73,5 @@ public class Community extends BaseTimeEntity {
         this.blindYn = blindYn;
     }
 
-    //== 연관관계 메서드 ==//
-    public void addMember(Member member){
-        this.member = member;
-    }
-
-    public void addCategory(Category category){
-        this.category = category;
-    }
-
-    public void getComment(Comment comment){
-        this.comments.add(comment);
-    }
-
-    public void getArticleHeart(ArticleHeart articleHeart) {
-        this.articleHearts.add(articleHeart);
-    }
-
-    public void getArticleBookmark(ArticleBookmark articleBookMark) {
-        this.articleBookmarks.add(articleBookMark);
-    }
-
-    public void getArticleImage(CommunityImage communityImage) {
-        this.communityImages.add(communityImage);
-    }
-
-
-    //== 생성 메서드 ==//
-
-    //== 조회 메서드 ==//
-
-    //== 수정 메서드 ==//
-
-    //== 비즈니스 로직 ==//
 
 }

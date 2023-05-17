@@ -2,6 +2,7 @@ package com.adoptpet.server.adopt.service;
 
 import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.AdoptBookmark;
+import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
 import com.adoptpet.server.adopt.repository.AdoptBookmarkRepository;
 import com.adoptpet.server.adopt.repository.AdoptImageRepository;
@@ -32,8 +33,20 @@ public class AdoptService {
     }
 
     @Transactional
-    public Adopt insertAdopt(Adopt adopt) {
-        return adoptRepository.save(adopt);
+    public Adopt insertAdopt(AdoptRequestDto adoptDto, SecurityUserDto user) {
+        // 현재 회원의 정보로 주소를 조회한다.
+        String address = memberService.getUserAddress(user.getMemberNo());
+        // 현재 회원의 주소 값을 셋팅한다.
+        adoptDto.setAddress(address);
+        // AdoptRequestDto => Adopt Entity로 변환해서 정보를 저장한다.
+        Adopt adopt = adoptDto.toEntity();
+        // 등록자 ID와 수정자 ID를 넣어준다.
+        adopt.addRegIdAndModId(user.getEmail(), user.getEmail());
+        // 분양 글을 저장한다.
+        Adopt savedAdopt = adoptRepository.save(adopt);
+        // 분양 글과 연관있는 이미지들의 데이터를 업데이트 해준다.
+        updateAdoptImageSaleNo(adoptDto.getImgNo(), savedAdopt.getSaleNo());
+        return savedAdopt;
     }
 
     @Transactional

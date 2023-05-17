@@ -16,7 +16,7 @@ public class MyAuthenticationFailureHandler implements AuthenticationFailureHand
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         // 인증 실패시 로그인 페이지로 이동
-        response.sendRedirect("http://localhost:3000/login");
+        response.sendRedirect("http://15.164.216.101/");
     }
 
 }

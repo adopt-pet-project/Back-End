@@ -63,28 +63,5 @@ public class Comment {
     @OneToMany(mappedBy = "comment")
     private List<CommentHeart> commentHearts = new ArrayList<>();
 
-    //== 연관관계 메서드 ==//
-    public void addCommunity(Community community){
-        this.community = community;
-        community.getComment(this);
-    }
-
-    public void addMember(Member member){
-        this.member = member;
-        //member.getComment() 만들기
-    }
-
-    public void getCommentHeart(CommentHeart commentHeart) {
-        this.commentHearts.add(commentHeart);
-    }
-
-    //== 생성 메서드 ==//
-
-    //== 조회 메서드 ==//
-
-    //== 수정 메서드 ==//
-
-    //== 비즈니스 로직 ==//
-
 
 }

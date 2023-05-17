@@ -27,4 +27,19 @@ public abstract class BaseImageEntity{
 
     @Column(name = "image_type")
     private String imageType;
+
+    public void addImageUrl(String url){
+        this.imageUrl = url;
+    }
+
+    public void addRagId(String regId){
+        this.regId = regId;
+    }
+    public void addImageName(String name){
+        this.imageName = name;
+    }
+
+    public void addImageType(String type){
+        this.imageType = type;
+    }
 }
