@@ -1,15 +1,11 @@
 package com.adoptpet.server.adopt.controller;
 
-import com.adoptpet.server.adopt.domain.Adopt;
-import com.adoptpet.server.adopt.domain.AdoptBookmark;
 import com.adoptpet.server.adopt.dto.request.AdoptBookmarkRequestDto;
 import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
 import com.adoptpet.server.adopt.service.AdoptService;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
-import com.adoptpet.server.user.domain.Member;
-import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +19,6 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class AdoptController {
 
-    private final MemberService memberService;
     private final AdoptService adoptService;
 
     @PostMapping("/adopt")
@@ -38,7 +33,7 @@ public class AdoptController {
         SecurityUserDto user = SecurityUtils.getUser();
 
         // 새로운 분양글을 저장한다.
-        Adopt savedAdopt = adoptService.insertAdopt(adoptDto, user);
+        adoptService.insertAdopt(adoptDto, user);
 
         return ResponseEntity.ok().build();
 
