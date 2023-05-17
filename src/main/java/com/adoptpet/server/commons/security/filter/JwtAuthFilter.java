@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -27,26 +28,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
 
-    // 인증이 되지 않아도 접근이 가능해야 하는 URL 패턴은 JWT 토큰을 검사하지 않는다.
-    private final List<String> excludePath = List.of(
-        "/",
-        "/token/logout",
-        "/token/refresh",
-        "/member/register"
-    );
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String requestPath = request.getRequestURI();
-        // excludePath와 하나라도 일치하는 경우 검사를 통과한다.
-        return excludePath.stream()
-                .anyMatch(requestPath::equals);
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // request Header에서 AccessToken을 가져온다.
         String atc = request.getHeader("Authorization");
+
+        // 토큰 검사 생략(모두 허용 URL의 경우 토큰 검사 통과)
+        if (!StringUtils.hasText(atc)) {
+            log.info("토큰 검사 생략 : 전체 허용 URL = {}", request.getRequestURI());
+            doFilter(request, response, filterChain);
+            return;
+        }
 
         // AccessToken을 검증하고, 만료되었을경우 예외를 발생시킨다.
         if (!jwtUtil.verifyToken(atc)) {
@@ -55,7 +48,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         // AccessToken의 값이 있고, 유효한 경우에 진행한다.
-        if (atc != null && jwtUtil.verifyToken(atc)) {
+        if (jwtUtil.verifyToken(atc)) {
 
             // AccessToken 내부의 payload에 있는 email로 user를 조회한다. 없다면 예외를 발생시킨다 -> 정상 케이스가 아님
             Member findMember = memberRepository.findByEmail(jwtUtil.getUid(atc))

@@ -2,6 +2,7 @@ package com.adoptpet.server.adopt.service;
 
 import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.AdoptBookmark;
+import com.adoptpet.server.adopt.domain.AdoptImage;
 import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import com.adoptpet.server.adopt.repository.AdoptBookmarkRepository;
@@ -11,10 +12,14 @@ import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Objects;
 
+import java.util.Objects;
+import java.util.Optional;
+
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -32,7 +37,9 @@ public class AdoptService {
 
     @Transactional
     public void deleteAdopt(Integer saleNo) {
+        // 분양글을 삭제한다.
         adoptRepository.deleteBySaleNo(saleNo);
+        // 삭제한 분양글과 관계가 있는 이미지의 key 값을 전부 null로 업데이트 한다.
         adoptImageRepository.updateAdoptImageNull(saleNo);
     }
 
@@ -54,6 +61,11 @@ public class AdoptService {
         Adopt adopt = findBySaleNo(saleNo);
         // AdoptRequestDto의 내용으로 분양글 엔티티의 내용을 변경한다.
         adopt.updateAdopt(adoptDto, user);
+        // 이미지 배열 중 가장 첫번째 URL을 썸네일 이미지로 넣어준다.
+        if (Objects.nonNull(adoptDto.getImgNo())) {
+            String imageUrl = adoptImageRepository.findImageUrlByPictureNo(adoptDto.getImgNo()[0]);
+            adopt.addThumbnail(imageUrl);
+        }
         // 분양 글을 업데이트 한다.
         Adopt updatedAdopt = adoptRepository.save(adopt);
         // 분양 글과 연관있는 이미지들의 데이터를 업데이트 해준다.
@@ -72,13 +84,18 @@ public class AdoptService {
     }
 
     @Transactional
-    public AdoptBookmark insertAdoptBookmark(SecurityUserDto dto, Integer saleNo) {
+    public void insertAdoptBookmark(SecurityUserDto dto, Integer saleNo) {
         // 회원의 정보와 현재 분양 게시글의 정보를 가져온다.
         Adopt adopt = findBySaleNo(saleNo);
         Member member = memberService.findByMemberNo(dto.getMemberNo());
+        Optional<AdoptBookmark> findBookmark = adoptBookmarkRepository.findByMemberNoAndSaleNo(member.getMemberNo(), adopt.getSaleNo());
+        if(findBookmark.isPresent()) {
+            throw new IllegalStateException("이미 관심 분양글로 등록 되었습니다.");
+        }
+
         // 외래키 업데이트를 위해 관심 분양 게시글 엔티티에 회원과 분양 게시글 엔티티를 셋팅해준다.
         AdoptBookmark adoptBookmark = new AdoptBookmark(dto.getEmail(), adopt, member);
-        return adoptBookmarkRepository.save(adoptBookmark);
+        adoptBookmarkRepository.save(adoptBookmark);
     }
 
     public AdoptDetailResponseDto readAdopt(Integer saleNo) {
@@ -95,6 +112,12 @@ public class AdoptService {
     private Adopt getAdopt(AdoptRequestDto adoptDto, SecurityUserDto user) {
         // AdoptRequestDto => Adopt Entity로 변환해서 정보를 저장한다.
         Adopt adopt = adoptDto.toEntity();
+
+        if (Objects.nonNull(adoptDto.getImgNo())) {
+            String imageUrl = adoptImageRepository.findImageUrlByPictureNo(adoptDto.getImgNo()[0]);
+            adopt.addThumbnail(imageUrl);
+        }
+
         // 등록자 ID와 수정자 ID를 넣어준다.
         adopt.addRegIdAndModId(user.getEmail(), user.getEmail());
         return adopt;

@@ -52,6 +52,9 @@ public class Adopt extends BaseTimeEntity {
     @Column(name = "longitude")
     private Float longitude;
 
+    @Column(name = "thumbnail")
+    private String thumbnail;
+
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private AdoptStatus status;
@@ -79,6 +82,10 @@ public class Adopt extends BaseTimeEntity {
         this.modId = modId;
     }
 
+    public void addThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
     public void addRegId(String regId) {
         this.regId = regId;
     }
@@ -93,5 +100,6 @@ public class Adopt extends BaseTimeEntity {
         this.latitude = adoptDto.getLatitude();
         this.longitude = adoptDto.getLongitude();
         this.modId = user.getEmail();
+        this.address = adoptDto.getAddress();
     }
 }

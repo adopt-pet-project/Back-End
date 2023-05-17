@@ -6,7 +6,6 @@ import static com.adoptpet.server.adopt.domain.QAdoptBookmark.*;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import static com.adoptpet.server.user.domain.QMember.*;
 import static com.adoptpet.server.user.domain.QProfileImage.*;
-
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
@@ -94,18 +93,10 @@ public class AdoptQueryService {
                                 , "chat"
                         ),
                         adopt.regDate,
-                        ExpressionUtils.as(
-                                JPAExpressions.select(adoptImage.imageUrl)
-                                        .from(adoptImage)
-                                        .where(adoptImage.saleNo.eq(adopt.saleNo))
-                                        .orderBy(adoptImage.sort.asc())
-                                        .limit(1)
-                                , "thumbnail"
-                        )
+                        adopt.thumbnail
                         ))
                 .from(adopt)
                 .orderBy(adopt.saleNo.desc())
-                .leftJoin(adoptImage).on(adoptImage.saleNo.eq(adopt.saleNo))
                 .innerJoin(member).on(adopt.regId.eq(member.email))
                 .where(saleNoGt(saleNo), searchCondition)
                 .limit(10)

@@ -24,6 +24,7 @@ public class AdoptController {
     private final AdoptService adoptService;
     private final AdoptQueryService adoptQueryService;
 
+    // 분양글 등록
     @PostMapping("/adopt")
     public ResponseEntity<Void> writeAdopt(@RequestBody @Valid AdoptRequestDto adoptDto, BindingResult bindingResult) {
 
@@ -42,6 +43,7 @@ public class AdoptController {
 
     }
 
+    // 관심 분양 게시글 등록
     @PostMapping("/adopt/bookmark/{saleNo}")
     public ResponseEntity<Void> addBookMark(@PathVariable("saleNo") Integer saleNo) {
 

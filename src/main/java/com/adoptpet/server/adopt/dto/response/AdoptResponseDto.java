@@ -21,4 +21,17 @@ public class AdoptResponseDto {
     private LocalDateTime regDate;
     private String thumbnail;
 
+    public AdoptResponseDto(Integer id, String title, String kind, String location, long bookmark, long chat, LocalDateTime regDate) {
+        this.id = id;
+        this.title = title;
+        this.kind = kind;
+        this.location = location;
+        this.bookmark = bookmark;
+        this.chat = chat;
+        this.regDate = regDate;
+    }
+
+    public void addThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
 }
