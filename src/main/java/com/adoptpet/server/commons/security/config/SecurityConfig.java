@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -36,12 +37,16 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests() // 요청에 대한 인증 설정
                 .antMatchers("/token/**").permitAll() // 토큰 발급을 위한 경로는 모두 허용
+                .antMatchers(HttpMethod.GET, "/adopt/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/community/**").permitAll()
                 .antMatchers("/", "/css/**","/images/**","/js/**","/favicon.ico","/h2-console/**").permitAll()
+                .antMatchers("/adopt/**").hasAnyRole("MANAGER", "USER")
+                .antMatchers(HttpMethod.POST, "/member").permitAll()
                 .antMatchers("/user/**").hasAnyRole("MANAGER", "USER") // 회원 페이지는 회원(USER) 또는 관리자(MANAGER) 권한이 있어야 접근 가능
                 .antMatchers("/admin/**").hasRole("MANAGER") // 관리자 페이지는 관리자(MANAGER) 권한이 있어야 접근 가능
                 .anyRequest().authenticated() // 그 외의 모든 요청은 인증이 필요하다.
                 .and()
-                .oauth2Login() // OAuth2 로그인 설정시작
+                .oauth2Login().loginPage("http://15.164.216.101/") // OAuth2 로그인 설정시작
                 .userInfoEndpoint().userService(customOAuth2UserService) // OAuth2 로그인시 사용자 정보를 가져오는 엔드포인트와 사용자 서비스를 설정
                 .and()
                 .failureHandler(oAuth2LoginFailureHandler) // OAuth2 로그인 실패시 처리할 핸들러를 지정해준다.
@@ -60,6 +65,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin("http://15.164.216.101/"); // CORS 허용할 오리진 추가
+        configuration.addAllowedMethod("http://localhost:3000");
         configuration.addAllowedMethod("*"); // 모든 HTTP 메서드 허용
         configuration.addAllowedMethod("*"); // 모든 헤더 허용
         configuration.setAllowCredentials(true); // 자격 증명 허용 설정
@@ -68,8 +74,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration); // 모든 경로에 대해 CORS 구성 적용
         return source;
     }
-
-
-
-
 }
