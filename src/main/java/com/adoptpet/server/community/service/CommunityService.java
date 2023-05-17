@@ -1,5 +1,6 @@
 package com.adoptpet.server.community.service;
 
+import com.adoptpet.server.community.domain.Comment;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.dto.ArticleDetailInfo;
 import com.adoptpet.server.community.dto.CommunityDto;
@@ -19,9 +20,13 @@ public class CommunityService {
 
     private final CommunityRepository communityRepository;
     private final CommunityQDslRepository communityQDslRepository;
+
     @Transactional
-    public void readArticle(Integer articleNo){
-        ArticleDetailInfo articleDetail = communityQDslRepository.findArticleDetail(articleNo);
+    public ArticleDetailInfo readArticle(Integer articleNo){
+
+        Community community = communityRepository.findById(articleNo).orElseThrow();
+
+        return communityQDslRepository.findArticleDetail(articleNo);
     }
 
 
