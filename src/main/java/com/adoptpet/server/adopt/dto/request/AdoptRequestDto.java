@@ -25,6 +25,9 @@ public class AdoptRequestDto {
     private String content;
 
     @NotBlank
+    private String address;
+
+    @NotBlank
     private String age;
 
     @NotNull
@@ -34,7 +37,8 @@ public class AdoptRequestDto {
     @Length(max = 20)
     private String kind;
 
-    private String address;
+    @NotBlank
+    private String name;
 
     @NotNull
     private Float latitude;
@@ -42,7 +46,6 @@ public class AdoptRequestDto {
     @NotNull
     private Float longitude;
 
-    @NotNull
     private Integer[] imgNo;
 
 
@@ -57,6 +60,7 @@ public class AdoptRequestDto {
                 .address(address)
                 .latitude(latitude)
                 .longitude(longitude)
+                .name(name)
                 .build();
     }
 }

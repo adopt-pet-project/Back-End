@@ -3,11 +3,18 @@ package com.adoptpet.server.commons.image.service;
 import com.adoptpet.server.commons.config.AwsS3config;
 import com.adoptpet.server.commons.properties.AwsS3Properties;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URL;
 import com.amazonaws.services.s3.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-
 import java.io.InputStream;
 import java.net.URL;
 
@@ -37,6 +44,7 @@ public class AwsS3Repository {
         return responseUrl;
     }
 
+
     //== S3 이미지 파일 제거 ==//
     public String deleteFile(String keyName) {
         final AmazonS3Client aswS3Client = awsS3config.amazonS3Client();
@@ -52,7 +60,6 @@ public class AwsS3Repository {
             log.debug("Fail Delete Failed _ file not found");
             result = "AWS S3 - Failed _ file not found";
         }
-
         return result;
     }
 

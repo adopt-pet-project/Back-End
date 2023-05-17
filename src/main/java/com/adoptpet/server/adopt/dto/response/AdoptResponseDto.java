@@ -1,73 +1,37 @@
 package com.adoptpet.server.adopt.dto.response;
 
-import com.adoptpet.server.adopt.domain.AdoptStatus;
-import com.adoptpet.server.adopt.domain.Gender;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class AdoptResponseDto {
 
     private Integer id;
-    private String authorId;
-    private String[] images;
-    private Header header;
-    private Metadata metadata;
-    private Context context;
-    private Author author;
+    private String title;
+    private String kind;
+    private String location;
+    private long bookmark;
+    private long chat;
+    private LocalDateTime regDate;
+    private String thumbnail;
 
-    public AdoptResponseDto(Integer id, String authorId, Header header, Metadata metadata, Context context, Author author) {
+    public AdoptResponseDto(Integer id, String title, String kind, String location, long bookmark, long chat, LocalDateTime regDate) {
         this.id = id;
-        this.authorId = authorId;
-        this.header = header;
-        this.metadata = metadata;
-        this.context = context;
-        this.author = author;
+        this.title = title;
+        this.kind = kind;
+        this.location = location;
+        this.bookmark = bookmark;
+        this.chat = chat;
+        this.regDate = regDate;
     }
 
-    public void addImages(String[] images) {
-        this.images = images;
+    public void addThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
     }
-
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    public static class Header {
-        private String title;
-        private AdoptStatus status;
-        private LocalDateTime regDate;
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    public static class Metadata {
-        private Gender gender;
-        private String age;
-        private String name;
-        private String species;
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    public static class Context {
-        private String context;
-        private long bookmark;
-        private long chat;
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    public static class Author {
-        private String author;
-        private String profile;
-        private String location;
-    }
-
-
 }
