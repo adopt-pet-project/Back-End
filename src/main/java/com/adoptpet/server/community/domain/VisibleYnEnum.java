@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Getter
 @NoArgsConstructor(force = true)
 public enum VisibleYnEnum {
     VISIBLE("Y"),
@@ -47,7 +48,7 @@ public enum VisibleYnEnum {
 
         @Override // DB에 있는 값을 다시 enum으로 변환
         public VisibleYnEnum convertToEntityAttribute(String dbData) {
-            return VisibleYnEnum.from(dbData);
+            return from(dbData);
         }
     }
 }
