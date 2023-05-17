@@ -14,7 +14,7 @@ import java.net.URL;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class AwsS3Repository {
+public class AwsS3Service {
 
     private final AwsS3config awsS3config;
     private final AwsS3Properties awsS3Properties;
