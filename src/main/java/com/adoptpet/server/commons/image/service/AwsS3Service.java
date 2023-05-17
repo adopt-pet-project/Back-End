@@ -3,6 +3,7 @@ package com.adoptpet.server.commons.image.service;
 import com.adoptpet.server.adopt.domain.AdoptImage;
 import com.adoptpet.server.adopt.repository.AdoptImageRepository;
 import com.adoptpet.server.commons.image.ImageTypeEnum;
+import com.adoptpet.server.commons.image.dto.ImageInfoDto;
 import com.adoptpet.server.community.domain.CommunityImage;
 import com.adoptpet.server.community.repository.CommunityImageRepository;
 import com.adoptpet.server.user.domain.ProfileImage;
@@ -121,7 +122,7 @@ public class AwsS3Service {
      * @throws ResponseStatusException  : 파일 업로드가 실패한 경우 예외가 발생
      */
     @Transactional
-    public Integer upload(MultipartFile file, String regId, String type) {
+    public ImageInfoDto upload(MultipartFile file, String regId, String type) {
 
         // 타입 분류를 위해 enum 생성
         ImageTypeEnum typeEnum = ImageTypeEnum.from(type.toLowerCase());
@@ -146,10 +147,10 @@ public class AwsS3Service {
             URL responseUrl = awsS3Repository.uploadFile(objectMetadata, inputStream, fileName ,keyName);
 
             // Server DB에 upload된 image 정보 저장
-            Integer savedImageNo = saveImage(regId, typeEnum, responseUrl, imageName);
+            ImageInfoDto savedImageInfo = saveImage(regId, typeEnum, responseUrl, imageName);
 
             // 저장된 이미지 PK 반환
-            return savedImageNo;
+            return savedImageInfo;
 
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
@@ -160,7 +161,7 @@ public class AwsS3Service {
 
 
     //== 타입별 분류 후 데이터베이스 저장  ==//
-    private Integer saveImage(String regId, ImageTypeEnum type, URL responseUrl, String imageName){
+    private ImageInfoDto saveImage(String regId, ImageTypeEnum type, URL responseUrl, String imageName){
 
         String imageUrl = combineUrls(type.getPath(), responseUrl);
         String extension = extractExtension(responseUrl.getFile());
@@ -172,28 +173,28 @@ public class AwsS3Service {
                 .extension(extension)
                 .build();
 
-        int savedImageNo;
+        ImageInfoDto imageInfo;
 
         switch (type) {
             case COMMUNITY:
-                savedImageNo = saveCommunityImage(saveImageData);
+                imageInfo = saveCommunityImage(saveImageData);
                 break;
             case PROFILE:
-                savedImageNo = saveProfileImage(saveImageData);
+                imageInfo = saveProfileImage(saveImageData);
                 break;
             case ADOPT:
-                savedImageNo = saveAdoptImage(saveImageData);
+                imageInfo = saveAdoptImage(saveImageData);
                 break;
             default:
                throw INVALID_TYPE_EXCEPTION;
         }
 
-        return savedImageNo;
+        return imageInfo;
     }
 
 
     //== 게시글이미지 정보 저장 ==//
-    private Integer saveCommunityImage(SaveImageData imageData) {
+    private ImageInfoDto saveCommunityImage(SaveImageData imageData) {
         CommunityImage community = CommunityImage.builder()
                 .build();
 
@@ -203,11 +204,11 @@ public class AwsS3Service {
         community.addImageType(imageData.getExtension());
 
         CommunityImage save = communityImageRepository.save(community);
-        return save.getPictureNo();
+        return new ImageInfoDto(save.getPictureNo(),save.getImageUrl());
     }
     
     //== 프로필이미지 정보 저장 ==//
-    private Integer saveProfileImage(SaveImageData imageData) {
+    private ImageInfoDto saveProfileImage(SaveImageData imageData) {
         ProfileImage profile = ProfileImage.builder()
                 .build();
 
@@ -217,10 +218,11 @@ public class AwsS3Service {
         profile.addImageType(imageData.getExtension());
 
         ProfileImage save = profileImageRepository.save(profile);
-        return save.getPictureNo();
+
+        return new ImageInfoDto(save.getPictureNo(),save.getImageUrl());
     }
 
-    private Integer saveAdoptImage(SaveImageData imageData) {
+    private ImageInfoDto saveAdoptImage(SaveImageData imageData) {
         AdoptImage image = AdoptImage.builder()
                 .build();
 
@@ -231,7 +233,7 @@ public class AwsS3Service {
 
         AdoptImage save = adoptImageRepository.save(image);
 
-        return save.getPictureNo();
+        return new ImageInfoDto(save.getPictureNo(),save.getImageUrl());
     }
 
     //== URL 결합 메서드 ==//
@@ -278,7 +280,7 @@ public class AwsS3Service {
 
     //== 확장자 추출 메서드 ==//
     private String extractExtension(String fileName){
-       return fileName.substring(fileName.indexOf(DOT) + 1);
+       return fileName.substring(fileName.lastIndexOf(DOT) + 1);
     }
 
     //== image URL 파일명 추출 메서드 ==//
