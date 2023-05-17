@@ -37,21 +37,8 @@ public class AdoptController {
         // 현재 회원의 인증 객체를 가져온다.
         SecurityUserDto user = SecurityUtils.getUser();
 
-        // 현재 회원의 정보로 주소를 조회한다.
-        String address = memberService.getUserAddress(user.getMemberNo());
-        // 현재 회원의 주소 값을 셋팅한다.
-        adoptDto.setAddress(address);
-
-        // AdoptRequestDto => Adopt Entity로 변환해서 정보를 저장한다.
-        Adopt adopt = adoptDto.toEntity();
-        // 등록자 ID와 수정자 ID를 넣어준다.
-        adopt.addRegIdAndModId(user.getEmail(), user.getEmail());
-
         // 새로운 분양글을 저장한다.
-        Adopt savedAdopt = adoptService.insertAdopt(adopt);
-
-        // 분양 글과 연관있는 이미지들의 데이터를 업데이트 해준다.
-        adoptService.updateAdoptImageSaleNo(adoptDto.getImgNo(), savedAdopt.getSaleNo());
+        Adopt savedAdopt = adoptService.insertAdopt(adoptDto, user);
 
         return ResponseEntity.ok().build();
 
