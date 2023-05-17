@@ -16,4 +16,7 @@ public class AdoptImage extends BaseImageEntity {
     @Column(name = "sale_no", nullable = false)
     private Integer saleNo;
 
+    @Column(name = "sort")
+    private Integer sort;
+
 }

@@ -3,7 +3,7 @@ package com.adoptpet.server.adopt.service;
 import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.AdoptBookmark;
 import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
-import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
+import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import com.adoptpet.server.adopt.repository.AdoptBookmarkRepository;
 import com.adoptpet.server.adopt.repository.AdoptImageRepository;
 import com.adoptpet.server.adopt.repository.AdoptRepository;
@@ -13,7 +13,6 @@ import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Objects;
 
 @Service
@@ -32,15 +31,15 @@ public class AdoptService {
     }
 
     @Transactional
+    public void deleteAdopt(Integer saleNo) {
+        adoptRepository.deleteBySaleNo(saleNo);
+        adoptImageRepository.updateAdoptImageNull(saleNo);
+    }
+
+    @Transactional
     public Adopt insertAdopt(AdoptRequestDto adoptDto, SecurityUserDto user) {
-        // 현재 회원의 정보로 주소를 조회한다.
-        String address = memberService.getUserAddress(user.getMemberNo());
-        // 현재 회원의 주소 값을 셋팅한다.
-        adoptDto.setAddress(address);
-        // AdoptRequestDto => Adopt Entity로 변환해서 정보를 저장한다.
-        Adopt adopt = adoptDto.toEntity();
-        // 등록자 ID와 수정자 ID를 넣어준다.
-        adopt.addRegIdAndModId(user.getEmail(), user.getEmail());
+        // 회원의 정보로 Adopt 엔티티의 값을 셋팅해준다.
+        Adopt adopt = getAdopt(adoptDto, user);
         // 분양 글을 저장한다.
         Adopt savedAdopt = adoptRepository.save(adopt);
         // 분양 글과 연관있는 이미지들의 데이터를 업데이트 해준다.
@@ -48,12 +47,26 @@ public class AdoptService {
         return savedAdopt;
     }
 
+
+    @Transactional
+    public Adopt updateAdopt(AdoptRequestDto adoptDto, SecurityUserDto user, Integer saleNo) {
+        // 분양글의 고유번호로 분양글을 조회한다.
+        Adopt adopt = findBySaleNo(saleNo);
+        // AdoptRequestDto의 내용으로 분양글 엔티티의 내용을 변경한다.
+        adopt.updateAdopt(adoptDto, user);
+        // 분양 글을 업데이트 한다.
+        Adopt updatedAdopt = adoptRepository.save(adopt);
+        // 분양 글과 연관있는 이미지들의 데이터를 업데이트 해준다.
+        updateAdoptImageSaleNo(adoptDto.getImgNo(), saleNo);
+        return updatedAdopt;
+    }
+
     @Transactional
     public void updateAdoptImageSaleNo(Integer[] imageNoArr, Integer saleNo) {
         if (!Objects.isNull(imageNoArr)) {
             // 분양 이미지 테이블의 saleNo 값을 분양 테이블의 saleNo 값으로 업데이트 해준다.
-            for (Integer imageNo : imageNoArr) {
-                adoptImageRepository.updateAdoptImageSaleNo(saleNo, imageNo);
+            for (int i=0; i<imageNoArr.length; i++) {
+                adoptImageRepository.updateAdoptImageSaleNo(saleNo, imageNoArr[i], (i+1));
             }
         }
     }
@@ -68,9 +81,9 @@ public class AdoptService {
         return adoptBookmarkRepository.save(adoptBookmark);
     }
 
-    public AdoptResponseDto readAdopt(Integer saleNo) {
+    public AdoptDetailResponseDto readAdopt(Integer saleNo) {
         // Adopt 테이블과 Member 테이블을 조인해서 가져올 수 있는 데이터를 먼저 채운다.
-        AdoptResponseDto responseDto = queryService.selectAdoptAndMember(saleNo);
+        AdoptDetailResponseDto responseDto = queryService.selectAdoptAndMember(saleNo);
         // 현재 분양 게시글과 관련이 있는 이미지 url을 조회해온다.
         String[] images = queryService.selectAdoptImages(saleNo).toArray(String[]::new);
         // 현재 비어있는 responseDto의 이미지 필드의 값을 채워준다.
@@ -78,5 +91,13 @@ public class AdoptService {
         return responseDto;
     }
 
+
+    private Adopt getAdopt(AdoptRequestDto adoptDto, SecurityUserDto user) {
+        // AdoptRequestDto => Adopt Entity로 변환해서 정보를 저장한다.
+        Adopt adopt = adoptDto.toEntity();
+        // 등록자 ID와 수정자 ID를 넣어준다.
+        adopt.addRegIdAndModId(user.getEmail(), user.getEmail());
+        return adopt;
+    }
 
 }

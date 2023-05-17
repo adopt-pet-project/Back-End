@@ -1,5 +1,6 @@
 package com.adoptpet.server.commons.support;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -16,9 +17,11 @@ public abstract class BaseTimeEntity {
 
     @CreatedDate//생성일시 자동입력
     @Column(name = "reg_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime regDate;
 
     @LastModifiedDate
     @Column(name = "mod_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private LocalDateTime modDate;
 }

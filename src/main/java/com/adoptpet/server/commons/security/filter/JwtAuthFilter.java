@@ -31,13 +31,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final List<String> excludePath = List.of(
         "/",
         "/token/logout",
-        "/token/refresh"
+        "/token/refresh",
+        "/member/register"
     );
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String requestPath = request.getRequestURI();
-
         // excludePath와 하나라도 일치하는 경우 검사를 통과한다.
         return excludePath.stream()
                 .anyMatch(requestPath::equals);
@@ -45,19 +45,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // request Header에서 AccessToken을 가져온다.
         String atc = request.getHeader("Authorization");
 
-
+        // AccessToken을 검증하고, 만료되었을경우 예외를 발생시킨다.
         if (!jwtUtil.verifyToken(atc)) {
             log.error("Access Token 만료!");
             throw new IllegalStateException("Access Token 만료!");
         }
 
+        // AccessToken의 값이 있고, 유효한 경우에 진행한다.
         if (atc != null && jwtUtil.verifyToken(atc)) {
 
+            // AccessToken 내부의 payload에 있는 email로 user를 조회한다. 없다면 예외를 발생시킨다 -> 정상 케이스가 아님
             Member findMember = memberRepository.findByEmail(jwtUtil.getUid(atc))
                     .orElseThrow(IllegalStateException::new);
 
+            // SecurityContext에 등록할 User 객체를 만들어준다.
             SecurityUserDto userDto = SecurityUserDto.builder()
                     .memberNo(findMember.getMemberNo())
                     .email(findMember.getEmail())
@@ -65,7 +69,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     .name("이름이에용")
                     .picture("프로필 이미지에요").build();
 
-
+            // SecurityContext에 인증 객체를 등록해준다.
             Authentication auth = getAuthentication(userDto);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
@@ -76,7 +80,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 
     public Authentication getAuthentication(SecurityUserDto member) {
-        log.info("ROLE = {}", member.getRole());
         return new UsernamePasswordAuthenticationToken(member, "",
                 List.of(new SimpleGrantedAuthority(member.getRole())));
     }
