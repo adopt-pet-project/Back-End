@@ -2,6 +2,7 @@ package com.adoptpet.server.adopt.service;
 
 import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.AdoptBookmark;
+import com.adoptpet.server.adopt.dto.request.AdoptImageRequestDto;
 import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import com.adoptpet.server.adopt.repository.AdoptBookmarkRepository;
@@ -56,7 +57,7 @@ public class AdoptService {
         // 분양 글을 저장한다.
         Adopt savedAdopt = adoptRepository.save(adopt);
         // 분양 글과 연관있는 이미지들의 데이터를 업데이트 해준다.
-        updateAdoptImageSaleNo(adoptDto.getImgNo(), savedAdopt.getSaleNo());
+        updateAdoptImageSaleNo(adoptDto.getImage(), savedAdopt.getSaleNo());
         return savedAdopt;
     }
 
@@ -68,23 +69,22 @@ public class AdoptService {
         // AdoptRequestDto의 내용으로 분양글 엔티티의 내용을 변경한다.
         adopt.updateAdopt(adoptDto, user);
         // 이미지 배열 중 가장 첫번째 URL을 썸네일 이미지로 넣어준다.
-        if (Objects.nonNull(adoptDto.getImgNo())) {
-            String imageUrl = adoptImageRepository.findImageUrlByPictureNo(adoptDto.getImgNo()[0]);
-            adopt.addThumbnail(imageUrl);
+        if (Objects.nonNull(adoptDto.getImage())) {
+            adopt.addThumbnail(adoptDto.getImage()[0].getImgUrl());
         }
         // 분양 글을 업데이트 한다.
         Adopt updatedAdopt = adoptRepository.save(adopt);
         // 분양 글과 연관있는 이미지들의 데이터를 업데이트 해준다.
-        updateAdoptImageSaleNo(adoptDto.getImgNo(), saleNo);
+        updateAdoptImageSaleNo(adoptDto.getImage(), saleNo);
         return updatedAdopt;
     }
 
     @Transactional
-    public void updateAdoptImageSaleNo(Integer[] imageNoArr, Integer saleNo) {
-        if (!Objects.isNull(imageNoArr)) {
+    public void updateAdoptImageSaleNo(AdoptImageRequestDto[] imageDto, Integer saleNo) {
+        if (!Objects.isNull(imageDto)) {
             // 분양 이미지 테이블의 saleNo 값을 분양 테이블의 saleNo 값으로 업데이트 해준다.
-            for (int i=0; i<imageNoArr.length; i++) {
-                adoptImageRepository.updateAdoptImageSaleNo(saleNo, imageNoArr[i], (i+1));
+            for (int i=0; i< imageDto.length; i++) {
+                adoptImageRepository.updateAdoptImageSaleNo(saleNo, imageDto[i].getImgNo(), (i+1));
             }
         }
     }
@@ -119,9 +119,8 @@ public class AdoptService {
         // AdoptRequestDto => Adopt Entity로 변환해서 정보를 저장한다.
         Adopt adopt = adoptDto.toEntity();
 
-        if (Objects.nonNull(adoptDto.getImgNo())) {
-            String imageUrl = adoptImageRepository.findImageUrlByPictureNo(adoptDto.getImgNo()[0]);
-            adopt.addThumbnail(imageUrl);
+        if (Objects.nonNull(adoptDto.getImage())) {
+            adopt.addThumbnail(adoptDto.getImage()[0].getImgUrl());
         }
 
         // 등록자 ID와 수정자 ID를 넣어준다.

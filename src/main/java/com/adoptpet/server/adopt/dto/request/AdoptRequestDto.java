@@ -38,6 +38,9 @@ public class AdoptRequestDto {
     private String kind;
 
     @NotBlank
+    private String species;
+
+    @NotBlank
     private String name;
 
     @NotNull
@@ -46,7 +49,7 @@ public class AdoptRequestDto {
     @NotNull
     private Float longitude;
 
-    private Integer[] imgNo;
+    private AdoptImageRequestDto[] image;
 
 
     public Adopt toEntity() {

@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .antMatchers("/adopt/**").hasAnyRole("MANAGER", "USER")
                 .antMatchers(HttpMethod.POST, "/member").permitAll()
                 .antMatchers("/user/**").hasAnyRole("MANAGER", "USER") // 회원 페이지는 회원(USER) 또는 관리자(MANAGER) 권한이 있어야 접근 가능
+                .antMatchers("/community/**").hasAnyRole("MANAGER", "USER")
                 .antMatchers("/admin/**").hasRole("MANAGER") // 관리자 페이지는 관리자(MANAGER) 권한이 있어야 접근 가능
                 .anyRequest().authenticated() // 그 외의 모든 요청은 인증이 필요하다.
                 .and()
