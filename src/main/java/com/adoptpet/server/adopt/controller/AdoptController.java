@@ -1,6 +1,5 @@
 package com.adoptpet.server.adopt.controller;
 
-
 import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
@@ -13,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.List;
 

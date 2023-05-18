@@ -93,7 +93,9 @@ public class AdoptQueryService {
                                 , "chat"
                         ),
                         adopt.regDate,
-                        adopt.thumbnail
+                        adopt.thumbnail,
+                        adopt.species,
+                        adopt.status
                         ))
                 .from(adopt)
                 .orderBy(adopt.saleNo.desc())
@@ -102,9 +104,6 @@ public class AdoptQueryService {
                 .limit(10)
                 .fetch();
     }
-
-
-
 
     // 분양글과 관계가 이미지 리스트를 지우는 메서드
     @Transactional
