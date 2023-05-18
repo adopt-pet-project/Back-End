@@ -1,6 +1,9 @@
 package com.adoptpet.server.community.dto.request;
 
+import com.adoptpet.server.community.domain.BlindYnEnum;
+import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.domain.VisibleYnEnum;
+import com.adoptpet.server.community.dto.CommunityDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,4 +35,26 @@ public class RegisterArticleRequest {
 
     @JsonProperty("visible")
     private VisibleYnEnum visibleYn;
+
+    @JsonProperty("imgNo")
+    private Integer[] imgNo;
+
+    @JsonProperty("thumbnail")
+    private String thumbnail;
+
+    public CommunityDto toDto(String userId){
+        return CommunityDto.builder()
+                .categoryNo(this.categoryNo)
+                .title(this.title)
+                .content(this.content)
+                .viewCount(0)
+                .regId(userId)
+                .modId(userId)
+                .visibleYn(this.visibleYn)
+                .logicalDel(LogicalDelEnum.NORMAL)
+                .blindYn(BlindYnEnum.NORMAL)
+                .thumbnail(this.thumbnail)
+                .imgNo(this.imgNo)
+                .build();
+    }
 }

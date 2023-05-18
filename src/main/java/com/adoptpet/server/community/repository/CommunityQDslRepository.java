@@ -1,7 +1,7 @@
 package com.adoptpet.server.community.repository;
 
 import com.adoptpet.server.community.dto.ArticleDetailInfo;
-import com.querydsl.core.types.Projections;
+import com.adoptpet.server.community.dto.QArticleDetailInfo;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 
@@ -18,21 +18,20 @@ public class CommunityQDslRepository {
 
     private final JPAQueryFactory query;
 
-
     public CommunityQDslRepository(EntityManager em) {
         this.query = new JPAQueryFactory(em);
     }
 
     public ArticleDetailInfo findArticleDetail(Integer articleNo){
         return query
-                .select(Projections.constructor(ArticleDetailInfo.class,
+                .select(new QArticleDetailInfo(
                         community.articleNo,
                         community.regId,
                         community.title,
                         member.nickname,
-                        articleHeart.heartNo.count().intValue().as("view"),
-                        articleHeart.heartNo.count().intValue().as("like"),
-                        comment.commentNo.count().intValue().as("comment"),
+                        community.viewCount.as("view"),
+                        articleHeart.heartNo.countDistinct().intValue().as("like"),
+                        comment.commentNo.countDistinct().intValue().as("comment"),
                         community.regDate,
                         profileImage.imageUrl.as("profile"),
                         community.content
@@ -45,6 +44,6 @@ public class CommunityQDslRepository {
                 .where(community.articleNo.eq(articleNo))
                 .groupBy(community.articleNo,community.regId,community.title,member.nickname,
                         community.regDate,profileImage.imageUrl,community.content)
-                .fetchOne();
+                .fetchFirst();
     }
 }

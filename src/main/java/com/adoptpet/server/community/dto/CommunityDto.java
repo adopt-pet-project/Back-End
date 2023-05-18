@@ -2,12 +2,8 @@ package com.adoptpet.server.community.dto;
 
 import com.adoptpet.server.community.domain.*;
 import lombok.*;
-
-import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Getter
 @Builder
@@ -41,4 +37,12 @@ public class CommunityDto {
 
     @NotBlank
     private BlindYnEnum blindYn;
+
+    private String thumbnail;
+
+    private Integer[] imgNo;
+
+    public void addImgNo(Integer[] imgNo) {
+        this.imgNo = imgNo;
+    }
 }
