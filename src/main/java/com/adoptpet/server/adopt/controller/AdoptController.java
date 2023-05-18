@@ -1,6 +1,5 @@
 package com.adoptpet.server.adopt.controller;
 
-
 import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
@@ -13,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.List;
 
@@ -29,10 +27,13 @@ public class AdoptController {
     @PostMapping("/adopt")
     public ResponseEntity<Void> writeAdopt(@RequestBody @Valid AdoptRequestDto adoptDto, BindingResult bindingResult) {
 
+        log.info("bindingresult = {}", bindingResult);
         // 유효성 검증에 실패할경우 400번 에러를 내려준다.
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().build();
         }
+
+        log.info("adoptDto = {}", adoptDto);
 
         // 현재 회원의 인증 객체를 가져온다.
         SecurityUserDto user = SecurityUtils.getUser();

@@ -93,7 +93,9 @@ public class AdoptQueryService {
                                 , "chat"
                         ),
                         adopt.regDate,
-                        adopt.thumbnail
+                        adopt.thumbnail,
+                        adopt.species,
+                        adopt.status
                         ))
                 .from(adopt)
                 .orderBy(adopt.saleNo.desc())
@@ -103,14 +105,22 @@ public class AdoptQueryService {
                 .fetch();
     }
 
-
-
-
     // 분양글과 관계가 이미지 리스트를 지우는 메서드
     @Transactional
     public void deleteAdoptImages(Integer saleNo) {
         jpaQueryFactory.delete(adoptImage)
                 .where(adoptImage.saleNo.eq(saleNo))
+                .execute();
+
+        em.flush();
+        em.clear();
+    }
+
+    // 분양글과 관계가 있는 북마크를 지우는 메서드
+    @Transactional
+    public void removeBookmark(Integer saleNo) {
+        jpaQueryFactory.delete(adoptBookmark)
+                .where(adoptBookmark.adopt.saleNo.eq(saleNo))
                 .execute();
 
         em.flush();
