@@ -104,5 +104,6 @@ public class Adopt extends BaseTimeEntity {
         this.longitude = adoptDto.getLongitude();
         this.modId = user.getEmail();
         this.address = adoptDto.getAddress();
+        this.species = adoptDto.getSpecies();
     }
 }
