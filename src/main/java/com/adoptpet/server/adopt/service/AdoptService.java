@@ -2,7 +2,6 @@ package com.adoptpet.server.adopt.service;
 
 import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.AdoptBookmark;
-import com.adoptpet.server.adopt.domain.AdoptImage;
 import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import com.adoptpet.server.adopt.repository.AdoptBookmarkRepository;
@@ -15,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Objects;
 import java.util.Optional;
 
@@ -37,10 +35,18 @@ public class AdoptService {
 
     @Transactional
     public void deleteAdopt(Integer saleNo) {
-        // 분양글을 삭제한다.
-        adoptRepository.deleteBySaleNo(saleNo);
+        // 분양글과 북마크를 제거
+        removeBookMarkAndAdopt(saleNo);
         // 삭제한 분양글과 관계가 있는 이미지의 key 값을 전부 null로 업데이트 한다.
         adoptImageRepository.updateAdoptImageNull(saleNo);
+    }
+
+    @Transactional
+    public void removeBookMarkAndAdopt(Integer saleNo) {
+        // 삭제하려는 분양글과 연관된 북마크부터 제거
+        queryService.removeBookmark(saleNo);
+        // 분양글을 제거
+        adoptRepository.deleteBySaleNo(saleNo);
     }
 
     @Transactional

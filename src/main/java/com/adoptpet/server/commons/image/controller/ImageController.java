@@ -23,11 +23,11 @@ public class ImageController {
     private final AwsS3Service awsS3Service;
 
     /**
-    * 단일 image upload API
+     * 단일 image upload API
      * @param image   : 이미지 파일
      * @param type    : 이미지 분류(community,adopt,profile ...)
      * @return I
-    **/
+     **/
     @PostMapping(value = "",consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<ImageUploadResponse> uploadImage(
             @RequestPart(name = "imageFile") MultipartFile image,

@@ -117,6 +117,17 @@ public class AdoptQueryService {
         em.clear();
     }
 
+    // 분양글과 관계가 있는 북마크를 지우는 메서드
+    @Transactional
+    public void removeBookmark(Integer saleNo) {
+        jpaQueryFactory.delete(adoptBookmark)
+                .where(adoptBookmark.adopt.saleNo.eq(saleNo))
+                .execute();
+
+        em.flush();
+        em.clear();
+    }
+
 
     // 분양 테이블과 회원 테이블을 조인해서 정보를 가져오는 메서드
     public AdoptDetailResponseDto selectAdoptAndMember(Integer saleNo) {
