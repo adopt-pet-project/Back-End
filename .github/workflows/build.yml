@@ -1,10 +1,10 @@
 name: BackEnd - CI/CD
 
-on:
+on: 
+  push:
+    branches: ['dev']    
   pull_request:
     branches: ["main", "dev"]
-  push:
-    branches: ["dev"]
 
 
 permissions:
