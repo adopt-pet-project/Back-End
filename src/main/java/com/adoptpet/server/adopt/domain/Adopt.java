@@ -40,6 +40,9 @@ public class Adopt extends BaseTimeEntity {
     @Column(name = "kind")
     private String kind;
 
+    @Column(name = "species")
+    private String species;
+
     @Column(name = "name")
     private String name;
 
