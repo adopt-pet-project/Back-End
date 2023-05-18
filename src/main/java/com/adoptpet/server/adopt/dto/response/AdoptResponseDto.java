@@ -22,6 +22,6 @@ public class AdoptResponseDto {
     private LocalDateTime publishedAt;
     private String thumbnail;
     private String species;
-    private AdoptStatus status;
+    private Integer status;
 
 }
