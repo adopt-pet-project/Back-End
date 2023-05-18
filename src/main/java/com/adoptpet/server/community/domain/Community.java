@@ -51,6 +51,9 @@ public class Community extends BaseTimeEntity {
     @Column(name = "blind_yn")
     private BlindYnEnum blindYn;
 
+    @Column(name = "thumbnail")
+    private String thumbnail;
+
     @OneToMany(mappedBy = "community")
     private List<Comment> comments = new ArrayList<>();
 
@@ -61,7 +64,7 @@ public class Community extends BaseTimeEntity {
     private List<ArticleBookmark> articleBookmarks = new ArrayList<>();
 
     @Builder
-    public Community(Integer categoryNo, String title, String content, Integer viewCount, String regId, String modId, VisibleYnEnum visibleYn, LogicalDelEnum logicalDel, BlindYnEnum blindYn) {
+    public Community(Integer categoryNo, String title, String content, Integer viewCount, String regId, String modId, VisibleYnEnum visibleYn, LogicalDelEnum logicalDel, BlindYnEnum blindYn, String thumbnail) {
         this.categoryNo = categoryNo;
         this.title = title;
         this.content = content;
@@ -71,7 +74,6 @@ public class Community extends BaseTimeEntity {
         this.visibleYn = visibleYn;
         this.logicalDel = logicalDel;
         this.blindYn = blindYn;
+        this.thumbnail = thumbnail;
     }
-
-
 }
