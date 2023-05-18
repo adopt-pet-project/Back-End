@@ -64,6 +64,7 @@ public class AdoptRequestDto {
                 .latitude(latitude)
                 .longitude(longitude)
                 .name(name)
+                .species(species)
                 .build();
     }
 }

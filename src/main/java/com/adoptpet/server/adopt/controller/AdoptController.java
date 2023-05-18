@@ -27,13 +27,10 @@ public class AdoptController {
     @PostMapping("/adopt")
     public ResponseEntity<Void> writeAdopt(@RequestBody @Valid AdoptRequestDto adoptDto, BindingResult bindingResult) {
 
-        log.info("bindingresult = {}", bindingResult);
         // 유효성 검증에 실패할경우 400번 에러를 내려준다.
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().build();
         }
-
-        log.info("adoptDto = {}", adoptDto);
 
         // 현재 회원의 인증 객체를 가져온다.
         SecurityUserDto user = SecurityUtils.getUser();
