@@ -3,10 +3,13 @@ package com.adoptpet.server.adopt.service;
 import static com.adoptpet.server.adopt.domain.QAdoptImage.*;
 import static com.adoptpet.server.adopt.domain.QAdopt.*;
 import static com.adoptpet.server.adopt.domain.QAdoptBookmark.*;
+
+import com.adoptpet.server.adopt.domain.AdoptStatus;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import static com.adoptpet.server.user.domain.QMember.*;
 import static com.adoptpet.server.user.domain.QProfileImage.*;
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -96,6 +99,11 @@ public class AdoptQueryService {
                         adopt.thumbnail,
                         adopt.species,
                         adopt.status
+                                .when(AdoptStatus.SALE).then(0)
+                                .when(AdoptStatus.BOOKING).then(1)
+                                .when(AdoptStatus.SUCCESS).then(2)
+                                .when(AdoptStatus.CANCEL).then(3)
+                                .otherwise(9)
                         ))
                 .from(adopt)
                 .orderBy(adopt.saleNo.desc())
