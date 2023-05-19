@@ -31,12 +31,11 @@ public class ImageController {
     @PostMapping(value = "",consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<ImageUploadResponse> uploadImage(
             @RequestPart(name = "imageFile") MultipartFile image,
-            @RequestPart(name = "type") String type){
+            @RequestPart(name = "type") String type,
+            @RequestPart(name = "modId") String modId){
 
-        // 현재 회원의 인증 객체를 가져온다.
-        SecurityUserDto user = SecurityUtils.getUser();
-
-        ImageInfoDto imageInfo = awsS3Service.upload(image, user.getEmail(), type);
+        // image 업로드(S3, DB)
+        ImageInfoDto imageInfo = awsS3Service.upload(image, modId, type);
 
         return ResponseEntity.ok(imageInfo.toResponse());
     }
@@ -54,9 +53,9 @@ public class ImageController {
             @PathVariable(name = "imageType") String type,
             @PathVariable(name = "imageNo") Integer imageNo){
 
+        // image 삭제(S3, DB)
         String result = awsS3Service.delete(type, imageNo);
 
         return ResponseEntity.ok(result);
     }
-
 }

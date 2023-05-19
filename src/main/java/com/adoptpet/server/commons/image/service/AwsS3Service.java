@@ -50,7 +50,6 @@ public class AwsS3Service {
         String result;
         String imageUrl;
 
-
         switch (typeEnum){
             case ADOPT:
                 // image 조회
@@ -78,6 +77,7 @@ public class AwsS3Service {
 
                 // DB 이미지 정보 제거
                 profileImageRepository.delete(profileImg);
+                break;
             default:
                 throw INVALID_TYPE_EXCEPTION;
         }
@@ -102,7 +102,7 @@ public class AwsS3Service {
         String fileName = extractFileName(imageUrl);
 
         // 타입과 파일명을 합쳐 keyName 구성
-        String keyName = getKeyName(typeEnum.getType(),fileName);
+        String keyName = getKeyName(typeEnum.getPath(),fileName);
 
         // keyName으로 S3에 delete request
         String result = awsS3Repository.deleteFile(keyName);
@@ -142,7 +142,6 @@ public class AwsS3Service {
 
             // 경로와 파일이름을 합쳐 S3 key name을 얻음
             final String keyName = getKeyName(typeEnum.getPath(), fileName);
-            log.info("keyName : {}" , keyName);
 
             URL responseUrl = awsS3Repository.uploadFile(objectMetadata, inputStream, fileName ,keyName);
 
@@ -285,9 +284,7 @@ public class AwsS3Service {
 
     //== image URL 파일명 추출 메서드 ==//
     private String extractFileName(String imageUrl){
-
-        String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-
+        String fileName = imageUrl.substring(imageUrl.lastIndexOf("/")+1);
         return fileName;
     }
 
