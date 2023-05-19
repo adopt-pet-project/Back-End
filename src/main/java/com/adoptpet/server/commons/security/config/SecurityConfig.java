@@ -65,8 +65,9 @@ public class SecurityConfig {
     // CORS 설정
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://15.164.216.101"); // CORS 허용할 오리진 추가
-        configuration.addAllowedOrigin("http://localhost:3000");
+//        configuration.addAllowedOrigin("http://15.164.216.101"); // CORS 허용할 오리진 추가
+//        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("*");
         configuration.addAllowedMethod("*"); // 모든 HTTP 메서드 허용
         configuration.addAllowedHeader("*"); // 모든 헤더 허용
         configuration.setAllowCredentials(true); // 자격 증명 허용 설정

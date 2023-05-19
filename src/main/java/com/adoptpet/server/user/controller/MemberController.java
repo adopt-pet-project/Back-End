@@ -1,14 +1,14 @@
 package com.adoptpet.server.user.controller;
 
 import com.adoptpet.server.user.dto.request.RegisterDto;
+import com.adoptpet.server.user.dto.response.MemberResponseDto;
+import com.adoptpet.server.user.service.MemberQueryService;
 import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -17,6 +17,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+    private final MemberQueryService queryService;
 
     @PostMapping("/member")
     public ResponseEntity<Void> register(@Valid @RequestBody RegisterDto registerDto, BindingResult bindingResult) {
@@ -28,5 +29,12 @@ public class MemberController {
         // 회원을 저장한다.
         memberService.save(registerDto);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/member/{id}")
+    public ResponseEntity<MemberResponseDto> userInfo(@PathVariable("id") Integer id) {
+        MemberResponseDto responseDto = queryService.getUserInfo(id);
+
+        return ResponseEntity.ok(responseDto);
     }
 }

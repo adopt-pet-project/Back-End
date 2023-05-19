@@ -32,7 +32,8 @@ public enum VisibleYnEnum {
     private static final Map<String, VisibleYnEnum> CODE_MAP = Stream.of(values())
             .collect(Collectors.toMap(VisibleYnEnum::getValue, Function.identity()));
 
-    @JsonCreator// JSON을 deserialize 할 때 해당 메서드를 이용해 값을 변환
+    // JSON을 deserialize 할 때 해당 메서드를 이용해 값을 변환
+    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static VisibleYnEnum from(String value){
         return Optional.ofNullable(CODE_MAP.get(value.toUpperCase()))
                 .orElseThrow(()-> new IllegalArgumentException("Invalid value"));
