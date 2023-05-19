@@ -54,7 +54,6 @@ public class SecurityConfig {
                 .successHandler(oAuth2LoginSuccessHandler); // OAuth2 로그인 성공시 처리할 핸들러를 지정해준다.
 
 
-
         // JWT 인증 필터를 UsernamePasswordAuthenticationFilter 앞에 추가한다.
         return http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -65,8 +64,8 @@ public class SecurityConfig {
     // CORS 설정
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.addAllowedOrigin("http://15.164.216.101"); // CORS 허용할 오리진 추가
-//        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("http://15.164.216.101"); // CORS 허용할 오리진 추가
+        configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedOrigin("*");
         configuration.addAllowedMethod("*"); // 모든 HTTP 메서드 허용
         configuration.addAllowedHeader("*"); // 모든 헤더 허용
