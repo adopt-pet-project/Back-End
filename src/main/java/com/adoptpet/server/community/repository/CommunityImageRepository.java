@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface CommunityImageRepository extends JpaRepository<CommunityImage,Integer> {
     void deleteByArticleNo(Integer articleNo);
 
-    @Query("SELECT c.imageUrl FROM CommunityImage c WHERE c.articleNo = :articleNo")
+    @Query("SELECT c.imageUrl FROM CommunityImage c WHERE c.articleNo = :articleNo ORDER BY c.sort asc ")
     Optional<List<String>> findImageUrlByArticleNo(@Param("articleNo") Integer articleNo);
 
     @Modifying(clearAutomatically = true)
