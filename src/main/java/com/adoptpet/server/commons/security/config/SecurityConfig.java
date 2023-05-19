@@ -31,6 +31,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .httpBasic().disable() // HTTP 기본 인증을 비활성화
+                .cors().and()
                 .csrf().disable() // CSRF 보호 기능 비활성화
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션관리 정책을 STATELESS(세션이 있으면 쓰지도 않고, 없으면 만들지도 않는다)
@@ -48,7 +49,7 @@ public class SecurityConfig {
                 .antMatchers("/admin/**").hasRole("MANAGER") // 관리자 페이지는 관리자(MANAGER) 권한이 있어야 접근 가능
                 .anyRequest().authenticated() // 그 외의 모든 요청은 인증이 필요하다.
                 .and()
-                .oauth2Login().loginPage("http://15.164.216.101/") // OAuth2 로그인 설정시작
+                .oauth2Login().loginPage("http://localhost:3000") // OAuth2 로그인 설정시작
                 .userInfoEndpoint().userService(customOAuth2UserService) // OAuth2 로그인시 사용자 정보를 가져오는 엔드포인트와 사용자 서비스를 설정
                 .and()
                 .failureHandler(oAuth2LoginFailureHandler) // OAuth2 로그인 실패시 처리할 핸들러를 지정해준다.
@@ -65,9 +66,7 @@ public class SecurityConfig {
     // CORS 설정
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://15.164.216.101"); // CORS 허용할 오리진 추가
-        configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.addAllowedOrigin("*");
+        configuration.addAllowedOriginPattern("*");
         configuration.addAllowedMethod("*"); // 모든 HTTP 메서드 허용
         configuration.addAllowedHeader("*"); // 모든 헤더 허용
         configuration.setAllowCredentials(true); // 자격 증명 허용 설정
