@@ -1,10 +1,13 @@
 package com.adoptpet.server.adopt.repository;
 
 import com.adoptpet.server.adopt.domain.AdoptImage;
+import com.adoptpet.server.user.domain.ProfileImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 
 public interface AdoptImageRepository extends JpaRepository<AdoptImage, Integer> {
@@ -20,5 +23,7 @@ public interface AdoptImageRepository extends JpaRepository<AdoptImage, Integer>
     @Query("select a.imageUrl from AdoptImage a where a.pictureNo = :pictureNo")
     String findImageUrlByPictureNo(@Param("pictureNo") Integer pictureNo);
 
+    @Query("select a from AdoptImage a where a.pictureNo = null")
+    List<AdoptImage> findAllAdoptImageNull();
 
 }
