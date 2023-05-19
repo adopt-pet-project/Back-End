@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .antMatchers("/token/**").permitAll() // 토큰 발급을 위한 경로는 모두 허용
                 .antMatchers(HttpMethod.GET, "/adopt/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/community/**").permitAll()
+                .antMatchers("/api/image/**").permitAll()
                 .antMatchers("/", "/css/**","/images/**","/js/**","/favicon.ico","/h2-console/**").permitAll()
                 .antMatchers("/adopt/**").hasAnyRole("MANAGER", "USER")
                 .antMatchers(HttpMethod.POST, "/member").permitAll()
