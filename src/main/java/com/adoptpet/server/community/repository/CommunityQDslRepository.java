@@ -1,12 +1,15 @@
 package com.adoptpet.server.community.repository;
 
+import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.dto.ArticleDetailInfo;
-import com.querydsl.core.types.Projections;
+import com.adoptpet.server.community.dto.QArticleDetailInfo;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 
+import static com.adoptpet.server.community.domain.QArticleBookmark.articleBookmark;
 import static com.adoptpet.server.community.domain.QArticleHeart.articleHeart;
 import static com.adoptpet.server.community.domain.QCommunity.community;
 import static com.adoptpet.server.user.domain.QMember.member;
@@ -18,21 +21,35 @@ public class CommunityQDslRepository {
 
     private final JPAQueryFactory query;
 
-
     public CommunityQDslRepository(EntityManager em) {
         this.query = new JPAQueryFactory(em);
     }
 
+
+    public void deleteBookmark(Community community){
+        query.delete(articleBookmark)
+                .where(articleBookmark.community.eq(community))
+                .execute();
+    }
+
+    public void deleteArticleLike(Community community){
+        query.delete(articleHeart)
+                .where(articleHeart.community.eq(community))
+                .execute();
+    }
+
+
+    //== 게시글 상세내용 Join ==//
     public ArticleDetailInfo findArticleDetail(Integer articleNo){
         return query
-                .select(Projections.constructor(ArticleDetailInfo.class,
+                .select(new QArticleDetailInfo(
                         community.articleNo,
                         community.regId,
                         community.title,
                         member.nickname,
-                        articleHeart.heartNo.count().intValue().as("view"),
-                        articleHeart.heartNo.count().intValue().as("like"),
-                        comment.commentNo.count().intValue().as("comment"),
+                        community.viewCount.as("view"),
+                        articleHeart.heartNo.countDistinct().intValue().as("like"),
+                        comment.commentNo.countDistinct().intValue().as("comment"),
                         community.regDate,
                         profileImage.imageUrl.as("profile"),
                         community.content
@@ -45,6 +62,6 @@ public class CommunityQDslRepository {
                 .where(community.articleNo.eq(articleNo))
                 .groupBy(community.articleNo,community.regId,community.title,member.nickname,
                         community.regDate,profileImage.imageUrl,community.content)
-                .fetchOne();
+                .fetchFirst();
     }
 }

@@ -20,4 +20,7 @@ public class CommunityImage extends BaseImageEntity{
 
     @Column(name = "article_no")
     private Integer articleNo;
+
+    @Column(name = "sort")
+    private Integer sort;
 }

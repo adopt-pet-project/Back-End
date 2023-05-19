@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
 @NoArgsConstructor
 public class ArticleInfoResponse {
 

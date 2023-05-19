@@ -33,4 +33,7 @@ public class ArticleBookmark {
     @JoinColumn(name = "member_no")
     private Member member;
 
+    public void clearMember(){
+        this.member = null;
+    }
 }
