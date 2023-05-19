@@ -42,7 +42,7 @@ public class ArticleInfoResponse {
     @Builder
     @AllArgsConstructor
     public static class Context{
-        private String content; // community
+        private String context; // community
         private List<String> image; // articleImage
     }
 }

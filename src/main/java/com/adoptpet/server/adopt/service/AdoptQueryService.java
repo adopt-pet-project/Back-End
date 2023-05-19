@@ -9,6 +9,9 @@ import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import static com.adoptpet.server.user.domain.QMember.*;
 import static com.adoptpet.server.user.domain.QProfileImage.*;
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
+import com.adoptpet.server.adopt.dto.response.MyAdoptResponse;
+import com.adoptpet.server.commons.security.dto.SecurityUserDto;
+import com.adoptpet.server.commons.util.SecurityUtils;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
@@ -99,9 +102,9 @@ public class AdoptQueryService {
                         adopt.thumbnail,
                         adopt.species,
                         adopt.status
-                                .when(AdoptStatus.SALE).then(0)
-                                .when(AdoptStatus.BOOKING).then(1)
-                                .when(AdoptStatus.SUCCESS).then(2)
+                                .when(AdoptStatus.ADOPTING).then(0)
+                                .when(AdoptStatus.RESERVED).then(1)
+                                .when(AdoptStatus.END).then(2)
                                 .when(AdoptStatus.CANCEL).then(3)
                                 .otherwise(9)
                         ))
@@ -188,6 +191,60 @@ public class AdoptQueryService {
                 .where(adopt.saleNo.eq(saleNo))
                 .fetchOne();
 
+    }
+
+    // 상태값 별 마이페이지 분양 리스트 반환
+    public List<MyAdoptResponse> myAdoptList(String status, SecurityUserDto userDto) {
+        return jpaQueryFactory.select(Projections.constructor(MyAdoptResponse.class,
+                adopt.saleNo,
+                adopt.title,
+                adopt.content,
+                member.nickname,
+                adopt.viewCnt,
+                ExpressionUtils.as(
+                        JPAExpressions.select(adoptBookmark.count())
+                                .from(adoptBookmark)
+                                .where(adoptBookmark.adopt.saleNo.eq(adopt.saleNo))
+                        , "like"
+                ),
+                adopt.regDate,
+                adopt.thumbnail
+        ))
+                .from(adopt)
+                .join(member).on(adopt.regId.eq(member.email))
+                .where(adopt.regId.eq(userDto.getEmail()), adopt.status.eq(AdoptStatus.valueOf(status.toUpperCase())))
+                .fetch();
+    }
+
+    // 나의 관심 분양 글 조회
+    public List<MyAdoptResponse> myInterestedAdoptList(List<Integer> keys) {
+        return jpaQueryFactory.select(Projections.constructor(MyAdoptResponse.class,
+                adopt.saleNo,
+                adopt.title,
+                adopt.content,
+                member.nickname,
+                adopt.viewCnt,
+                ExpressionUtils.as(
+                        JPAExpressions.select(adoptBookmark.count())
+                                .from(adoptBookmark)
+                                .where(adoptBookmark.adopt.saleNo.eq(adopt.saleNo))
+                        , "like"
+                ),
+                adopt.regDate,
+                adopt.thumbnail
+                ))
+                .from(adopt)
+                .join(member).on(adopt.regId.eq(member.email))
+                .where(adopt.saleNo.in(keys))
+                .fetch();
+    }
+
+    // 나의 관심 분양 글의 PK List 조회
+    public List<Integer> myInterestedAdoptKeys(SecurityUserDto userDto) {
+        return jpaQueryFactory.select(adoptBookmark.adopt.saleNo)
+                .from(adoptBookmark)
+                .where(adoptBookmark.member.memberNo.eq(userDto.getMemberNo()))
+                .fetch();
     }
 
     /*
