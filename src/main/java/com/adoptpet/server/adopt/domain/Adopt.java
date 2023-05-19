@@ -77,6 +77,9 @@ public class Adopt extends BaseTimeEntity {
     @Column(name = "mod_id")
     private String modId;
 
+    @Column(name = "view_cnt")
+    private Integer viewCnt;
+
     @OneToMany(mappedBy = "adopt", fetch = FetchType.LAZY)
     private List<AdoptBookmark> adoptBookmarks = new ArrayList<>();
 
