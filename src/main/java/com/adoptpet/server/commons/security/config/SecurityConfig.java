@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .antMatchers("/adopt/**").hasAnyRole("MANAGER", "USER")
                 .antMatchers(HttpMethod.POST, "/member").permitAll()
                 .antMatchers("/user/**").hasAnyRole("MANAGER", "USER") // 회원 페이지는 회원(USER) 또는 관리자(MANAGER) 권한이 있어야 접근 가능
+                .antMatchers("/community/**").hasAnyRole("MANAGER", "USER")
                 .antMatchers("/admin/**").hasRole("MANAGER") // 관리자 페이지는 관리자(MANAGER) 권한이 있어야 접근 가능
                 .anyRequest().authenticated() // 그 외의 모든 요청은 인증이 필요하다.
                 .and()
@@ -51,7 +52,6 @@ public class SecurityConfig {
                 .and()
                 .failureHandler(oAuth2LoginFailureHandler) // OAuth2 로그인 실패시 처리할 핸들러를 지정해준다.
                 .successHandler(oAuth2LoginSuccessHandler); // OAuth2 로그인 성공시 처리할 핸들러를 지정해준다.
-
 
 
         // JWT 인증 필터를 UsernamePasswordAuthenticationFilter 앞에 추가한다.
@@ -64,10 +64,11 @@ public class SecurityConfig {
     // CORS 설정
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://15.164.216.101/"); // CORS 허용할 오리진 추가
-        configuration.addAllowedMethod("http://localhost:3000");
+        configuration.addAllowedOrigin("http://15.164.216.101"); // CORS 허용할 오리진 추가
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("*");
         configuration.addAllowedMethod("*"); // 모든 HTTP 메서드 허용
-        configuration.addAllowedMethod("*"); // 모든 헤더 허용
+        configuration.addAllowedHeader("*"); // 모든 헤더 허용
         configuration.setAllowCredentials(true); // 자격 증명 허용 설정
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

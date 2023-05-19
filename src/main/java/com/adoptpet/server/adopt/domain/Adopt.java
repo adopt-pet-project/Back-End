@@ -40,6 +40,9 @@ public class Adopt extends BaseTimeEntity {
     @Column(name = "kind")
     private String kind;
 
+    @Column(name = "species")
+    private String species;
+
     @Column(name = "name")
     private String name;
 
@@ -101,5 +104,6 @@ public class Adopt extends BaseTimeEntity {
         this.longitude = adoptDto.getLongitude();
         this.modId = user.getEmail();
         this.address = adoptDto.getAddress();
+        this.species = adoptDto.getSpecies();
     }
 }
