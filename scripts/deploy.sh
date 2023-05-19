@@ -93,3 +93,4 @@ else
 
       echo "관리자 알람 발송완료, 배포 비정상종료 : $(date +%Y)-$(date +%m)-$(date +%d) $(date +%H):$(date +%M):$(date +%S)" >> /home/ec2-user/deploy.log
   fi
+fi
