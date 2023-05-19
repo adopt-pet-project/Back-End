@@ -25,3 +25,4 @@ public class MyAdoptController {
         return ResponseEntity.ok(myAdoptList);
     }
 }
+
