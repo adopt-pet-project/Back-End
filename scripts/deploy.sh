@@ -57,7 +57,7 @@ else
   GREEN_HEALTH=$(sudo docker-compose -p ${DOCKER_APP_NAME}-green -f docker-compose.green.yml ps | grep Up)
 
   if [ -z "$GREEN_HEALTH" ]; then
-
+     sudo docker-compose -p ${DOCKER_APP_NAME}-blue -f docker-compose.blue.yml down
       sudo ./slack_green.sh
   else
 
