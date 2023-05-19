@@ -43,13 +43,14 @@ public class SecurityConfig {
                 .antMatchers("/api/image/**").permitAll()
                 .antMatchers("/", "/css/**","/images/**","/js/**","/favicon.ico","/h2-console/**").permitAll()
                 .antMatchers("/adopt/**").hasAnyRole("MANAGER", "USER")
+                .antMatchers("/mypage/**").hasAnyRole("MANAGER", "USER")
                 .antMatchers(HttpMethod.POST, "/member").permitAll()
                 .antMatchers("/user/**").hasAnyRole("MANAGER", "USER") // 회원 페이지는 회원(USER) 또는 관리자(MANAGER) 권한이 있어야 접근 가능
                 .antMatchers("/community/**").hasAnyRole("MANAGER", "USER")
                 .antMatchers("/admin/**").hasRole("MANAGER") // 관리자 페이지는 관리자(MANAGER) 권한이 있어야 접근 가능
                 .anyRequest().authenticated() // 그 외의 모든 요청은 인증이 필요하다.
                 .and()
-                .oauth2Login().loginPage("http://localhost:3000") // OAuth2 로그인 설정시작
+                .oauth2Login() // OAuth2 로그인 설정시작
                 .userInfoEndpoint().userService(customOAuth2UserService) // OAuth2 로그인시 사용자 정보를 가져오는 엔드포인트와 사용자 서비스를 설정
                 .and()
                 .failureHandler(oAuth2LoginFailureHandler) // OAuth2 로그인 실패시 처리할 핸들러를 지정해준다.

@@ -2,8 +2,10 @@ package com.adoptpet.server.adopt.service;
 
 import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.AdoptBookmark;
+import com.adoptpet.server.adopt.domain.AdoptStatus;
 import com.adoptpet.server.adopt.dto.request.AdoptImageRequestDto;
 import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
+import com.adoptpet.server.adopt.dto.request.AdoptStatusRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import com.adoptpet.server.adopt.repository.AdoptBookmarkRepository;
 import com.adoptpet.server.adopt.repository.AdoptImageRepository;
@@ -111,7 +113,18 @@ public class AdoptService {
         String[] images = queryService.selectAdoptImages(saleNo).toArray(String[]::new);
         // 현재 비어있는 responseDto의 이미지 필드의 값을 채워준다.
         responseDto.addImages(images);
+
+        // 분양글의 조회수를 올려준다.
+        adoptRepository.increaseCount(saleNo);
         return responseDto;
+    }
+
+    @Transactional
+    public void updateAdoptStatus(AdoptStatusRequestDto requestDto) {
+        // 문자열로 되어있는 상태 값을 ENUM으로 변환
+        AdoptStatus status = AdoptStatus.valueOf(requestDto.getStatus().toUpperCase());
+        // 상태값 업데이트 진행
+        adoptRepository.updateAdoptStatus(status, requestDto.getId());
     }
 
 

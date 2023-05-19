@@ -1,6 +1,7 @@
 package com.adoptpet.server.adopt.controller;
 
 import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
+import com.adoptpet.server.adopt.dto.request.AdoptStatusRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
 import com.adoptpet.server.adopt.service.AdoptQueryService;
@@ -53,12 +54,14 @@ public class AdoptController {
         return ResponseEntity.ok().build();
     }
 
+    // 분양글 삭제
     @DeleteMapping("/adopt/{saleNo}")
     public ResponseEntity<Void> deleteAdopt(@PathVariable("saleNo") Integer saleNo) {
         adoptService.deleteAdopt(saleNo);
         return ResponseEntity.ok().build();
     }
 
+    // 분양글 리스트 조회
     @GetMapping("/adopt")
     public ResponseEntity<List<AdoptResponseDto>> getAdoptList(@RequestParam(value = "saleNo", required = false) Integer saleNo,
                                                                @RequestParam(value = "keyword", required = false) String keyword,
@@ -67,6 +70,7 @@ public class AdoptController {
         return ResponseEntity.ok(adoptList);
     }
 
+    // 분양글 수정
     @PatchMapping("/adopt/{saleNo}")
     public ResponseEntity<Void> updateAdopt(@RequestBody @Valid AdoptRequestDto adoptDto, BindingResult bindingResult,
                                             @PathVariable("saleNo") Integer saleNo) {
@@ -86,9 +90,17 @@ public class AdoptController {
 
 
 
+    // 분양글 상세 조회
     @GetMapping("/adopt/{saleNo}")
     public ResponseEntity<AdoptDetailResponseDto> readAdopt(@PathVariable("saleNo") Integer saleNo) {
         AdoptDetailResponseDto responseDto = adoptService.readAdopt(saleNo);
         return ResponseEntity.ok(responseDto);
+    }
+
+    // 분양글 상태 수정
+    @PatchMapping("/adopt")
+    public ResponseEntity<Void> updateStatus(@RequestBody final AdoptStatusRequestDto requestDto) {
+        adoptService.updateAdoptStatus(requestDto);
+        return ResponseEntity.ok().build();
     }
 }
