@@ -45,7 +45,7 @@ public class ArticleDetailInfo {
     public ArticleInfoResponse toResponse(){
 
         ArticleInfoResponse.Context context = ArticleInfoResponse.Context.builder()
-                .content(this.content)
+                .context(this.content)
                 .image(this.images)
                 .build();
 
