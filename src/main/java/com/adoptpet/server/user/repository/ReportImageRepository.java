@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface ReportImageRepository extends paRepository<ReportImage, Integer> {
+public interface ReportImageRepository extends JpaRepository<ReportImage, Integer> {
 
-    @Query("select r from ReportImage r where r.declNo = null")
+    @Query("select rㄱ from ReportImage r where r.declNo = null")
     List<ReportImage> findAllReportImageNull();
 }
