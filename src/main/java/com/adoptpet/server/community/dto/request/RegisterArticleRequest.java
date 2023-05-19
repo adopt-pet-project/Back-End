@@ -44,7 +44,7 @@ public class RegisterArticleRequest {
     private String thumbnail;
 
     public CommunityDto toDto(String userId){
-        return CommunityDto.builder()
+        CommunityDto.CommunityDtoBuilder builder = CommunityDto.builder()
                 .categoryNo(this.categoryNo)
                 .title(this.title)
                 .content(this.content)
@@ -53,9 +53,17 @@ public class RegisterArticleRequest {
                 .modId(userId)
                 .visibleYn(this.visibleYn)
                 .logicalDel(LogicalDelEnum.NORMAL)
-                .blindYn(BlindYnEnum.NORMAL)
-                .image(this.image)
-                .thumbnail(this.getImage()[0].getImageUrl())
-                .build();
+                .blindYn(BlindYnEnum.NORMAL);
+        // 등록한 이미지가 있을 경우
+        if (this.image != null && this.image.length > 0) {
+            builder.image(this.image)
+                    .thumbnail(this.image[0].getImageUrl());
+        // 등록한 이미지가 없을 경우
+        } else {
+            builder.image(null)
+                    .thumbnail("NONE");
+        }
+
+        return builder.build();
     }
 }

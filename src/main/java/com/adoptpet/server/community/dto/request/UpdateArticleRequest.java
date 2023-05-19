@@ -4,30 +4,41 @@ import com.adoptpet.server.community.domain.VisibleYnEnum;
 import com.adoptpet.server.community.dto.ArticleImageDto;
 import com.adoptpet.server.community.dto.CommunityDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdateArticleRequest {
     @JsonProperty("categoryNo")
-    private final Integer categoryNo;
+    private Integer categoryNo;
     @JsonProperty("title")
-    private final String title;
+    private String title;
     @JsonProperty("content")
-    private final String content;
+    private String content;
     @JsonProperty("visible")
     private VisibleYnEnum visibleYn;
-    @JsonProperty("imageNo")
-    private ArticleImageDto[] articleImageDto;
+    @JsonProperty("image")
+    private ArticleImageDto[] image;
 
     public CommunityDto toDto(){
-        return CommunityDto.builder()
+        CommunityDto.CommunityDtoBuilder builder = CommunityDto.builder()
                 .categoryNo(this.categoryNo)
                 .title(this.title)
-                .visibleYn(this.visibleYn)
-                .image(this.articleImageDto)
-                .thumbnail(this.articleImageDto[0].getImageUrl())
-                .build();
+                .content(this.content)
+                .visibleYn(this.visibleYn);
+        // 등록한 이미지가 있을 경우
+        if (this.image != null && this.image.length > 0) {
+            builder.image(this.image)
+                    .thumbnail(this.image[0].getImageUrl());
+        // 등록한 이미지가 없을 경우
+        } else {
+            builder.image(null);
+        }
+
+        return builder.build();
     }
 }

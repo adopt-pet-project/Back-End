@@ -1,6 +1,5 @@
 package com.adoptpet.server.community.service;
 
-import com.adoptpet.server.community.domain.ArticleBookmark;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.dto.ArticleDetailInfo;
@@ -36,18 +35,15 @@ public class CommunityService {
     * 게시글 수정
     **/
     public Community updateArticle(CommunityDto communityDto, String modId, Integer articleNo){
+
         // 게시글 고유키로 게시글 검증
         Community community = findByArticleNo(articleNo);
         // 게시글 데이터 엔티티 저장
-        community.updateByArticleNo(communityDto, modId);
-        // 이미지 배열 중 가장 첫번째 URL을 썸네일 이미지로 넣어준다.
-        if (Objects.nonNull(communityDto.getImage())) {
-            community.addThumbnail(communityDto.getImage()[0].getImageUrl());
-        }
-        // 게시글 업데이트
-        Community updatedArticle = communityRepository.save(community);
+        community.updateArticleByMod(communityDto, modId);
         // 이미지 업데이트
         updateImageByArticleNo(communityDto.getImage(),articleNo);
+        // 게시글 업데이트
+        Community updatedArticle = communityRepository.save(community);
 
         return updatedArticle;
     }
@@ -86,12 +82,12 @@ public class CommunityService {
         // Community 저장
         Community saveArticle = communityRepository.save(community);
         // 이미지 업데이트
-        ArticleImageDto[] imageNo = communityDto.getImage();
+        ArticleImageDto[] images = communityDto.getImage();
         updateImageByArticleNo(communityDto.getImage(), saveArticle.getArticleNo());
         // 저장된 Community를 DTO로 변환
         CommunityDto response = createArticleMapper.toDTO(saveArticle);
-        // 반환값에 null 대신 imgNo 추가
-        response.addImgNo(imageNo);
+        // 반환값에 null 대신 image 기입
+        response.addImgNo(images);
         return response;
     }
 
@@ -102,40 +98,36 @@ public class CommunityService {
             for (int i=0; i<imageNoArr.length; i++) {
                 communityImageRepository.updateImagByArticleNo(articleNo, imageNoArr[i].getImageNo(), (i+1));
             }
+        } else {
+            communityImageRepository.updateAllByArticleNo(articleNo);
         }
     }
     
     
     /**
      * 게시글 논리 삭제
-     *
-     * @return
      */
     @Transactional
     public Community softDeleteArticle(Integer articleNo) {
 
-        // 게시글 조회
+        // 게시글 번호를 사용하여 해당 게시글을 조회한다.
         Community community = findByArticleNo(articleNo);
-
-        // 북마크, 좋아요 삭제
-        List<ArticleBookmark> articleBookmarks = community.getArticleBookmarks();
-        articleBookmarks.forEach(ArticleBookmark::clearMember);
-
-        community.getArticleBookmarks().clear();
+        // 게시글을 논리 삭제한다.
         community.deleteByLogicalDel(LogicalDelEnum.DELETE);
-
+        // 게시글과 관련된 데이터인 북마크와 좋아요를 삭제한다.
         communityQDslRepository.deleteBookmark(community);
         communityQDslRepository.deleteArticleLike(community);
-
-        // 댓글 논리삭제 업데이트
-
-        // 게시글 논리삭제 업데이트
+        // 게시글 이미지의 게시글 번호 컬럼을 비운다.(batch를 통해 자정에 삭제)
+        communityImageRepository.updateAllByArticleNo(articleNo);
+        // 변경된 게시글을 DB에 저장하여 업데이트한다.
         Community deletedCommunity = communityRepository.save(community);
+
         return deletedCommunity;
     }
 
 
     private Community findByArticleNo(Integer articleNo){
+        // 게시글 번호로 게시글을 조회하고, 조회되지 않을 경우 예외를 발생시킨다.
         return communityRepository.findById(articleNo)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Not Found article"));
     }

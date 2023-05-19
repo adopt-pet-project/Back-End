@@ -30,7 +30,7 @@ public class Comment {
     private LocalDateTime modDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
+    @JoinColumn(name = "parent_no")
     private Comment parent;
 
     @OneToMany(mappedBy = "parent")
