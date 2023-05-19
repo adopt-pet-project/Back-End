@@ -27,9 +27,7 @@ public class CommunityController {
     @GetMapping("/article/{articleNo}")
     public ResponseEntity<ArticleInfoResponse> readArticle(
             @PathVariable("articleNo") Integer articleNo){
-
         ArticleDetailInfo articleDetailInfo = communityService.readArticle(articleNo);
-
         return ResponseEntity.ok(articleDetailInfo.toResponse());
     }
 
