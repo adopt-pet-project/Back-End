@@ -19,6 +19,6 @@ public interface CreateArticleMapper extends GenericMapper<CommunityDto, Communi
     Community toEntity(CommunityDto communityDto); // plan method - @Mapping 으로 옵션 지정가능
 
     @Override
-    @Mapping(target = "imgNo", ignore = true) // imgNo은 매핑 제외
+    @Mapping(target = "imageNo", ignore = true) // imgNo은 매핑 제외
     CommunityDto toDTO(Community community);
 }

@@ -1,12 +1,15 @@
 package com.adoptpet.server.community.repository;
 
+import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.dto.ArticleDetailInfo;
 import com.adoptpet.server.community.dto.QArticleDetailInfo;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 
+import static com.adoptpet.server.community.domain.QArticleBookmark.articleBookmark;
 import static com.adoptpet.server.community.domain.QArticleHeart.articleHeart;
 import static com.adoptpet.server.community.domain.QCommunity.community;
 import static com.adoptpet.server.user.domain.QMember.member;
@@ -22,6 +25,21 @@ public class CommunityQDslRepository {
         this.query = new JPAQueryFactory(em);
     }
 
+
+    public void deleteBookmark(Community community){
+        query.delete(articleBookmark)
+                .where(articleBookmark.community.eq(community))
+                .execute();
+    }
+
+    public void deleteArticleLike(Community community){
+        query.delete(articleHeart)
+                .where(articleHeart.community.eq(community))
+                .execute();
+    }
+
+
+    //== 게시글 상세내용 Join ==//
     public ArticleDetailInfo findArticleDetail(Integer articleNo){
         return query
                 .select(new QArticleDetailInfo(

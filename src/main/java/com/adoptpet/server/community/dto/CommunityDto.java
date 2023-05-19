@@ -40,9 +40,9 @@ public class CommunityDto {
 
     private String thumbnail;
 
-    private Integer[] imgNo;
+    private ArticleImageDto[] imageNo;
 
-    public void addImgNo(Integer[] imgNo) {
-        this.imgNo = imgNo;
+    public void addImgNo(ArticleImageDto[] imageNo) {
+        this.imageNo = imageNo;
     }
 }

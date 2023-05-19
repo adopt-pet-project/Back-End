@@ -2,9 +2,11 @@ package com.adoptpet.server.community.controller;
 
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
+import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.dto.ArticleDetailInfo;
 import com.adoptpet.server.community.dto.CommunityDto;
 import com.adoptpet.server.community.dto.request.RegisterArticleRequest;
+import com.adoptpet.server.community.dto.request.UpdateArticleRequest;
 import com.adoptpet.server.community.dto.response.ArticleInfoResponse;
 import com.adoptpet.server.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
@@ -45,5 +47,25 @@ public class CommunityController {
         return ResponseEntity.ok(resultCommunity);
     }
 
+    @PatchMapping("/article/{articleNo}")
+    public ResponseEntity<Void> updateArticle(
+            @RequestBody @Valid UpdateArticleRequest request, @PathVariable("articleNo") Integer articleNo){
+
+        // 현재 회원의 인증 객체를 가져온다.
+        SecurityUserDto user = SecurityUtils.getUser();
+
+        CommunityDto communityDto = request.toDto();
+
+        communityService.updateArticle(communityDto,user.getEmail(),articleNo);
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    @DeleteMapping("/article/{articleNo}")
+    public ResponseEntity<Community> deleteAdopt(@PathVariable("articleNo") Integer articleNo) {
+        Community community = communityService.softDeleteArticle(articleNo);
+        return ResponseEntity.ok(community);
+    }
 
 }

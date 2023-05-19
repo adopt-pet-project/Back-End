@@ -2,10 +2,13 @@ package com.adoptpet.server.community.domain;
 
 
 import com.adoptpet.server.commons.support.BaseTimeEntity;
+import com.adoptpet.server.community.dto.CommunityDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,6 +17,7 @@ import java.util.List;
 @Entity
 @Table(name = "COMMUNITY")
 @Getter
+@Where(clause = "logical_del = '0'")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Community extends BaseTimeEntity {
     @Id
@@ -75,5 +79,21 @@ public class Community extends BaseTimeEntity {
         this.logicalDel = logicalDel;
         this.blindYn = blindYn;
         this.thumbnail = thumbnail;
+    }
+
+    public void updateByArticleNo(CommunityDto communityDto, String modId) {
+        this.categoryNo = communityDto.getCategoryNo();
+        this.title = communityDto.getTitle();
+        this.content = communityDto.getContent();
+        this.modId = modId;
+        this.visibleYn = communityDto.getVisibleYn();
+    }
+
+    public void deleteByLogicalDel(LogicalDelEnum logicalDel){
+        this.logicalDel = logicalDel;
+    }
+
+    public void addThumbnail(String imageUrl) {
+        this.thumbnail = imageUrl;
     }
 }

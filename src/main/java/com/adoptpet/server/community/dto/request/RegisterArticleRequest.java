@@ -3,6 +3,7 @@ package com.adoptpet.server.community.dto.request;
 import com.adoptpet.server.community.domain.BlindYnEnum;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.domain.VisibleYnEnum;
+import com.adoptpet.server.community.dto.ArticleImageDto;
 import com.adoptpet.server.community.dto.CommunityDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
@@ -36,8 +37,8 @@ public class RegisterArticleRequest {
     @JsonProperty("visible")
     private VisibleYnEnum visibleYn;
 
-    @JsonProperty("imgNo")
-    private Integer[] imgNo;
+    @JsonProperty("imageNo")
+    private ArticleImageDto[] imageNo;
 
     @JsonProperty("thumbnail")
     private String thumbnail;
@@ -53,8 +54,8 @@ public class RegisterArticleRequest {
                 .visibleYn(this.visibleYn)
                 .logicalDel(LogicalDelEnum.NORMAL)
                 .blindYn(BlindYnEnum.NORMAL)
-                .thumbnail(this.thumbnail)
-                .imgNo(this.imgNo)
+                .imageNo(this.imageNo)
+                .thumbnail(this.getImageNo()[0].getImageUrl())
                 .build();
     }
 }
