@@ -1,9 +1,11 @@
 package com.adoptpet.server.user.service;
 
 import com.adoptpet.server.commons.util.ConstantUtil;
+import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.domain.ProfileImage;
 import com.adoptpet.server.user.dto.request.RegisterDto;
+import com.adoptpet.server.user.dto.response.MemberResponseDto;
 import com.adoptpet.server.user.repository.MemberRepository;
 import com.adoptpet.server.user.repository.ProfileImageRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final ProfileImageRepository profileImageRepository;
+    private final MemberQueryService queryService;
 
 
     public Optional<Member> findByEmail(String email) {
@@ -51,6 +54,11 @@ public class MemberService {
 
         return memberRepository.save(member);
     }
+
+    public MemberResponseDto findMemberInfo(Integer memberNo) {
+        return memberNo == 0 ? queryService.getUserInfo(SecurityUtils.getUser().getMemberNo()) : queryService.getUserInfo(memberNo);
+    }
+
 
 
     private ProfileImage getProfile(Member member) {
