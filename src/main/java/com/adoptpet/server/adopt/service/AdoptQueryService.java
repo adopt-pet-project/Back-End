@@ -11,8 +11,6 @@ import static com.adoptpet.server.user.domain.QProfileImage.*;
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
 import com.adoptpet.server.adopt.dto.response.MyAdoptResponse;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
-import com.adoptpet.server.commons.util.SecurityUtils;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -42,6 +40,14 @@ public class AdoptQueryService {
                 .where(adoptImage.saleNo.eq(saleNo))
                 .orderBy(adoptImage.sort.asc())
                 .fetch();
+    }
+
+    // 분양 게시글 소유자인지 확인
+    public boolean isMine(String email, Integer saleNo) {
+        return jpaQueryFactory.select(adopt.saleNo)
+                .from(adopt)
+                .where(adopt.regId.eq(email), adopt.saleNo.eq(saleNo))
+                .fetchFirst() != null;
     }
 
     // 분양 게시글의 대표 이미지를 조회하는 메서드

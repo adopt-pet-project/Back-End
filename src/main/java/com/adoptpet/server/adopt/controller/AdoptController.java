@@ -92,8 +92,9 @@ public class AdoptController {
 
     // 분양글 상세 조회
     @GetMapping("/adopt/{saleNo}")
-    public ResponseEntity<AdoptDetailResponseDto> readAdopt(@PathVariable("saleNo") Integer saleNo) {
-        AdoptDetailResponseDto responseDto = adoptService.readAdopt(saleNo);
+    public ResponseEntity<AdoptDetailResponseDto> readAdopt(@PathVariable("saleNo") final Integer saleNo,
+                                                            @RequestHeader(value = "Authorization", required = false) final String accessToken) {
+        AdoptDetailResponseDto responseDto = adoptService.readAdopt(saleNo, accessToken);
         return ResponseEntity.ok(responseDto);
     }
 
