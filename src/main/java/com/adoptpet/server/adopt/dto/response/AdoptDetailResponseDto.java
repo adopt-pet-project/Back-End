@@ -73,11 +73,17 @@ public class AdoptDetailResponseDto {
 
     @Getter
     @Setter
-    @AllArgsConstructor
     public static class Author {
         private String author;
         private String profile;
         private String location;
+        private boolean isMine;
+
+        public Author(String author, String profile, String location) {
+            this.author = author;
+            this.profile = profile;
+            this.location = location;
+        }
     }
 
 

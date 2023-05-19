@@ -24,4 +24,5 @@ public interface AdoptRepository extends JpaRepository<Adopt, Integer> {
     @Query("update Adopt a set a.status = :status where a.saleNo = :saleNo")
     @Modifying(clearAutomatically = true)
     void updateAdoptStatus(@Param("status") AdoptStatus status, @Param("saleNo") Integer saleNo);
+
 }
