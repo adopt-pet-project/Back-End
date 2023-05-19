@@ -6,7 +6,6 @@ import com.adoptpet.server.community.dto.CommunityDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
@@ -27,7 +26,7 @@ public class UpdateArticleRequest {
                 .categoryNo(this.categoryNo)
                 .title(this.title)
                 .visibleYn(this.visibleYn)
-                .imageNo(this.articleImageDto)
+                .image(this.articleImageDto)
                 .thumbnail(this.articleImageDto[0].getImageUrl())
                 .build();
     }

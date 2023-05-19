@@ -37,8 +37,8 @@ public class RegisterArticleRequest {
     @JsonProperty("visible")
     private VisibleYnEnum visibleYn;
 
-    @JsonProperty("imageNo")
-    private ArticleImageDto[] imageNo;
+    @JsonProperty("image")
+    private ArticleImageDto[] image;
 
     @JsonProperty("thumbnail")
     private String thumbnail;
@@ -54,8 +54,8 @@ public class RegisterArticleRequest {
                 .visibleYn(this.visibleYn)
                 .logicalDel(LogicalDelEnum.NORMAL)
                 .blindYn(BlindYnEnum.NORMAL)
-                .imageNo(this.imageNo)
-                .thumbnail(this.getImageNo()[0].getImageUrl())
+                .image(this.image)
+                .thumbnail(this.getImage()[0].getImageUrl())
                 .build();
     }
 }

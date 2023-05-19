@@ -41,13 +41,13 @@ public class CommunityService {
         // 게시글 데이터 엔티티 저장
         community.updateByArticleNo(communityDto, modId);
         // 이미지 배열 중 가장 첫번째 URL을 썸네일 이미지로 넣어준다.
-        if (Objects.nonNull(communityDto.getImageNo())) {
-            community.addThumbnail(communityDto.getImageNo()[0].getImageUrl());
+        if (Objects.nonNull(communityDto.getImage())) {
+            community.addThumbnail(communityDto.getImage()[0].getImageUrl());
         }
         // 게시글 업데이트
         Community updatedArticle = communityRepository.save(community);
         // 이미지 업데이트
-        updateImageByArticleNo(communityDto.getImageNo(),articleNo);
+        updateImageByArticleNo(communityDto.getImage(),articleNo);
 
         return updatedArticle;
     }
@@ -86,8 +86,8 @@ public class CommunityService {
         // Community 저장
         Community saveArticle = communityRepository.save(community);
         // 이미지 업데이트
-        ArticleImageDto[] imageNo = communityDto.getImageNo();
-        updateImageByArticleNo(communityDto.getImageNo(), saveArticle.getArticleNo());
+        ArticleImageDto[] imageNo = communityDto.getImage();
+        updateImageByArticleNo(communityDto.getImage(), saveArticle.getArticleNo());
         // 저장된 Community를 DTO로 변환
         CommunityDto response = createArticleMapper.toDTO(saveArticle);
         // 반환값에 null 대신 imgNo 추가
