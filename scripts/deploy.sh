@@ -67,7 +67,7 @@ else
 
       # docker-compose.blue.yml 파일을 사용하여 spring-green 프로젝트의 컨테이너를 중지
       sudo docker-compose -p ${DOCKER_APP_NAME}-blue -f docker-compose.blue.yml down
-
+ 
       # 사용하지 않는 이미지 삭제
       sudo docker image prune -af
 
