@@ -61,9 +61,9 @@ public class CommunityController {
 
 
     @DeleteMapping("/article/{articleNo}")
-    public ResponseEntity<Community> deleteAdopt(@PathVariable("articleNo") Integer articleNo) {
-        Community community = communityService.softDeleteArticle(articleNo);
-        return ResponseEntity.ok(community);
+    public ResponseEntity<Void> deleteCommunity(@PathVariable("articleNo") Integer articleNo) {
+        communityService.softDeleteArticle(articleNo);
+        return ResponseEntity.ok().build();
     }
 
 }
