@@ -7,17 +7,15 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "COMMUNITY")
 @Getter
-@Where(clause = "logical_del = '0'")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Community extends BaseTimeEntity {
     @Id
@@ -81,12 +79,18 @@ public class Community extends BaseTimeEntity {
         this.thumbnail = thumbnail;
     }
 
-    public void updateByArticleNo(CommunityDto communityDto, String modId) {
+    public void updateArticleByMod(CommunityDto communityDto, String modId) {
         this.categoryNo = communityDto.getCategoryNo();
         this.title = communityDto.getTitle();
         this.content = communityDto.getContent();
         this.modId = modId;
         this.visibleYn = communityDto.getVisibleYn();
+        // 이미지 배열 중 가장 첫번째 URL을 썸네일 이미지로 넣어준다.
+        if (Objects.nonNull(communityDto.getImage())) {
+            this.thumbnail = communityDto.getImage()[0].getImageUrl();
+        } else {
+            this.thumbnail = "NONE";
+        }
     }
 
     public void deleteByLogicalDel(LogicalDelEnum logicalDel){
