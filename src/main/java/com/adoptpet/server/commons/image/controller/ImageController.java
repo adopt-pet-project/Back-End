@@ -32,10 +32,10 @@ public class ImageController {
     public ResponseEntity<ImageUploadResponse> uploadImage(
             @RequestPart(name = "imageFile") MultipartFile image,
             @RequestPart(name = "type") String type,
-            @RequestPart(name = "modId") String modId){
+            @RequestPart(name = "regId") String regId){
 
         // image 업로드(S3, DB)
-        ImageInfoDto imageInfo = awsS3Service.upload(image, modId, type);
+        ImageInfoDto imageInfo = awsS3Service.upload(image, regId, type);
 
         return ResponseEntity.ok(imageInfo.toResponse());
     }
