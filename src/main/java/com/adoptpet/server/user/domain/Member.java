@@ -5,7 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,14 +41,14 @@ public class Member {
     @Column(name = "platform")
     private String platform;
 
-    @Column(name = "reg_date", nullable = false)
-    private LocalDateTime regDate;
-
-    @Column(name = "nickmod_date", nullable = false)
-    private LocalDateTime nickModDate;
-
-    @Column(name = "passmod_date", nullable = false)
-    private LocalDateTime passModDate;
+//    @Column(name = "reg_date", nullable = false)
+//    private LocalDateTime regDate;
+//
+//    @Column(name = "nickmod_date", nullable = false)
+//    private LocalDateTime nickModDate;
+//
+//    @Column(name = "passmod_date", nullable = false)
+//    private LocalDateTime passModDate;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<AdoptBookmark> adoptBookmarkList = new ArrayList<>();
