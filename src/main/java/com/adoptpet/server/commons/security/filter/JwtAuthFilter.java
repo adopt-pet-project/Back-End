@@ -59,7 +59,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     .memberNo(findMember.getMemberNo())
                     .email(findMember.getEmail())
                     .role("ROLE_".concat(findMember.getUserRole()))
-                    .nickname(findMember.getNickname())
+                    .name("이름이에용")
                     .picture("프로필 이미지에요").build();
 
             // SecurityContext에 인증 객체를 등록해준다.

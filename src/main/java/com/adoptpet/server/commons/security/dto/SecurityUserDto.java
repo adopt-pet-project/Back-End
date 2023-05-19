@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 public class SecurityUserDto {
     private String email;
-    private String nickname;
+    private String name;
     private String picture;
     private String role;
     private Integer memberNo;

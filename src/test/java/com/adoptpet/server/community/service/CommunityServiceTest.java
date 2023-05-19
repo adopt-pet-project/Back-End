@@ -4,20 +4,16 @@ import com.adoptpet.server.community.domain.BlindYnEnum;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.domain.VisibleYnEnum;
 import com.adoptpet.server.community.dto.CommunityDto;
-import com.adoptpet.server.community.repository.CommunityQDslRepository;
 import com.adoptpet.server.community.repository.CommunityRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 
-@Slf4j
 @SpringBootTest
-@ExtendWith(MockitoExtension.class)
+@Slf4j
 class CommunityServiceTest {
 
 
@@ -27,20 +23,15 @@ class CommunityServiceTest {
     @Autowired
     private CommunityRepository communityRepository;
 
-    @Autowired
-    private CommunityQDslRepository communityQDslRepository;
-
-
 //    @Test
-//    @DisplayName("게시글 등록 테스트")
-//    void registerArticle_Success(){
+//    @Rollback(value = false)
+//    void createArticle_Success(){
 //        //given
 //        String memberEmail = "test10@gmail.com";
 //        Integer categoryNo = 1;
-//        Integer[] imgNo = {1,2,3};
 //        CommunityDto communityDto = new CommunityDto(1,"테스트2", "코온텐츠", 0,
 //                memberEmail, memberEmail, VisibleYnEnum.VISIBLE,
-//                LogicalDelEnum.NORMAL, BlindYnEnum.NORMAL,imgNo);
+//                LogicalDelEnum.NORMAL, BlindYnEnum.NORMAL);
 //
 //        //when
 //        CommunityDto createdArticle = communityService.insertArticle(communityDto);
