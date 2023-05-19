@@ -17,8 +17,8 @@ public interface CommunityImageRepository extends JpaRepository<CommunityImage,I
     @Query("update CommunityImage c set c.articleNo = :articleNo, c.sort = :sort where c.pictureNo = :pictureNo")
     void updateImagByArticleNo(@Param("articleNo") Integer articleNo, @Param("pictureNo") Integer pictureNo, @Param("sort") Integer sort);
 
-    // @Modifying(clearAutomatically = true)
-    @Query("update CommunityImage c set c.articleNo=null where c.articleNo = :articleNo")
+    @Modifying(clearAutomatically = true)
+    @Query("update CommunityImage cc set c.articleNo=null where c.articleNo = :articleNo")
     void updateAllByArticleNo(@Param("articleNo") Integer articleNo);
 
     @Query("select c from CommunityImage c where c.articleNo = null")
