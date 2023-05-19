@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-
+ 
 
 public interface AdoptImageRepository extends JpaRepository<AdoptImage, Integer> {
 
