@@ -45,7 +45,7 @@ public class MemberQueryService {
                             ExpressionUtils.as(
                                     JPAExpressions.select(comment.count())
                                             .from(comment)
-                                            .where(comment.member.memberNo.eq(memberNo)),
+                                            .where(comment.regId.eq(member.email)),
                                     "comment"
                             ),
                             // 회원 정지 누적 수 카운팅
