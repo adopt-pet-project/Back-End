@@ -9,5 +9,5 @@ import java.util.List;
 public interface ReportImageRepository extends JpaRepository<ReportImage, Integer> {
 
     @Query("select r from ReportImage r where r.declNo = null")
-    List<ReportImage> findAllReportImageNull();
+    List<ReportImage> findAllReportImageNull();  
 }
