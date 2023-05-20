@@ -64,10 +64,11 @@ public class AdoptController {
 
     // 분양글 리스트 조회
     @GetMapping("/adopt")
-    public ResponseEntity<List<AdoptResponseDto>> getAdoptList(@RequestParam(value = "saleNo", required = false) Integer saleNo,
-                                                               @RequestParam(value = "keyword", required = false) String keyword,
-                                                               @RequestParam(value = "option", required = false) Integer option) {
-        List<AdoptResponseDto> adoptList = adoptQueryService.selectAdoptList(saleNo, keyword, option);
+    public ResponseEntity<List<AdoptResponseDto>> getAdoptList(@RequestParam(value = "saleNo", required = false) final Integer saleNo,
+                                                               @RequestParam(value = "keyword", required = false) final String keyword,
+                                                               @RequestParam(value = "option", required = false) final Integer option,
+                                                               @RequestParam(value = "filter", required = false) final String filter) {
+        List<AdoptResponseDto> adoptList = adoptQueryService.selectAdoptList(saleNo, keyword, option, filter);
         return ResponseEntity.ok(adoptList);
     }
 

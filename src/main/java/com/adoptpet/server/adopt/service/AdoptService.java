@@ -117,12 +117,12 @@ public class AdoptService {
         String[] images = queryService.selectAdoptImages(saleNo).toArray(String[]::new);
 
         // 현재 분양 게시글을 보는 회원이 권한이 있는지 여부는 기본 false
-        responseDto.getAuthor().setMine(false);
+        responseDto.addIsMine(false);
 
         if (StringUtils.hasText(accessToken)) {
             // 현재 분양 게시글을 보려는 회원이 이 분양 게시글을 작성한 작성자와 같은지 확인한다.
             boolean isMine = queryService.isMine(SecurityUtils.getUser().getEmail(), saleNo);
-            responseDto.getAuthor().setMine(isMine);
+            responseDto.addIsMine(isMine);
         }
 
         // 현재 비어있는 responseDto의 이미지 필드의 값을 채워준다.

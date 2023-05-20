@@ -61,7 +61,7 @@ public class AdoptQueryService {
     }
 
     // 분양 게시글 리스트 조회
-    public List<AdoptResponseDto> selectAdoptList(Integer saleNo, String keyword, Integer option) {
+    public List<AdoptResponseDto> selectAdoptList(Integer saleNo, String keyword, Integer option, String filter) {
 
         BooleanExpression searchCondition = null;
         // option이 null이 아닐경우 검색 조건에 따라 쿼리를 동적으로 변경한다.
@@ -77,7 +77,7 @@ public class AdoptQueryService {
                     searchCondition = titleLikeOrContentLike(keyword);
                     break;
                 case 4:
-                    searchCondition = kindLike(keyword);
+                    searchCondition = speciesLike(keyword);
                     break;
                 default:
                     break;
@@ -88,7 +88,6 @@ public class AdoptQueryService {
                 .select(Projections.constructor(AdoptResponseDto.class,
                         adopt.saleNo,
                         adopt.title,
-                        adopt.kind,
                         member.address,
                         // select subQuery를 이용하여 집계함수를 사용
                         ExpressionUtils.as(
@@ -117,7 +116,7 @@ public class AdoptQueryService {
                 .from(adopt)
                 .orderBy(adopt.saleNo.desc())
                 .innerJoin(member).on(adopt.regId.eq(member.email))
-                .where(saleNoGt(saleNo), searchCondition)
+                .where(saleNoGt(saleNo), searchCondition, kindLike(filter))
                 .limit(10)
                 .fetch();
     }
@@ -150,7 +149,6 @@ public class AdoptQueryService {
                 // AdoptResponseDto의 생성자를 이용해서 값을 반환 받는다.
         return jpaQueryFactory.select(Projections.constructor(AdoptDetailResponseDto.class,
                             adopt.saleNo,
-                            adopt.regId,
                     // AdoptResponseDto의 내부 클래스의 값은 중첩 생성자 Projection으로 채워준다.
                     Projections.constructor(AdoptDetailResponseDto.Header.class,
                             adopt.title,
@@ -161,7 +159,7 @@ public class AdoptQueryService {
                             adopt.gender,
                             adopt.age,
                             adopt.name,
-                            adopt.kind
+                            adopt.species
                     ),
                     Projections.constructor(AdoptDetailResponseDto.Context.class,
                             adopt.content,
@@ -180,6 +178,7 @@ public class AdoptQueryService {
                             )
                     ),
                     Projections.constructor(AdoptDetailResponseDto.Author.class,
+                            member.memberNo,
                             member.nickname,
                             profileImage.imageUrl,
                             member.address
@@ -275,6 +274,10 @@ public class AdoptQueryService {
 
     private BooleanExpression kindLike(String kind) {
         return !StringUtils.hasText(kind) ? null : adopt.kind.contains(kind);
+    }
+
+    private BooleanExpression speciesLike(String species) {
+        return !StringUtils.hasText(species) ? null : adopt.species.contains(species);
     }
 
 }
