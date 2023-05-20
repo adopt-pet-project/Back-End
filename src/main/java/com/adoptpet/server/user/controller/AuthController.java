@@ -2,6 +2,8 @@ package com.adoptpet.server.user.controller;
 
 import com.adoptpet.server.commons.security.dto.RefreshToken;
 import com.adoptpet.server.commons.security.service.JwtUtil;
+import com.adoptpet.server.commons.support.StatusResponseDto;
+import com.adoptpet.server.user.dto.response.TokenResponseStatus;
 import com.adoptpet.server.user.repository.RefreshTokenRepository;
 import com.adoptpet.server.user.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +25,14 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("token/logout")
-    public ResponseEntity<Void> logout(@RequestHeader("Authorization") final String accessToken) {
+    public ResponseEntity<StatusResponseDto> logout(@RequestHeader("Authorization") final String accessToken) {
         // 엑세스 토큰으로 현재 Redis 정보 삭제
         tokenService.removeRefreshToken(accessToken);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(StatusResponseDto.addStatus(200));
     }
 
     @PostMapping("/token/refresh")
-    public ResponseEntity<String> refresh(@RequestHeader("Authorization") final String accessToken) {
+    public ResponseEntity<TokenResponseStatus> refresh(@RequestHeader("Authorization") final String accessToken) {
 
         // 액세스 토큰으로 Refresh 토큰 객체를 조회
         Optional<RefreshToken> refreshToken = tokenRepository.findByAccessToken(accessToken);
@@ -45,10 +47,10 @@ public class AuthController {
             resultToken.updateAccessToken(newAccessToken);
             tokenRepository.save(resultToken);
             // 새로운 액세스 토큰을 반환해준다.
-            return ResponseEntity.ok().body(newAccessToken);
+            return ResponseEntity.ok(TokenResponseStatus.addStatus(200, accessToken));
         }
 
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest().body(TokenResponseStatus.addStatus(400, null));
     }
 
 }

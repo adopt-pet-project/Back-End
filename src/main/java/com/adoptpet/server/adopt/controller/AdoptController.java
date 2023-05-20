@@ -7,6 +7,7 @@ import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
 import com.adoptpet.server.adopt.service.AdoptQueryService;
 import com.adoptpet.server.adopt.service.AdoptService;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
+import com.adoptpet.server.commons.support.StatusResponseDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +27,11 @@ public class AdoptController {
 
     // 분양글 등록
     @PostMapping("/adopt")
-    public ResponseEntity<Void> writeAdopt(@RequestBody @Valid AdoptRequestDto adoptDto, BindingResult bindingResult) {
+    public ResponseEntity<StatusResponseDto> writeAdopt(@RequestBody @Valid AdoptRequestDto adoptDto, BindingResult bindingResult) {
 
         // 유효성 검증에 실패할경우 400번 에러를 내려준다.
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(StatusResponseDto.addStatus(400));
         }
 
         // 현재 회원의 인증 객체를 가져온다.
@@ -40,43 +41,44 @@ public class AdoptController {
         adoptService.insertAdopt(adoptDto, user);
 
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(StatusResponseDto.addStatus(200));
 
     }
 
     // 관심 분양 게시글 등록
     @PostMapping("/adopt/bookmark/{saleNo}")
-    public ResponseEntity<Void> addBookMark(@PathVariable("saleNo") Integer saleNo) {
+    public ResponseEntity<StatusResponseDto> addBookMark(@PathVariable("saleNo") Integer saleNo) {
 
         // 관심 분양 게시글 등록
         adoptService.insertAdoptBookmark(SecurityUtils.getUser(), saleNo);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(StatusResponseDto.addStatus(200));
     }
 
     // 분양글 삭제
     @DeleteMapping("/adopt/{saleNo}")
-    public ResponseEntity<Void> deleteAdopt(@PathVariable("saleNo") Integer saleNo) {
+    public ResponseEntity<StatusResponseDto> deleteAdopt(@PathVariable("saleNo") Integer saleNo) {
         adoptService.deleteAdopt(saleNo);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(StatusResponseDto.addStatus(200));
     }
 
     // 분양글 리스트 조회
     @GetMapping("/adopt")
-    public ResponseEntity<List<AdoptResponseDto>> getAdoptList(@RequestParam(value = "saleNo", required = false) Integer saleNo,
-                                                               @RequestParam(value = "keyword", required = false) String keyword,
-                                                               @RequestParam(value = "option", required = false) Integer option) {
-        List<AdoptResponseDto> adoptList = adoptQueryService.selectAdoptList(saleNo, keyword, option);
+    public ResponseEntity<List<AdoptResponseDto>> getAdoptList(@RequestParam(value = "saleNo", required = false) final Integer saleNo,
+                                                               @RequestParam(value = "keyword", required = false) final String keyword,
+                                                               @RequestParam(value = "option", required = false) final Integer option,
+                                                               @RequestParam(value = "filter", required = false) final String filter) {
+        List<AdoptResponseDto> adoptList = adoptQueryService.selectAdoptList(saleNo, keyword, option, filter);
         return ResponseEntity.ok(adoptList);
     }
 
     // 분양글 수정
     @PatchMapping("/adopt/{saleNo}")
-    public ResponseEntity<Void> updateAdopt(@RequestBody @Valid AdoptRequestDto adoptDto, BindingResult bindingResult,
+    public ResponseEntity<StatusResponseDto> updateAdopt(@RequestBody @Valid AdoptRequestDto adoptDto, BindingResult bindingResult,
                                             @PathVariable("saleNo") Integer saleNo) {
         // 유효성 검증에 실패할경우 400번 에러를 내려준다.
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(StatusResponseDto.addStatus(400));
         }
 
         // 현재 회원의 인증 객체를 가져온다.
@@ -85,22 +87,23 @@ public class AdoptController {
         // 새로운 분양글을 저장한다.
         adoptService.updateAdopt(adoptDto, user, saleNo);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(StatusResponseDto.addStatus(200));
     }
 
 
 
     // 분양글 상세 조회
     @GetMapping("/adopt/{saleNo}")
-    public ResponseEntity<AdoptDetailResponseDto> readAdopt(@PathVariable("saleNo") Integer saleNo) {
-        AdoptDetailResponseDto responseDto = adoptService.readAdopt(saleNo);
+    public ResponseEntity<AdoptDetailResponseDto> readAdopt(@PathVariable("saleNo") final Integer saleNo,
+                                                            @RequestHeader(value = "Authorization", required = false) final String accessToken) {
+        AdoptDetailResponseDto responseDto = adoptService.readAdopt(saleNo, accessToken);
         return ResponseEntity.ok(responseDto);
     }
 
     // 분양글 상태 수정
     @PatchMapping("/adopt")
-    public ResponseEntity<Void> updateStatus(@RequestBody final AdoptStatusRequestDto requestDto) {
+    public ResponseEntity<StatusResponseDto> updateStatus(@RequestBody final AdoptStatusRequestDto requestDto) {
         adoptService.updateAdoptStatus(requestDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(StatusResponseDto.addStatus(200));
     }
 }

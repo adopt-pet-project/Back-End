@@ -11,12 +11,16 @@ import com.adoptpet.server.adopt.repository.AdoptBookmarkRepository;
 import com.adoptpet.server.adopt.repository.AdoptImageRepository;
 import com.adoptpet.server.adopt.repository.AdoptRepository;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
+import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import java.util.Objects;
 import java.util.Optional;
 
@@ -106,11 +110,21 @@ public class AdoptService {
         adoptBookmarkRepository.save(adoptBookmark);
     }
 
-    public AdoptDetailResponseDto readAdopt(Integer saleNo) {
+    public AdoptDetailResponseDto readAdopt(Integer saleNo, String accessToken) {
         // Adopt 테이블과 Member 테이블을 조인해서 가져올 수 있는 데이터를 먼저 채운다.
         AdoptDetailResponseDto responseDto = queryService.selectAdoptAndMember(saleNo);
         // 현재 분양 게시글과 관련이 있는 이미지 url을 조회해온다.
         String[] images = queryService.selectAdoptImages(saleNo).toArray(String[]::new);
+
+        // 현재 분양 게시글을 보는 회원이 권한이 있는지 여부는 기본 false
+        responseDto.addIsMine(false);
+
+        if (StringUtils.hasText(accessToken)) {
+            // 현재 분양 게시글을 보려는 회원이 이 분양 게시글을 작성한 작성자와 같은지 확인한다.
+            boolean isMine = queryService.isMine(SecurityUtils.getUser().getEmail(), saleNo);
+            responseDto.addIsMine(isMine);
+        }
+
         // 현재 비어있는 responseDto의 이미지 필드의 값을 채워준다.
         responseDto.addImages(images);
 

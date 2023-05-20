@@ -11,17 +11,16 @@ import java.time.LocalDateTime;
 public class AdoptDetailResponseDto {
 
     private Integer id;
-    private String authorId;
-    private String[] images;
+    private String[] imageList;
+    private boolean isMine;
     private Coords coords;
     private Header header;
     private Metadata metadata;
     private Context context;
     private Author author;
 
-    public AdoptDetailResponseDto(Integer id, String authorId, Header header, Metadata metadata, Context context, Author author, Coords coords) {
+    public AdoptDetailResponseDto(Integer id, Header header, Metadata metadata, Context context, Author author, Coords coords) {
         this.id = id;
-        this.authorId = authorId;
         this.header = header;
         this.metadata = metadata;
         this.context = context;
@@ -29,8 +28,11 @@ public class AdoptDetailResponseDto {
         this.coords = coords;
     }
 
-    public void addImages(String[] images) {
-        this.images = images;
+    public void addIsMine(boolean isMine) {
+        this.isMine = isMine;
+    }
+    public void addImages(String[] imageList) {
+        this.imageList = imageList;
     }
 
     @Getter
@@ -49,7 +51,7 @@ public class AdoptDetailResponseDto {
     public static class Header {
         private String title;
         private AdoptStatus status;
-        private LocalDateTime regDate;
+        private LocalDateTime publishedAt;
     }
 
     @Getter
@@ -75,9 +77,10 @@ public class AdoptDetailResponseDto {
     @Setter
     @AllArgsConstructor
     public static class Author {
-        private String author;
+        private Integer id;
+        private String username;
         private String profile;
-        private String location;
+        private String address;
     }
 
 

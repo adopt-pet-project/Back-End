@@ -31,22 +31,22 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .httpBasic().disable() // HTTP 기본 인증을 비활성화
-                .cors().and()
+                .cors().and() // CORS 활성화
                 .csrf().disable() // CSRF 보호 기능 비활성화
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션관리 정책을 STATELESS(세션이 있으면 쓰지도 않고, 없으면 만들지도 않는다)
                 .and()
                 .authorizeRequests() // 요청에 대한 인증 설정
                 .antMatchers("/token/**").permitAll() // 토큰 발급을 위한 경로는 모두 허용
-                .antMatchers(HttpMethod.GET, "/adopt/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/community/**").permitAll()
-                .antMatchers("/api/image/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/adopt/**").permitAll() //  /adopt/** GET 요청에 대해서는 권한 없이 접근 가능
+                .antMatchers(HttpMethod.GET, "/community/**").permitAll() // /community/** GET 요청에 대해서는 권한 없이 접근 가능
+                .antMatchers("/api/image/**").permitAll() // /api/image/** 요청에 대해서는 권한 없이 접근 가능
                 .antMatchers("/", "/css/**","/images/**","/js/**","/favicon.ico","/h2-console/**").permitAll()
-                .antMatchers("/adopt/**").hasAnyRole("MANAGER", "USER")
-                .antMatchers("/mypage/**").hasAnyRole("MANAGER", "USER")
-                .antMatchers(HttpMethod.POST, "/member").permitAll()
+                .antMatchers("/adopt/**").hasAnyRole("MANAGER", "USER") // GET 요청을 제외한 나머지 /adopt/** 요청은 권한 필요
+                .antMatchers("/mypage/**").hasAnyRole("MANAGER", "USER") // GET 요청을 제외한 나머지 /mypage/** 요청은 권한 필요
+                .antMatchers(HttpMethod.POST, "/member").permitAll() // /member POST 요청은 권한 없이 접근 가능
                 .antMatchers("/user/**").hasAnyRole("MANAGER", "USER") // 회원 페이지는 회원(USER) 또는 관리자(MANAGER) 권한이 있어야 접근 가능
-                .antMatchers("/community/**").hasAnyRole("MANAGER", "USER")
+                .antMatchers("/community/**").hasAnyRole("MANAGER", "USER") // GET 요청을 제외한 나머지 /community/** 요청은 권한 필요
                 .antMatchers("/admin/**").hasRole("MANAGER") // 관리자 페이지는 관리자(MANAGER) 권한이 있어야 접근 가능
                 .anyRequest().authenticated() // 그 외의 모든 요청은 인증이 필요하다.
                 .and()
