@@ -15,8 +15,7 @@ public class AdoptResponseDto {
 
     private Integer id;
     private String title;
-    private String kind;
-    private String location;
+    private String address;
     private long bookmark;
     private long chat;
     private LocalDateTime publishedAt;
