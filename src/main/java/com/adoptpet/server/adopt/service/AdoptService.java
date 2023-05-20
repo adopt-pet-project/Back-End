@@ -18,9 +18,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -110,7 +114,7 @@ public class AdoptService {
         adoptBookmarkRepository.save(adoptBookmark);
     }
 
-    public AdoptDetailResponseDto readAdopt(Integer saleNo, String accessToken) {
+    public AdoptDetailResponseDto readAdopt(Integer saleNo, String accessToken, HttpServletRequest request, HttpServletResponse response) {
         // Adopt 테이블과 Member 테이블을 조인해서 가져올 수 있는 데이터를 먼저 채운다.
         AdoptDetailResponseDto responseDto = queryService.selectAdoptAndMember(saleNo);
         // 현재 분양 게시글과 관련이 있는 이미지 url을 조회해온다.
@@ -128,8 +132,8 @@ public class AdoptService {
         // 현재 비어있는 responseDto의 이미지 필드의 값을 채워준다.
         responseDto.addImages(images);
 
-        // 분양글의 조회수를 올려준다.
-        adoptRepository.increaseCount(saleNo);
+        // 분양글의 조회수를 증가시키는 로직 실행
+        increaseCount(saleNo, request, response);
         return responseDto;
     }
 
@@ -141,11 +145,61 @@ public class AdoptService {
         adoptRepository.updateAdoptStatus(status, requestDto.getId());
     }
 
+    @Transactional
+    private void increaseCount(Integer saleNo, HttpServletRequest request, HttpServletResponse response) {
+        Cookie oldCookie = null;
+        // 현재 브라우저의 쿠키를 전부 가져온다.
+        Cookie[] cookies = request.getCookies();
+
+        // 쿠키가 있을 경우 실행
+        if (Objects.nonNull(cookies)) {
+            // 반복문을 돌면서 adoptView라는 이름을 가진 쿠키가 있을 경우 oldCookie에 값을 담아준다.
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("adoptView")) {
+                    oldCookie = cookie;
+                }
+            }
+        }
+
+        // adoptView 쿠키가 null이 아닐경우 실행한다.
+        if (Objects.nonNull(oldCookie)) {
+            // 현재 분양글 번호를 값으로 포함한 쿠키가 없을 경우 실행한다.
+            if (!oldCookie.getValue().contains("[" + saleNo + "]")) {
+                // 조회수를 1 증가시킨다.
+                adoptRepository.increaseCount(saleNo);
+                // 현재 쿠키의 값에 조회한 분양글 번호를 이어서 저장해준다.
+                oldCookie.setValue(oldCookie.getValue() + "_[" + saleNo + "]");
+                // 이 쿠키는 모든 요청에 같이 전달되도록 설정
+                oldCookie.setPath("/");
+                // 쿠키의 유효기간을 하루로 설정
+                oldCookie.setMaxAge(60 * 60 * 24);
+                // 응답 객체(response)에 쿠키를 셋팅해준다.
+                response.addCookie(oldCookie);
+            }
+        } else {
+            // oldCookie의 값이 없다면 현재 조회한 게시글이 하나도 없는 상태이므로 조회 수 카운트를 올려준다.
+            adoptRepository.increaseCount(saleNo);
+            // 쿠키를 새로 생성하면서 현재 게시글의 번호를 값으로 넣어준다.
+            Cookie newCookie = new Cookie("adoptView", "[" + saleNo + "]");
+            // 이 쿠키는 모든 요청에 같이 전달되도록 설정
+            newCookie.setPath("/");
+            // 쿠키의 유효기간을 하루로 설정
+            newCookie.setMaxAge(60 * 60 * 24);
+            // 응답 객체(response)에 쿠키를 셋팅해준다.
+            response.addCookie(newCookie);
+        }
+
+
+    }
+
+
+
 
     private Adopt getAdopt(AdoptRequestDto adoptDto, SecurityUserDto user) {
         // AdoptRequestDto => Adopt Entity로 변환해서 정보를 저장한다.
         Adopt adopt = adoptDto.toEntity();
 
+        // 이미지 객체가 비어있지 않다면, 가장 첫 이미지를 대표 이미지로 지정해준다.
         if (Objects.nonNull(adoptDto.getImage())) {
             adopt.addThumbnail(adoptDto.getImage()[0].getImgUrl());
         }
