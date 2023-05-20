@@ -1,5 +1,6 @@
 package com.adoptpet.server.user.controller;
 
+import com.adoptpet.server.commons.support.StatusResponseDto;
 import com.adoptpet.server.user.dto.request.RegisterDto;
 import com.adoptpet.server.user.dto.response.MemberResponseDto;
 import com.adoptpet.server.user.service.MemberService;
@@ -18,15 +19,15 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/member")
-    public ResponseEntity<Void> register(@Valid @RequestBody RegisterDto registerDto, BindingResult bindingResult) {
+    public ResponseEntity<StatusResponseDto> register(@Valid @RequestBody RegisterDto registerDto, BindingResult bindingResult) {
         // DTO의 유효성 검사가 실패할 경우 400번 에러를 돌려준다.
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(StatusResponseDto.addStatus(400));
         }
 
         // 회원을 저장한다.
         memberService.save(registerDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(StatusResponseDto.addStatus(200));
     }
 
     @GetMapping("/member/{id}")
