@@ -14,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -95,8 +98,9 @@ public class AdoptController {
     // 분양글 상세 조회
     @GetMapping("/adopt/{saleNo}")
     public ResponseEntity<AdoptDetailResponseDto> readAdopt(@PathVariable("saleNo") final Integer saleNo,
-                                                            @RequestHeader(value = "Authorization", required = false) final String accessToken) {
-        AdoptDetailResponseDto responseDto = adoptService.readAdopt(saleNo, accessToken);
+                                                            @RequestHeader(value = "Authorization", required = false) final String accessToken,
+                                                            HttpServletRequest request, HttpServletResponse response) {
+        AdoptDetailResponseDto responseDto = adoptService.readAdopt(saleNo, accessToken, request, response);
         return ResponseEntity.ok(responseDto);
     }
 
