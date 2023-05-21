@@ -25,4 +25,5 @@ public interface AdoptRepository extends JpaRepository<Adopt, Integer> {
     @Modifying(clearAutomatically = true)
     void updateAdoptStatus(@Param("status") AdoptStatus status, @Param("saleNo") Integer saleNo);
 
+
 }
