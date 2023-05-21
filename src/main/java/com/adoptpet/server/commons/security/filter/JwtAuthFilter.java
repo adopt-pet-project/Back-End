@@ -36,7 +36,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // 토큰 검사 생략(모두 허용 URL의 경우 토큰 검사 통과)
         if (!StringUtils.hasText(atc)) {
-            log.info("토큰 검사 생략 : 전체 허용 URL = {}", request.getRequestURI());
             doFilter(request, response, filterChain);
             return;
         }
@@ -60,7 +59,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     .email(findMember.getEmail())
                     .role("ROLE_".concat(findMember.getUserRole()))
                     .nickname(findMember.getNickname())
-                    .picture("프로필 이미지에요").build();
+                    .build();
 
             // SecurityContext에 인증 객체를 등록해준다.
             Authentication auth = getAuthentication(userDto);
