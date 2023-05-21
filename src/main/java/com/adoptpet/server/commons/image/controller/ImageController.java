@@ -25,9 +25,6 @@ public class ImageController {
 
     /**
      * 단일 image upload API
-     * @param file    : 이미지 파일
-     * @param type    : 이미지 분류(community,adopt,profile ...)
-     * @return I
      **/
     @PostMapping(value = "",consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<StatusResponseDto> uploadImage(
@@ -57,10 +54,10 @@ public class ImageController {
      *         - 성공시 : "AWS S3 - Success"
      *         - 실패시 : "AWS S3 - Failed _ file not found"
      **/
-    @DeleteMapping("/{type}/{imageNo}")
+    @DeleteMapping("/{type}/{imageId}")
     public ResponseEntity<StatusResponseDto> deleteImage(
             @PathVariable(name = "type") String type,
-            @PathVariable(name = "imageNo") Integer imageNo
+            @PathVariable(name = "imageId") Integer imageNo
     ){
 
         // image 삭제(S3, DB)
