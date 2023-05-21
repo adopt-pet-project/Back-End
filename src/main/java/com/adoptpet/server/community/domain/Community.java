@@ -41,10 +41,6 @@ public class Community extends BaseTimeEntity {
     @Column(name = "mod_id")
     private String modId;
 
-    @Column(name = "visible_yn")
-    @Convert(converter = VisibleYnEnum.VisibleConverter.class)
-    private VisibleYnEnum visibleYn;
-
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "logical_del")
     private LogicalDelEnum logicalDel;
@@ -66,14 +62,13 @@ public class Community extends BaseTimeEntity {
     private List<ArticleBookmark> articleBookmarks = new ArrayList<>();
 
     @Builder
-    public Community(Integer categoryNo, String title, String content, Integer viewCount, String regId, String modId, VisibleYnEnum visibleYn, LogicalDelEnum logicalDel, BlindYnEnum blindYn, String thumbnail) {
+    public Community(Integer categoryNo, String title, String content, Integer viewCount, String regId, String modId, LogicalDelEnum logicalDel, BlindYnEnum blindYn, String thumbnail) {
         this.categoryNo = categoryNo;
         this.title = title;
         this.content = content;
         this.viewCount = viewCount;
         this.regId = regId;
         this.modId = modId;
-        this.visibleYn = visibleYn;
         this.logicalDel = logicalDel;
         this.blindYn = blindYn;
         this.thumbnail = thumbnail;
@@ -84,7 +79,6 @@ public class Community extends BaseTimeEntity {
         this.title = communityDto.getTitle();
         this.content = communityDto.getContent();
         this.modId = modId;
-        this.visibleYn = communityDto.getVisibleYn();
         // 이미지 배열 중 가장 첫번째 URL을 썸네일 이미지로 넣어준다.
         if (Objects.nonNull(communityDto.getImage())) {
             this.thumbnail = communityDto.getImage()[0].getImageUrl();
