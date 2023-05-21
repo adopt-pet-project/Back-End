@@ -35,7 +35,7 @@ public class GlobalCatcher {
     //== 커스텀 예외 발생시 ==//
     @ExceptionHandler(value = CustomException.class)
     protected ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
-        log.error("CustomException :: {}", ex.getErrorCode());
+        log.error("CustomException :: {}", ex);
 
         ErrorCode errorCode = ex.getErrorCode();
 
