@@ -1,14 +1,13 @@
 package com.adoptpet.server.commons.image.controller;
 
-import com.adoptpet.server.commons.image.dto.ImageInfoDto;
-import com.adoptpet.server.commons.image.dto.response.ImageUploadResponse;
+import com.adoptpet.server.commons.exception.ErrorCode;
 import com.adoptpet.server.commons.image.service.AwsS3Service;
-import com.adoptpet.server.commons.security.dto.SecurityUserDto;
-import com.adoptpet.server.commons.util.SecurityUtils;
+import com.adoptpet.server.commons.support.StatusResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,20 +23,28 @@ public class ImageController {
 
     /**
      * 단일 image upload API
-     * @param image   : 이미지 파일
+     * @param file    : 이미지 파일
      * @param type    : 이미지 분류(community,adopt,profile ...)
      * @return I
      **/
     @PostMapping(value = "",consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<ImageUploadResponse> uploadImage(
-            @RequestPart(name = "imageFile") MultipartFile image,
+    public ResponseEntity<StatusResponseDto> uploadImage(
+            @RequestPart(name = "file") MultipartFile file,
             @RequestPart(name = "type") String type,
-            @RequestPart(name = "regId") String regId){
+            @RequestPart(name = "email",required = false) String email,
+            @RequestHeader(value = "Authorization",required = false) String accessToken){
+
+        // request validation
+        if(!StringUtils.hasText(email) && !StringUtils.hasText(accessToken)){
+            ErrorCode.throwNotEnterEmailOrToken();
+        } else if(file.isEmpty()){
+            ErrorCode.throwMissingFileRequestPart();
+        }
 
         // image 업로드(S3, DB)
-        ImageInfoDto imageInfo = awsS3Service.upload(image, regId, type);
+        awsS3Service.upload(file, type, email, accessToken);
 
-        return ResponseEntity.ok(imageInfo.toResponse());
+        return ResponseEntity.ok(StatusResponseDto.addStatus(200));
     }
 
     /**
@@ -48,14 +55,15 @@ public class ImageController {
      *         - 성공시 : "AWS S3 - Success"
      *         - 실패시 : "AWS S3 - Failed _ file not found"
      **/
-    @DeleteMapping("/{imageType}/{imageNo}")
-    public ResponseEntity<String> deleteImage(
-            @PathVariable(name = "imageType") String type,
-            @PathVariable(name = "imageNo") Integer imageNo){
+    @DeleteMapping("/{type}/{imageNo}")
+    public ResponseEntity<StatusResponseDto> deleteImage(
+            @PathVariable(name = "type") String type,
+            @PathVariable(name = "imageNo") Integer imageNo
+    ){
 
         // image 삭제(S3, DB)
         String result = awsS3Service.delete(type, imageNo);
 
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(StatusResponseDto.successMassage(result));
     }
 }
