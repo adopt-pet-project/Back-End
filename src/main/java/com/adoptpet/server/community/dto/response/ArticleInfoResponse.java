@@ -12,15 +12,15 @@ import java.util.List;
 @NoArgsConstructor
 public class ArticleInfoResponse {
 
-    private Integer articleNo; //  community
-    private String authorId; // community
+    private Integer id; // articleNo
+    private boolean mine;
     private Header header;
     private Context context;
 
     @Builder
-    public ArticleInfoResponse(Integer articleNo, String authorId, Header header, Context context) {
-        this.articleNo = articleNo;
-        this.authorId = authorId;
+    public ArticleInfoResponse(Integer articleNo, boolean mine, Header header, Context context) {
+        this.id = articleNo;
+        this.mine = mine;
         this.header = header;
         this.context = context;
     }
@@ -29,20 +29,21 @@ public class ArticleInfoResponse {
     @Builder
     @AllArgsConstructor
     public static class Header{
-        private String title; //  community
-        private String author; //  user
-        private Integer view; // community
-        private Integer like; // articleHeart
-        private Integer comment; // comment
-        private LocalDateTime regDate; // community
-        private String profile; // user
+        private String title;
+        private Integer authorId; // memberNo
+        private String username; //nickname
+        private String profile;
+        private Integer view;
+        private Integer like;
+        private Integer comment;
+        private LocalDateTime publishedAt; //regDate
     }
 
     @Getter
     @Builder
     @AllArgsConstructor
     public static class Context{
-        private String context; // community
-        private List<String> image; // articleImage
+        private String context; //content
+        private List<String> imageList; // images
     }
 }
