@@ -102,7 +102,7 @@ public class AdoptQueryService {
                         ExpressionUtils.as(
                                 JPAExpressions.select(chat.count())
                                         .from(chat)
-                                        .where(chat.saleNo.eq(saleNo))
+                                        .where(chat.saleNo.eq(adopt.saleNo))
                                 , "chat"
                         ),
                         adopt.regDate,
