@@ -1,5 +1,6 @@
 package com.adoptpet.server.community.service;
 
+import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.dto.ArticleDetailInfo;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -30,16 +32,22 @@ public class CommunityService {
     private final CommunityImageRepository communityImageRepository;
 
 
+    private Community findByArticleNo(Integer articleNo){
+        // 게시글 번호로 게시글을 조회하고, 조회되지 않을 경우 예외를 발생시킨다.
+        return communityRepository.findById(articleNo)
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Not Found article"));
+    }
+
 
     /**
     * 게시글 수정
     **/
-    public Community updateArticle(CommunityDto communityDto, String modId, Integer articleNo){
+    public Community updateArticle(CommunityDto communityDto, Integer articleNo){
 
         // 게시글 고유키로 게시글 검증
         Community community = findByArticleNo(articleNo);
         // 게시글 데이터 엔티티 저장
-        community.updateArticleByMod(communityDto, modId);
+        community.updateArticleByMod(communityDto, SecurityUtils.getUser().getEmail());
         // 이미지 업데이트
         updateImageByArticleNo(communityDto.getImage(),articleNo);
         // 게시글 업데이트
@@ -53,11 +61,19 @@ public class CommunityService {
     * 게시글 상세 내용 조회
     **/
     @Transactional(readOnly = true)
-    public ArticleDetailInfo readArticle(Integer articleNo){
+    public ArticleDetailInfo readArticle(Integer articleNo, String accessToken){
         // 게시글 고유키로 게시글 검증
         findByArticleNo(articleNo);
         // 게시글 정보 조회
         ArticleDetailInfo articleDetail = communityQDslRepository.findArticleDetail(articleNo);
+        // 조회 유저 검증 기본 값 지정
+        articleDetail.addIsMine(false);
+        // 엑세스 토큰 있을 시 조회한 유저가 게시글의 주인인지 확인
+        if (StringUtils.hasText(accessToken)) {
+            // 현재 게시글을 보려는 회원이 이 게시글을 작성한 작성자와 같은지 확인한다.
+            boolean isMine = communityQDslRepository.isMine(SecurityUtils.getUser().getEmail(), articleNo);
+            articleDetail.addIsMine(true);
+        }
         // 이미지 URL 조회 -> 없을 시 null 반환
         List<String> images = communityImageRepository.findImageUrlByArticleNo(articleNo)
                     .orElse(null);
@@ -90,6 +106,7 @@ public class CommunityService {
         response.addImgNo(images);
         return response;
     }
+
 
     @Transactional
     public void updateImageByArticleNo(ArticleImageDto[] imageNoArr, Integer articleNo) {
@@ -126,11 +143,7 @@ public class CommunityService {
     }
 
 
-    private Community findByArticleNo(Integer articleNo){
-        // 게시글 번호로 게시글을 조회하고, 조회되지 않을 경우 예외를 발생시킨다.
-        return communityRepository.findById(articleNo)
-                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Not Found article"));
-    }
+
 
 
 }
