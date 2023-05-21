@@ -11,6 +11,7 @@ import com.adoptpet.server.adopt.repository.AdoptBookmarkRepository;
 import com.adoptpet.server.adopt.repository.AdoptImageRepository;
 import com.adoptpet.server.adopt.repository.AdoptRepository;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
+import com.adoptpet.server.commons.util.ConstantUtil;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.service.MemberService;
@@ -200,6 +201,9 @@ public class AdoptService {
         if (Objects.nonNull(adoptDto.getImage())) {
             adopt.addThumbnail(adoptDto.getImage()[0].getImgUrl());
         }
+
+        // 이미지 객체가 비어있다면 기본 분양 이미지를 넣어준다.
+        adopt.addThumbnail(ConstantUtil.DEFAULT_ADOPT_IMAGE);
 
         // 등록자 ID와 수정자 ID를 넣어준다.
         adopt.addRegIdAndModId(user.getEmail(), user.getEmail());
