@@ -189,7 +189,6 @@ public class AdoptService {
             response.addCookie(newCookie);
         }
 
-
     }
 
 
