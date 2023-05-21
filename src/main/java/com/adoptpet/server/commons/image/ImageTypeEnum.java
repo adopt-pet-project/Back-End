@@ -1,5 +1,6 @@
 package com.adoptpet.server.commons.image;
 
+import com.adoptpet.server.commons.exception.ErrorCode;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,6 @@ public enum ImageTypeEnum {
     public static ImageTypeEnum from(String type){
         // 주어진 타입(type)에 해당하는 ImageTypeEnum 값을 반환
         return Optional.ofNullable(CODE_MAP.get(type))
-                .orElseThrow(()-> new IllegalArgumentException("요청한 type의 값이 유효하지 않습니다."));
+                .orElseThrow(ErrorCode::throwImageTypeNotFound);
     }
 }
