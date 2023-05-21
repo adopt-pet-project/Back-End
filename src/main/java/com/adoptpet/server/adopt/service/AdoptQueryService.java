@@ -3,7 +3,9 @@ package com.adoptpet.server.adopt.service;
 import static com.adoptpet.server.adopt.domain.QAdoptImage.*;
 import static com.adoptpet.server.adopt.domain.QAdopt.*;
 import static com.adoptpet.server.adopt.domain.QAdoptBookmark.*;
+import static com.adoptpet.server.adopt.domain.QChat.*;
 
+import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.AdoptStatus;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import static com.adoptpet.server.user.domain.QMember.*;
@@ -98,9 +100,9 @@ public class AdoptQueryService {
                         ),
                         // select subQuery를 이용하여 집계함수를 사용
                         ExpressionUtils.as(
-                                JPAExpressions.select(adoptBookmark.count())
-                                        .from(adoptBookmark)
-                                        .where(adoptBookmark.adopt.saleNo.eq(adopt.saleNo))
+                                JPAExpressions.select(chat.count())
+                                        .from(chat)
+                                        .where(chat.saleNo.eq(saleNo))
                                 , "chat"
                         ),
                         adopt.regDate,
@@ -130,6 +132,13 @@ public class AdoptQueryService {
 
         em.flush();
         em.clear();
+    }
+
+    // 현재 분양글이 분양 상태인지 조회하는 메서드
+    public Adopt isAdopting(Integer saleNo) {
+        return jpaQueryFactory.selectFrom(adopt)
+                .where(adopt.saleNo.eq(saleNo), adopt.status.eq(AdoptStatus.ADOPTING))
+                .fetchOne();
     }
 
     // 분양글과 관계가 있는 북마크를 지우는 메서드
@@ -171,9 +180,9 @@ public class AdoptQueryService {
                                             , "bookmark"
                             ),
                             ExpressionUtils.as(
-                                    JPAExpressions.select(adoptBookmark.count())
-                                            .from(adoptBookmark)
-                                            .where(adoptBookmark.adopt.saleNo.eq(saleNo))
+                                    JPAExpressions.select(chat.count())
+                                            .from(chat)
+                                            .where(chat.saleNo.eq(saleNo))
                                     , "chat"
                             )
                     ),

@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling // SpringScheduling 사용 설정
 public class BackEndApplication {
 
+
     static {
         System.setProperty("com.amazonaws.sdk.disableEc2Metadata", "true");
     }

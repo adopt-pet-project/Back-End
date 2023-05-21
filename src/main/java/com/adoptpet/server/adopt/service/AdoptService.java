@@ -193,8 +193,6 @@ public class AdoptService {
     }
 
 
-
-
     private Adopt getAdopt(AdoptRequestDto adoptDto, SecurityUserDto user) {
         // AdoptRequestDto => Adopt Entity로 변환해서 정보를 저장한다.
         Adopt adopt = adoptDto.toEntity();

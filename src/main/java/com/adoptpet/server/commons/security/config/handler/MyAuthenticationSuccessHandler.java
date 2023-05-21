@@ -52,14 +52,14 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
             // 회원이 존재하면 jwt token 발행을 시작한다.
             GeneratedToken token = jwtUtil.generateToken(email, role);
             log.info("jwtToken = {}", token.getAccessToken());
-            log.info("addr = {}", request.getRemoteAddr());
 
             // accessToken을 쿼리스트링에 담는 url을 만들어준다.
-           String targetUrl = UriComponentsBuilder.fromUriString("https://localhost:3000/loginSuccess")
+           String targetUrl = UriComponentsBuilder.fromUriString("http://15.164.216.101/loginSuccess")
                     .queryParam("accessToken", token.getAccessToken())
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
+           log.info("redirect 준비");
            // 로그인 확인 페이지로 리다이렉트 시킨다.
            getRedirectStrategy().sendRedirect(request, response, targetUrl);
 
@@ -67,7 +67,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
         } else {
 
             // 회원이 존재하지 않을경우, 서비스 제공자와 email을 쿼리스트링으로 전달하는 url을 만들어준다.
-            String targetUrl = UriComponentsBuilder.fromUriString("https://localhost:3000/loginSuccess")
+            String targetUrl = UriComponentsBuilder.fromUriString("http://15.164.216.101/loginSuccess")
                     .queryParam("email", (String) oAuth2User.getAttribute("email"))
                     .queryParam("provider", provider)
                     .build()
