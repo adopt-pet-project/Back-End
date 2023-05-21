@@ -44,7 +44,7 @@ public class ImageController {
         // image 업로드(S3, DB)
         awsS3Service.upload(file, type, email, accessToken);
 
-        return ResponseEntity.ok(StatusResponseDto.addStatus(200));
+        return ResponseEntity.ok(StatusResponseDto.success());
     }
 
     /**
@@ -64,6 +64,6 @@ public class ImageController {
         // image 삭제(S3, DB)
         String result = awsS3Service.delete(type, imageNo);
 
-        return ResponseEntity.ok(StatusResponseDto.successMassage(result));
+        return ResponseEntity.ok(StatusResponseDto.success(result));
     }
 }
