@@ -1,6 +1,7 @@
 package com.adoptpet.server.commons.image.controller;
 
 import com.adoptpet.server.commons.exception.ErrorCode;
+import com.adoptpet.server.commons.image.dto.ImageInfoDto;
 import com.adoptpet.server.commons.image.service.AwsS3Service;
 import com.adoptpet.server.commons.support.StatusResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import static com.adoptpet.server.commons.support.StatusResponseDto.*;
 
 
 @RestController
@@ -42,9 +44,9 @@ public class ImageController {
         }
 
         // image 업로드(S3, DB)
-        awsS3Service.upload(file, type, email, accessToken);
+        ImageInfoDto result = awsS3Service.upload(file, type, email, accessToken);
 
-        return ResponseEntity.ok(StatusResponseDto.success());
+        return ResponseEntity.ok(success(result.toResponse()));
     }
 
     /**
@@ -64,6 +66,6 @@ public class ImageController {
         // image 삭제(S3, DB)
         String result = awsS3Service.delete(type, imageNo);
 
-        return ResponseEntity.ok(StatusResponseDto.success(result));
+        return ResponseEntity.ok(success(result));
     }
 }

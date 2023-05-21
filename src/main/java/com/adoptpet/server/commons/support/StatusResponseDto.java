@@ -2,6 +2,7 @@ package com.adoptpet.server.commons.support;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 
 @Getter
@@ -9,7 +10,7 @@ import lombok.Getter;
 @JsonInclude(JsonInclude.Include.NON_NULL) // DTO 를 JSON으로 변환 시 null값인 field 제외
 public class StatusResponseDto {
     private Integer status;
-    private String massage;
+    private Object data;
 
     public StatusResponseDto(Integer status) {
         this.status = status;
@@ -22,7 +23,7 @@ public class StatusResponseDto {
     public static StatusResponseDto success(){
         return new StatusResponseDto(200);
     }
-    public static StatusResponseDto success(String massage){
-        return new StatusResponseDto(200, massage);
+    public static StatusResponseDto success(Object data){
+        return new StatusResponseDto(200, data);
     }
 }
