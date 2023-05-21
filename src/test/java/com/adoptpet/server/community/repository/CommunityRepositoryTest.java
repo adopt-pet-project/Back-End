@@ -34,7 +34,6 @@ class CommunityRepositoryTest {
                 .regId("testId")
                 .title("조회 테스트 체크")
                 .viewCount(0)
-                .visibleYn(VisibleYnEnum.VISIBLE)
                 .build();
     }
 
@@ -94,7 +93,6 @@ class CommunityRepositoryTest {
         assertEquals(save.getContent(),community.getContent(),"content false");
         assertEquals(save.getTitle(),community.getTitle(),"title false");
         assertEquals(save.getRegId(),community.getRegId(),"regId false");
-        assertEquals(save.getVisibleYn(),community.getVisibleYn(),"visible false");
 
     }
 }
