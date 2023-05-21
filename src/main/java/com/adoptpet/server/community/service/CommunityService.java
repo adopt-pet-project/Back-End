@@ -1,5 +1,6 @@
 package com.adoptpet.server.community.service;
 
+import com.adoptpet.server.commons.exception.ErrorCode;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
@@ -35,9 +36,8 @@ public class CommunityService {
     private Community findByArticleNo(Integer articleNo){
         // 게시글 번호로 게시글을 조회하고, 조회되지 않을 경우 예외를 발생시킨다.
         return communityRepository.findById(articleNo)
-                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Not Found article"));
+                .orElseThrow(ErrorCode::throwArticleNotFound);
     }
-
 
     /**
     * 게시글 수정
@@ -141,9 +141,4 @@ public class CommunityService {
 
         return deletedCommunity;
     }
-
-
-
-
-
 }
