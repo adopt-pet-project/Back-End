@@ -28,7 +28,7 @@ public class GlobalCatcher {
 
         String error = "누락된 필수 요청 값이 있습니다.";
 
-        ErrorResponse response = new ErrorResponse(HttpStatus.BAD_REQUEST,ex.getMessage(),error);
+        ErrorResponse response = new ErrorResponse(400,ex.getMessage(),error);
 
         return ResponseEntity.badRequest().body(response);
     }
@@ -38,9 +38,9 @@ public class GlobalCatcher {
     protected ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
         log.error("CustomException :: ", ex);
 
-        ErrorCode error_code = ex.getErrorCode();
+        ErrorCode errorCode = ex.getErrorCode();
 
-        return ResponseEntity.status(error_code.getHttpStatus()).body(ErrorResponse.toErrorResponse(error_code));
+        return ResponseEntity.status(errorCode.getStatus()).body(ErrorResponse.toErrorResponse(errorCode));
     }
 
     private List<String> generateErrors(BindException ex) {
