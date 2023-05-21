@@ -12,7 +12,6 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @RestControllerAdvice
@@ -28,7 +27,7 @@ public class GlobalCatcher {
 
         String error = "누락된 필수 요청 값이 있습니다.";
 
-        ErrorResponse response = new ErrorResponse(400,ex.getMessage(),error);
+        ErrorResponse response = new ErrorResponse(HttpStatus.BAD_REQUEST,ex.getMessage(),error);
 
         return ResponseEntity.badRequest().body(response);
     }
@@ -36,11 +35,11 @@ public class GlobalCatcher {
     //== 커스텀 예외 발생시 ==//
     @ExceptionHandler(value = CustomException.class)
     protected ResponseEntity<ErrorResponse> handleCustomException(CustomException ex) {
-        log.error("CustomException :: ", ex);
+        log.error("CustomException :: {}", ex.getErrorCode());
 
         ErrorCode errorCode = ex.getErrorCode();
 
-        return ResponseEntity.status(errorCode.getStatus()).body(ErrorResponse.toErrorResponse(errorCode));
+        return ResponseEntity.status(errorCode.getHttpStatus()).body(ErrorResponse.toErrorResponse(errorCode));
     }
 
     private List<String> generateErrors(BindException ex) {

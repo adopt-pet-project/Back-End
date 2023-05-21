@@ -1,12 +1,15 @@
 package com.adoptpet.server.community.service;
 
+import com.adoptpet.server.commons.exception.CustomException;
 import com.adoptpet.server.commons.exception.ErrorCode;
 import com.adoptpet.server.commons.util.SecurityUtils;
+import com.adoptpet.server.community.domain.Category;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.dto.ArticleDetailInfo;
 import com.adoptpet.server.community.dto.ArticleImageDto;
 import com.adoptpet.server.community.dto.CommunityDto;
+import com.adoptpet.server.community.repository.CategoryRepository;
 import com.adoptpet.server.community.repository.CommunityImageRepository;
 import com.adoptpet.server.community.repository.CommunityQDslRepository;
 import com.adoptpet.server.community.service.mapper.CreateArticleMapper;
@@ -21,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -31,7 +35,7 @@ public class CommunityService {
     private final CommunityRepository communityRepository;
     private final CommunityQDslRepository communityQDslRepository;
     private final CommunityImageRepository communityImageRepository;
-
+    private final CategoryRepository categoryRepository;
 
     private Community findByArticleNo(Integer articleNo){
         // 게시글 번호로 게시글을 조회하고, 조회되지 않을 경우 예외를 발생시킨다.
@@ -95,6 +99,13 @@ public class CommunityService {
         final CreateArticleMapper createArticleMapper = CreateArticleMapper.INSTANCE;
         // DTO를 Entity로 매핑
         Community community = createArticleMapper.toEntity(communityDto);
+
+        // 카테고리 번호 확인
+        Optional<Category> findCategory = categoryRepository.findById(community.getCategoryNo());
+        if(!findCategory.isPresent()){
+            throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND);
+        }
+
         // Community 저장
         Community saveArticle = communityRepository.save(community);
         // 이미지 업데이트
