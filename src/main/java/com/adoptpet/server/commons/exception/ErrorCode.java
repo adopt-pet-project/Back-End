@@ -11,7 +11,7 @@ import static org.springframework.http.HttpStatus.*;
 public enum ErrorCode {
 
     /* 400 BAD_REQUEST : 잘못된 요청 */
-    MISSING_MODIFIER_BAD_REQUEST(BAD_REQUEST, "수정자에 대한 정보가 입력되지 않았습니다."),
+    MISSING_REGISTER_BAD_REQUEST(BAD_REQUEST, "등록자에 대한 정보가 입력되지 않았습니다."),
     MISSING_FILE_BAD_REQUEST(BAD_REQUEST,"요청에 대한 이미지 파일이 누락되었습니다."),
 
 
@@ -36,7 +36,7 @@ public enum ErrorCode {
     private final String massage;
 
     public static CustomException throwNotEnterEmailOrToken(){
-        throw new CustomException(MISSING_MODIFIER_BAD_REQUEST);
+        throw new CustomException(MISSING_REGISTER_BAD_REQUEST);
     }
 
     public static CustomException throwMissingFileRequestPart() {
