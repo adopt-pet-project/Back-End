@@ -10,4 +10,8 @@ public abstract class ConstantUtil {
 
     public static final String DEFAULT_ADOPT_IMAGE
             ="https://project-adopt-bucket.s3.ap-northeast-2.amazonaws.com/other/cat.jpeg";
+
+    public static final String KAFKA_TOPIC = "adopt-chat";
+    public static final String GROUP_ID = "adopt";
+    public static final String KAFKA_BROKER = "localhost:9092";
 }

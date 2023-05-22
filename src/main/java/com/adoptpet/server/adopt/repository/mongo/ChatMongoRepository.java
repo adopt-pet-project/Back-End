@@ -1,9 +1,8 @@
 package com.adoptpet.server.adopt.repository.mongo;
 
-import com.adoptpet.server.adopt.domain.mongo.Customer;
+import com.adoptpet.server.adopt.domain.mongo.Chatting;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface ChatMongoRepository extends MongoRepository<Customer, String> {
+public interface ChatMongoRepository extends MongoRepository<Chatting, String> {
 
-    Customer findByFirstName(String firstName);
 }
