@@ -14,7 +14,6 @@ import com.adoptpet.server.user.repository.ProfileImageRepository;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -25,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.adoptpet.server.commons.exception.ErrorCode.*;
 
@@ -79,7 +79,7 @@ public class AwsS3Service {
                 break;
         }
 
-        String result = deleteFileByUrl(typeEnum, imageUrl);
+        String result = deleteFile(imageUrl);
 
         // S3 이미지 파일 삭제 요청
         return result;
@@ -87,18 +87,16 @@ public class AwsS3Service {
     }
 
     /**
-     * S3 File delete method
-     * @param typeEnum : keyName Prefix(path) 제공
+     * S3 단일 파일 삭제
      * @param imageUrl : S3 image URL
      * @return String : 성공시 result = success, 실패시 result = file not found
      **/
-    private String deleteFileByUrl(ImageTypeEnum typeEnum, String imageUrl) {
+    @Transactional
+    public String deleteFile(String imageUrl) {
 
-        // URL 에서 파일명 추출
-        String fileName = extractFileName(imageUrl);
-
-        // 타입과 파일명을 합쳐 keyName 구성
-        String keyName = getKeyName(typeEnum.getPath(),fileName);
+        // URL 에서 keyName 추출
+        final String keyName = extractKeyName(imageUrl);
+        log.info("keyName : {} ", keyName);
 
         // keyName으로 S3에 delete request
         String result = awsS3Repository.deleteFile(keyName);
@@ -106,6 +104,36 @@ public class AwsS3Service {
         return result;
     }
 
+    /**
+    * S3 여러 파일 삭제
+     * @param imageUrls : S3 image URL 리스트
+     * @return String  :
+     *          - 성공시 : result = "Success delete all image file"
+     *          - 실패시 : result = "n개의 이미지가 삭제되지 않았습니다."
+    **/
+    @Transactional
+    public String deleteMultipleFile(List<String> imageUrls){
+        // 이미지 URL에서 keyName 추출
+        List<String> keyNames = imageUrls.stream()
+                .map(url -> extractKeyName(url))
+                .collect(Collectors.toList());
+
+        // S3에 삭제 요청
+        String result = awsS3Repository.deleteFiles(keyNames);
+
+        return result;
+    }
+
+    //== 이미지 URL 에서 keyName 추출 ==//
+    public String extractKeyName(String imageUrl){
+
+        final int secondSlashIndex = imageUrl.indexOf("/") + 2;
+        final int thirdSlashIndex = imageUrl.indexOf("/", secondSlashIndex);
+
+        final String keyName = imageUrl.substring(thirdSlashIndex + 1);
+
+        return keyName;
+    }
 
     /**
      * 전달받은 MultipartFile을 AwsS3 버킷에 업로드
@@ -141,7 +169,7 @@ public class AwsS3Service {
         try (InputStream inputStream = file.getInputStream()){
 
             // 경로와 파일이름을 합쳐 S3 key name을 얻음
-            final String keyName = getKeyName(typeEnum.getPath(), fileName);
+            final String keyName = extractKeyName(typeEnum.getPath(), fileName);
 
             // 파일 업로드 후 파일에 대한 URL을 얻음
             URL responseUrl = awsS3Repository.uploadFile(objectMetadata, inputStream, fileName ,keyName);
@@ -265,7 +293,7 @@ public class AwsS3Service {
     }
 
     //== keyName 결합 메서드 ==//
-    private String getKeyName(String path, String fileName) {
+    private String extractKeyName(String path, String fileName) {
 
         StringBuilder sb = new StringBuilder();
         sb.append(path);
@@ -280,11 +308,6 @@ public class AwsS3Service {
         return fileName.substring(fileName.lastIndexOf(DOT) + 1);
     }
 
-    //== image URL 파일명 추출 메서드 ==//
-    private String extractFileName(String imageUrl){
-        String fileName = imageUrl.substring(imageUrl.lastIndexOf("/")+1);
-        return fileName;
-    }
 
     @Getter
     @Builder
