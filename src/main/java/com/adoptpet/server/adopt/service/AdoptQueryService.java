@@ -4,7 +4,6 @@ import static com.adoptpet.server.adopt.domain.QAdoptImage.*;
 import static com.adoptpet.server.adopt.domain.QAdopt.*;
 import static com.adoptpet.server.adopt.domain.QAdoptBookmark.*;
 import static com.adoptpet.server.adopt.domain.QChat.*;
-
 import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.AdoptStatus;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;

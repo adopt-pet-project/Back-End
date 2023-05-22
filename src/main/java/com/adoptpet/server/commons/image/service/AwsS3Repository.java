@@ -1,6 +1,6 @@
 package com.adoptpet.server.commons.image.service;
 
-import com.adoptpet.server.commons.config.AwsS3config;
+import com.adoptpet.server.commons.config.aws.AwsS3config;
 import com.adoptpet.server.commons.properties.AwsS3Properties;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;

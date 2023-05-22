@@ -14,9 +14,6 @@ import javax.validation.constraints.NotNull;
 @ToString
 public class AdoptRequestDto {
 
-    @NotNull
-    private Integer categoryNo;
-
     @NotBlank
     private String title;
 
@@ -54,7 +51,6 @@ public class AdoptRequestDto {
 
     public Adopt toEntity() {
         return Adopt.builder()
-                .categoryNo(categoryNo)
                 .age(age)
                 .content(content)
                 .title(title)
