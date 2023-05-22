@@ -13,23 +13,23 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdateArticleRequest {
-    @JsonProperty("categoryNo")
+    @JsonProperty("categoryId")
     private Integer categoryNo;
+
     @JsonProperty("title")
     private String title;
-    @JsonProperty("content")
+
+    @JsonProperty("context")
     private String content;
-    @JsonProperty("visible")
-    private VisibleYnEnum visibleYn;
-    @JsonProperty("image")
+
+    @JsonProperty("imageList")
     private ArticleImageDto[] image;
 
     public CommunityDto toDto(){
         CommunityDto.CommunityDtoBuilder builder = CommunityDto.builder()
                 .categoryNo(this.categoryNo)
                 .title(this.title)
-                .content(this.content)
-                .visibleYn(this.visibleYn);
+                .content(this.content);
         // 등록한 이미지가 있을 경우
         if (this.image != null && this.image.length > 0) {
             builder.image(this.image)

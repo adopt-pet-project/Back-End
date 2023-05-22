@@ -2,8 +2,11 @@ package com.adoptpet.server.commons.image.service;
 
 import com.adoptpet.server.adopt.domain.AdoptImage;
 import com.adoptpet.server.adopt.repository.AdoptImageRepository;
+import com.adoptpet.server.commons.exception.CustomException;
+import com.adoptpet.server.commons.exception.ErrorCode;
 import com.adoptpet.server.commons.image.ImageTypeEnum;
 import com.adoptpet.server.commons.image.dto.ImageInfoDto;
+import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.domain.CommunityImage;
 import com.adoptpet.server.community.repository.CommunityImageRepository;
 import com.adoptpet.server.user.domain.ProfileImage;
@@ -14,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -21,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
+
+import static com.adoptpet.server.commons.exception.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,26 +41,19 @@ public class AwsS3Service {
 
     private static String DOT = ".";
 
-    private static ResponseStatusException NOT_FOUND_EXCEPTION =
-            new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found imageNo");
-
-    private static ResponseStatusException INVALID_TYPE_EXCEPTION =
-            new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid type");
-
 
     @Transactional
     public String delete(String type, Integer imageNo){
         // 타입 분류를 위해 enum 생성
         ImageTypeEnum typeEnum = ImageTypeEnum.from(type.toLowerCase());
 
-        String result;
-        String imageUrl;
+        String imageUrl ="";
 
         switch (typeEnum){
             case ADOPT:
                 // image 조회
                 AdoptImage adoptImg = adoptImageRepository.findById(imageNo)
-                        .orElseThrow(() -> NOT_FOUND_EXCEPTION);
+                        .orElseThrow(ErrorCode::throwImageNotFound);
                 imageUrl = adoptImg.getImageUrl();
 
                 // DB 이미지 정보 제거
@@ -63,7 +62,7 @@ public class AwsS3Service {
             case COMMUNITY:
                 // image 조회
                 CommunityImage communityImg = communityImageRepository.findById(imageNo)
-                        .orElseThrow(() -> NOT_FOUND_EXCEPTION);
+                        .orElseThrow(ErrorCode::throwImageNotFound);
                 imageUrl = communityImg.getImageUrl();
 
                 // DB 이미지 정보 제거
@@ -72,23 +71,20 @@ public class AwsS3Service {
             case PROFILE:
                 // image 조회
                 ProfileImage profileImg = profileImageRepository.findById(imageNo)
-                        .orElseThrow(() -> NOT_FOUND_EXCEPTION);
+                        .orElseThrow(ErrorCode::throwImageNotFound);
                 imageUrl = profileImg.getImageUrl();
 
                 // DB 이미지 정보 제거
                 profileImageRepository.delete(profileImg);
                 break;
-            default:
-                throw INVALID_TYPE_EXCEPTION;
         }
 
+        String result = deleteFileByUrl(typeEnum, imageUrl);
+
         // S3 이미지 파일 삭제 요청
-        result = deleteFileByUrl(typeEnum, imageUrl);
         return result;
 
     }
-
-
 
     /**
      * S3 File delete method
@@ -122,7 +118,7 @@ public class AwsS3Service {
      * @throws ResponseStatusException  : 파일 업로드가 실패한 경우 예외가 발생
      */
     @Transactional
-    public ImageInfoDto upload(MultipartFile file, String regId, String type) {
+    public ImageInfoDto upload(MultipartFile file, String type, String regId, String accessToken) {
 
         // 타입 분류를 위해 enum 생성
         ImageTypeEnum typeEnum = ImageTypeEnum.from(type.toLowerCase());
@@ -132,9 +128,13 @@ public class AwsS3Service {
         objectMetadata.setContentLength(file.getSize());          // 파일 크기
         objectMetadata.setContentType(file.getContentType());     // 파일 타입
 
+        // 토큰이 있을 경우 해당 토큰에서 이메일을 얻어 수정자 ID 초기화
+        if(StringUtils.hasText(accessToken)){
+            regId = SecurityUtils.getUser().getEmail();
+        }
+
         // 원본 파일명 가져오기
         final String imageName = file.getOriginalFilename();
-
         // 업로드될 파일을 위해 고유한 파일명 생성
         final String fileName = createFileName(imageName);
 
@@ -143,6 +143,7 @@ public class AwsS3Service {
             // 경로와 파일이름을 합쳐 S3 key name을 얻음
             final String keyName = getKeyName(typeEnum.getPath(), fileName);
 
+            // 파일 업로드 후 파일에 대한 URL을 얻음
             URL responseUrl = awsS3Repository.uploadFile(objectMetadata, inputStream, fileName ,keyName);
 
             // Server DB에 upload된 image 정보 저장
@@ -150,14 +151,11 @@ public class AwsS3Service {
 
             // 저장된 이미지 PK 반환
             return savedImageInfo;
-
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+        } catch (IOException ex) {
+            log.error(ex.getMessage());
+            throw new CustomException(UNSUCCESSFUL_UPLOAD);
         }
     }
-
-
-
 
     //== 타입별 분류 후 데이터베이스 저장  ==//
     private ImageInfoDto saveImage(String regId, ImageTypeEnum type, URL responseUrl, String imageName){
@@ -185,7 +183,7 @@ public class AwsS3Service {
                 imageInfo = saveAdoptImage(saveImageData);
                 break;
             default:
-                throw INVALID_TYPE_EXCEPTION;
+                throw new CustomException(IMAGE_TYPE_NOT_FOUND);
         }
 
         return imageInfo;

@@ -13,14 +13,15 @@ import java.util.List;
 public class ArticleDetailInfo {
 
     private Integer articleNo; //  community
-    private String regId; // community
+    private boolean mine;
     private String title; //  community
     private String nickname; //  member
+    private Integer memberNo; // member
+    private String profile; // profileImage
     private Integer view; // community
     private Integer like; // articleHeart
     private Integer comment; // comment
     private LocalDateTime regDate; // community
-    private String profile; // profileImage
     private String content; // community
     private List<String> images;// communityImage
 
@@ -29,41 +30,48 @@ public class ArticleDetailInfo {
     }
 
     @QueryProjection
-    public ArticleDetailInfo(Integer articleNo, String regId, String title, String nickname, Integer view, Integer like, Integer comment, LocalDateTime regDate, String profile, String content) {
+    public ArticleDetailInfo(Integer articleNo, String title, String nickname, Integer memberNo, String profile, Integer view, Integer like, Integer comment, LocalDateTime regDate, String content) {
         this.articleNo = articleNo;
-        this.regId = regId;
         this.title = title;
         this.nickname = nickname;
+        this.memberNo = memberNo;
+        this.profile = profile;
         this.view = view;
         this.like = like;
         this.comment = comment;
         this.regDate = regDate;
-        this.profile = profile;
         this.content = content;
     }
+
+
 
     public ArticleInfoResponse toResponse(){
 
         ArticleInfoResponse.Context context = ArticleInfoResponse.Context.builder()
                 .context(this.content)
-                .image(this.images)
+                .imageList(this.images)
                 .build();
 
         ArticleInfoResponse.Header header = ArticleInfoResponse.Header.builder()
-                .author(this.nickname)
-                .profile(this.profile)
                 .title(this.title)
+                .authorId(this.memberNo)
+                .username(this.nickname)
+                .profile(this.profile)
                 .view(this.view)
                 .like(this.like)
                 .comment(this.comment)
-                .regDate(this.regDate)
+                .publishedAt(this.regDate)
                 .build();
 
         return ArticleInfoResponse.builder()
                 .articleNo(this.articleNo)
-                .authorId(this.regId)
+                .mine(this.mine)
                 .header(header)
                 .context(context)
                 .build();
+    }
+
+    public void addIsMine(boolean mine){
+        this.mine = mine;
     }
 }

@@ -3,7 +3,6 @@ package com.adoptpet.server.community.repository;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.dto.ArticleDetailInfo;
 import com.adoptpet.server.community.dto.QArticleDetailInfo;
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 
@@ -44,14 +43,14 @@ public class CommunityQDslRepository {
         return query
                 .select(new QArticleDetailInfo(
                         community.articleNo,
-                        community.regId,
                         community.title,
                         member.nickname,
+                        member.memberNo,
+                        profileImage.imageUrl.as("profile"),
                         community.viewCount.as("view"),
                         articleHeart.heartNo.countDistinct().intValue().as("like"),
                         comment.commentNo.countDistinct().intValue().as("comment"),
                         community.regDate,
-                        profileImage.imageUrl.as("profile"),
                         community.content
                 ))
                 .from(community)
@@ -61,7 +60,15 @@ public class CommunityQDslRepository {
                 .leftJoin(comment).on(community.articleNo.eq(comment.community.articleNo))
                 .where(community.articleNo.eq(articleNo))
                 .groupBy(community.articleNo,community.regId,community.title,member.nickname,
-                        community.regDate,profileImage.imageUrl,community.content)
+                        member.memberNo,community.regDate,profileImage.imageUrl,community.content)
                 .fetchFirst();
+    }
+
+    //게시글의 소유자인지 이메일로 검증
+    public boolean isMine(String email, Integer articleNo) {
+            return query.select(community.articleNo)
+                    .from(community)
+                    .where(community.regId.eq(email), community.articleNo.eq(articleNo))
+                    .fetchFirst() != null;
     }
 }
