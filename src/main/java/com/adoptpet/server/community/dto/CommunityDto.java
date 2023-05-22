@@ -30,9 +30,6 @@ public class CommunityDto {
     private String modId;
 
     @NotBlank
-    private VisibleYnEnum visibleYn;
-
-    @NotBlank
     private LogicalDelEnum logicalDel;
 
     @NotBlank

@@ -22,7 +22,7 @@ import javax.validation.constraints.NotNull;
 public class RegisterArticleRequest {
 
     @NotNull
-    @JsonProperty("categoryNo")
+    @JsonProperty("categoryId")
     private Integer categoryNo;
 
     @JsonProperty("title")
@@ -30,14 +30,11 @@ public class RegisterArticleRequest {
     @Length(max = 100)
     private String title;
 
-    @JsonProperty("content")
+    @JsonProperty("context")
     @NotBlank
     private String content;
 
-    @JsonProperty("visible")
-    private VisibleYnEnum visibleYn;
-
-    @JsonProperty("image")
+    @JsonProperty("imageList")
     private ArticleImageDto[] image;
 
     @JsonProperty("thumbnail")
@@ -51,7 +48,6 @@ public class RegisterArticleRequest {
                 .viewCount(0)
                 .regId(userId)
                 .modId(userId)
-                .visibleYn(this.visibleYn)
                 .logicalDel(LogicalDelEnum.NORMAL)
                 .blindYn(BlindYnEnum.NORMAL);
         // 등록한 이미지가 있을 경우

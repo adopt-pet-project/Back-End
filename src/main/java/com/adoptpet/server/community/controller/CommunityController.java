@@ -1,6 +1,7 @@
 package com.adoptpet.server.community.controller;
 
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
+import com.adoptpet.server.commons.support.StatusResponseDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.dto.ArticleDetailInfo;
@@ -12,9 +13,12 @@ import com.adoptpet.server.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
+import static com.adoptpet.server.commons.support.StatusResponseDto.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,44 +30,59 @@ public class CommunityController {
 
     @GetMapping("/article/{articleNo}")
     public ResponseEntity<ArticleInfoResponse> readArticle(
-            @PathVariable("articleNo") Integer articleNo){
-        ArticleDetailInfo articleDetailInfo = communityService.readArticle(articleNo);
+            @PathVariable("articleNo") Integer articleNo,
+            @RequestHeader(value = "Authorization",required = false) String accessToken){
+
+        ArticleDetailInfo articleDetailInfo = communityService.readArticle(articleNo,accessToken);
+
         return ResponseEntity.ok(articleDetailInfo.toResponse());
     }
 
     @PostMapping("/article")
-    public ResponseEntity<CommunityDto> writeArticle (
-            @RequestBody @Valid RegisterArticleRequest request){
+    public ResponseEntity<StatusResponseDto> writeArticle (
+            @RequestBody @Valid RegisterArticleRequest request, BindingResult bindingResult){
+
+        // 유효성 검증에 실패할경우 400번 에러를 응답한다.
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(addStatus(400));
+        }
 
         // 현재 회원의 인증 객체를 가져온다.
         SecurityUserDto user = SecurityUtils.getUser();
         // 게시글 dto 생성
         CommunityDto communityDto = request.toDto(user.getEmail());
         // 게시글 등록
-        CommunityDto resultCommunity = communityService.insertArticle(communityDto);
+        communityService.insertArticle(communityDto);
 
-        return ResponseEntity.ok(resultCommunity);
+        return ResponseEntity.ok(success());
     }
 
     @PatchMapping("/article/{articleNo}")
-    public ResponseEntity<Void> updateArticle(
-            @RequestBody @Valid UpdateArticleRequest request, @PathVariable("articleNo") Integer articleNo){
+    public ResponseEntity<StatusResponseDto> updateArticle(
+            @RequestBody @Valid UpdateArticleRequest request,
+            @PathVariable("articleNo") Integer articleNo,BindingResult bindingResult){
 
-        // 현재 회원의 인증 객체를 가져온다.
-        SecurityUserDto user = SecurityUtils.getUser();
+        // 유효성 검증에 실패할경우 400번 에러를 응답한다.
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(addStatus(400));
+        }
 
+        // UpdateArticleRequest -> CommunityDto
         CommunityDto communityDto = request.toDto();
+        // DB Update
+        communityService.updateArticle(communityDto,articleNo);
 
-        communityService.updateArticle(communityDto,user.getEmail(),articleNo);
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(success());
     }
 
 
     @DeleteMapping("/article/{articleNo}")
-    public ResponseEntity<Community> deleteAdopt(@PathVariable("articleNo") Integer articleNo) {
-        Community community = communityService.softDeleteArticle(articleNo);
-        return ResponseEntity.ok(community);
+    public ResponseEntity<StatusResponseDto> deleteAdopt(
+            @PathVariable("articleNo") Integer articleNo) {
+
+        communityService.softDeleteArticle(articleNo);
+
+        return ResponseEntity.ok(success());
     }
 
 }
