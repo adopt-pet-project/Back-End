@@ -1,4 +1,4 @@
-package com.adoptpet.server.commons.config;
+package com.adoptpet.server.commons.config.aws;
 
 import com.adoptpet.server.commons.properties.AwsS3Properties;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;

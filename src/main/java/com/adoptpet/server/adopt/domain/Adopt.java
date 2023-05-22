@@ -21,9 +21,6 @@ public class Adopt extends BaseTimeEntity {
     @Column(name = "sale_no")
     private Integer saleNo;
 
-    @Column(name = "category_no", nullable = false)
-    private Integer categoryNo;
-
     @Column(name = "title", nullable = false, length = 100)
     private String title;
 
@@ -98,7 +95,6 @@ public class Adopt extends BaseTimeEntity {
 
     // 분양 엔티티의 정보를 업데이트
     public void updateAdopt(AdoptRequestDto adoptDto, SecurityUserDto user) {
-        this.categoryNo = adoptDto.getCategoryNo();
         this.title = adoptDto.getTitle();
         this.content = adoptDto.getContent();
         this.age = adoptDto.getAge();

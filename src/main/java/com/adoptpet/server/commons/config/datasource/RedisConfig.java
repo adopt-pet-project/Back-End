@@ -1,4 +1,4 @@
-package com.adoptpet.server.commons.config;
+package com.adoptpet.server.commons.config.datasource;
 
 import com.adoptpet.server.commons.properties.RedisProperties;
 import lombok.RequiredArgsConstructor;
