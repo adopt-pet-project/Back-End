@@ -13,6 +13,7 @@ public enum ErrorCode {
     /* 400 BAD_REQUEST : 잘못된 요청 */
     MISSING_REGISTER_BAD_REQUEST(BAD_REQUEST, "등록자에 대한 정보가 입력되지 않았습니다."),
     MISSING_FILE_BAD_REQUEST(BAD_REQUEST,"요청에 대한 이미지 파일이 누락되었습니다."),
+    DELETED_ARTICLE_BAD_REQUEST(BAD_REQUEST,"해당 게시글이 삭제된 상태입니다."),
 
     /* 403 FORBIDDEN : 접근 권한 제한 */
     /* Valid : 유효한 */
@@ -50,9 +51,5 @@ public enum ErrorCode {
 
     public static CustomException throwImageTypeNotFound() {
         throw new CustomException(IMAGE_TYPE_NOT_FOUND);
-    }
-
-    public static CustomException throwArticleNotFound() {
-        throw new CustomException(ARTICLE_NOT_FOUND);
     }
 }

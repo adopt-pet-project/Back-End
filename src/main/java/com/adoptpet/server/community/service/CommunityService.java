@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.adoptpet.server.commons.exception.ErrorCode.*;
+
 @Slf4j
 @Service
 @Transactional
@@ -41,7 +43,7 @@ public class CommunityService {
         // 게시글 번호로 게시글을 조회하고, 조회되지 않을 경우 예외를 발생시킨다.
         Optional<Community> findCommunity = communityRepository.findById(articleNo);
         if(!findCommunity.isPresent()){
-            throw new CustomException(ErrorCode.ARTICLE_NOT_FOUND);
+            throw new CustomException(ARTICLE_NOT_FOUND);
         }
         return findCommunity.get();
     }
@@ -51,7 +53,7 @@ public class CommunityService {
     public void checkCategoryNo(Integer categoryNo) {
         Optional<Category> findCategory = categoryRepository.findById(categoryNo);
         if(!findCategory.isPresent()){
-            throw new CustomException(ErrorCode.CATEGORY_NOT_FOUND);
+            throw new CustomException(CATEGORY_NOT_FOUND);
         }
     }
 
