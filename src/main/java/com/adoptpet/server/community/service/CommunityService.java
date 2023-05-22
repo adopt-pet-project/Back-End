@@ -45,6 +45,12 @@ public class CommunityService {
         if(!findCommunity.isPresent()){
             throw new CustomException(ARTICLE_NOT_FOUND);
         }
+
+        // 삭제된 게시글 조회 검증
+        if(!findCommunity.get().getLogicalDel().equals(LogicalDelEnum.NORMAL)){
+            throw new CustomException(DELETED_ARTICLE_BAD_REQUEST);
+        }
+
         return findCommunity.get();
     }
 
@@ -100,7 +106,7 @@ public class CommunityService {
         if (StringUtils.hasText(accessToken)) {
             // 현재 게시글을 보려는 회원이 이 게시글을 작성한 작성자와 같은지 확인한다.
             boolean isMine = communityQDslRepository.isMine(SecurityUtils.getUser().getEmail(), articleNo);
-            articleDetail.addIsMine(true);
+            articleDetail.addIsMine(isMine);
         }
 
         // 이미지 URL 조회 -> 없을 시 null 반환
