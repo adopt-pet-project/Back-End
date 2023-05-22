@@ -1,4 +1,4 @@
-package com.adoptpet.server.commons.config;
+package com.adoptpet.server.commons.config.datasource;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.context.annotation.Bean;

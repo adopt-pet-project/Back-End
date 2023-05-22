@@ -1,4 +1,4 @@
-package com.adoptpet.server.commons.config;
+package com.adoptpet.server.commons.config.datasource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;

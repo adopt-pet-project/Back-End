@@ -23,7 +23,7 @@ public interface AdoptImageRepository extends JpaRepository<AdoptImage, Integer>
     @Query("select a.imageUrl from AdoptImage a where a.pictureNo = :pictureNo")
     String findImageUrlByPictureNo(@Param("pictureNo") Integer pictureNo);
 
-    @Query("select a from AdoptImage a where a.pictureNo = null")
+    @Query("select a from AdoptImage a where a.saleNo = null")
     List<AdoptImage> findAllAdoptImageNull();
 
 }
