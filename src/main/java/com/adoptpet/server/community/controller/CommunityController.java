@@ -3,15 +3,12 @@ package com.adoptpet.server.community.controller;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.support.StatusResponseDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
-import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.dto.ArticleDetailInfo;
+import com.adoptpet.server.community.dto.ArticleListDto;
 import com.adoptpet.server.community.dto.CommunityDto;
 import com.adoptpet.server.community.dto.request.RegisterArticleRequest;
-import com.adoptpet.server.community.dto.request.RegisterCommentRequest;
 import com.adoptpet.server.community.dto.request.UpdateArticleRequest;
 import com.adoptpet.server.community.dto.response.ArticleInfoResponse;
-import com.adoptpet.server.community.dto.response.ArticleListResponse;
-import com.adoptpet.server.community.dto.response.CommentListResponse;
 import com.adoptpet.server.community.service.CommentService;
 import com.adoptpet.server.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +18,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
+import java.util.List;
 
 import static com.adoptpet.server.commons.support.StatusResponseDto.*;
 
@@ -50,10 +49,16 @@ public class CommunityController {
 //    }
 
 
-    @GetMapping("/list")
-    public ResponseEntity<ArticleListResponse> readArticleList(){
+    @GetMapping("/list/{order}")
+    public ResponseEntity<List<ArticleListDto>> readArticleList(
+            @PathVariable("order") String order,
+            @RequestParam(value = "page",required = false) Integer pageNum,
+            @RequestParam(value = "option", required = false) Integer option,
+            @RequestParam(value = "keyword", required = false) String keyword){
 
-        return ResponseEntity.ok().build();
+        List<ArticleListDto> articleList = communityService.readArticleList(order,pageNum,option,keyword);
+
+        return ResponseEntity.ok(articleList);
     }
 
     @GetMapping("/article/{articleNo}")

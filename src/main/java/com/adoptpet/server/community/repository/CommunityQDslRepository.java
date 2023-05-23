@@ -2,11 +2,20 @@ package com.adoptpet.server.community.repository;
 
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.dto.ArticleDetailInfo;
+import com.adoptpet.server.community.dto.ArticleListDto;
 import com.adoptpet.server.community.dto.QArticleDetailInfo;
+import com.querydsl.core.types.*;
+import com.querydsl.core.types.dsl.*;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
+import java.util.List;
+import java.util.Objects;
 
 import static com.adoptpet.server.community.domain.QArticleBookmark.articleBookmark;
 import static com.adoptpet.server.community.domain.QArticleHeart.articleHeart;
@@ -15,6 +24,7 @@ import static com.adoptpet.server.user.domain.QMember.member;
 import static com.adoptpet.server.user.domain.QProfileImage.profileImage;
 import static com.adoptpet.server.community.domain.QComment.comment;
 
+@Slf4j
 @Repository
 public class CommunityQDslRepository {
 
@@ -70,5 +80,77 @@ public class CommunityQDslRepository {
                     .from(community)
                     .where(community.regId.eq(email), community.articleNo.eq(articleNo))
                     .fetchFirst() != null;
+    }
+
+
+    //== 게시글 목록 조회 ==//
+    public List<ArticleListDto> selectArticleList(String order,Integer pageNum,Integer option,String keyword) {
+
+        // row 시작 위치 (mysql에서는 limit)
+        final Integer offset = pageNum == null? 0 : (pageNum * 10) - 10; // 1 -> 0, 2 -> 10 3 -> 20
+        // row 개수
+        final Integer limit = 10;
+
+        // orderBy에서 like 서브쿼리의 alias를 읽기 위한 객체 생성
+        StringPath likeAlias = Expressions.stringPath("likeCnt");
+
+        BooleanExpression searchCondition = null;
+
+        if(Objects.nonNull(option)){
+            switch (option){
+                case 1:
+                    searchCondition = titleLike(keyword);
+                    break;
+                case 2:
+                    searchCondition = contentLike(keyword);
+                    break;
+                case 3:
+                    searchCondition = titleLikeOrContentLike(keyword);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        JPQLQuery<Integer> likeCntByCommunity = JPAExpressions.select(articleHeart.count().intValue())
+                .from(articleHeart)
+                .where(articleHeart.community.eq(community));
+
+        JPQLQuery<Integer> commentCntByCommunity = JPAExpressions.select(comment.count().intValue())
+                .from(comment)
+                .where(comment.community.eq(community));
+
+        return query.select(Projections.fields(ArticleListDto.class,
+                        community.articleNo,
+                        community.title,
+                        community.content,
+                        member.nickname,
+                        community.viewCount,
+                        Expressions.as(likeCntByCommunity,"likeCnt"),
+                        Expressions.as(commentCntByCommunity,"commentCnt"),
+                        community.regDate,
+                        community.thumbnail
+                ))
+                .from(community)
+                .leftJoin(member).on(community.regId.eq(member.email))
+                .where(searchCondition)
+                .groupBy(community.articleNo,community.title,community.content,
+                        member.nickname,community.viewCount,community.regDate,
+                        community.thumbnail)
+                .orderBy(order.equals("like") ? likeAlias.desc() : community.modDate.desc() )
+                .offset(offset).limit(limit)
+                .fetch();
+    }
+
+    private BooleanExpression titleLike(String title) {
+        return !StringUtils.hasText(title) ? null : community.title.contains(title);
+    }
+
+    private BooleanExpression contentLike(String content) {
+        return !StringUtils.hasText(content) ? null : community.content.contains(content);
+    }
+
+    private BooleanExpression titleLikeOrContentLike(String keyword) {
+        return !StringUtils.hasText(keyword) ? null : contentLike(keyword).or(titleLike(keyword));
     }
 }
