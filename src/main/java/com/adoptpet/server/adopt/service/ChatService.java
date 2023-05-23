@@ -2,14 +2,22 @@ package com.adoptpet.server.adopt.service;
 
 import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.Chat;
+import com.adoptpet.server.adopt.domain.mongo.Chatting;
+import com.adoptpet.server.adopt.dto.chat.Message;
 import com.adoptpet.server.adopt.dto.request.ChatRequestDto;
 import com.adoptpet.server.adopt.repository.ChatRepository;
+import com.adoptpet.server.adopt.repository.mongo.ChatMongoRepository;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
+import com.adoptpet.server.commons.security.service.JwtUtil;
+import com.adoptpet.server.commons.util.ConstantUtil;
+import com.adoptpet.server.user.domain.Member;
+import com.adoptpet.server.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -19,6 +27,10 @@ public class ChatService {
 
     private final ChatRepository chatRepository;
     private final AdoptQueryService queryService;
+    private final ChatMongoRepository chatMongoRepository;
+    private final MessageSender sender;
+    private final MemberRepository memberRepository;
+    private final JwtUtil jwtUtil;
 
     @Transactional
     public Chat makeChatRoom(SecurityUserDto userDto, ChatRequestDto requestDto) {
@@ -40,4 +52,21 @@ public class ChatService {
         return chatRepository.save(chat);
 
     }
+
+    public List<Chat> getChatList(SecurityUserDto userDto) {
+        return chatRepository.findChattingRoom(userDto.getMemberNo());
+    }
+
+    @Transactional
+    public void sendMessage(Message message, String accessToken) {
+        Member findMember = memberRepository.findByEmail(jwtUtil.getUid(accessToken))
+                        .orElseThrow(IllegalStateException::new);
+        message.setSendTimeAndSender(LocalDateTime.now(), findMember.getMemberNo(), findMember.getNickname());
+        Chatting chatting = message.convertEntity();
+        chatting.setDate(LocalDateTime.now());
+        chatMongoRepository.save(chatting);
+        sender.send(ConstantUtil.KAFKA_TOPIC, message);
+    }
+
+
 }

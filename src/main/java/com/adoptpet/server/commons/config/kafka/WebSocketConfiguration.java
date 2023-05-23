@@ -18,17 +18,15 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // 웹소켓 연결 주소 -> url/chat
         registry.addEndpoint("/chat")
-                .setAllowedOrigins("*")
+                .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // 메시지 보낼 url -> /kafka/topic
-        registry.enableSimpleBroker("/sub");
-        registry.setApplicationDestinationPrefixes("/pub");
+        registry.enableSimpleBroker("/subscribe");
+        registry.setApplicationDestinationPrefixes("/publish");
     }
 
     @Override
