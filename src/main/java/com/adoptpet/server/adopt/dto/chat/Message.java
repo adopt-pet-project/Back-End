@@ -43,6 +43,7 @@ public class Message implements Serializable {
                 .chatRoomNo(chatNo)
                 .content(contentType)
                 .content(content)
+                .sendDate(sendTime)
                 .build();
     }
 }
