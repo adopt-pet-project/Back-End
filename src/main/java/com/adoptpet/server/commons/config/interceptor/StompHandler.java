@@ -15,6 +15,7 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import java.util.List;
 
@@ -29,12 +30,12 @@ public class StompHandler implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        if (accessor.getCommand() == StompCommand.CONNECT) {
+        if (StompCommand.CONNECT.equals(accessor.getCommand()) || StompCommand.SEND.equals(accessor.getCommand())) {
             String accessToken = accessor.getFirstNativeHeader("Authorization");
             if (!jwtUtil.verifyToken(accessToken)) {
                 throw new IllegalStateException("토큰이 만료되었습니다.");
             } else {
-                accessor.setUser(getAuthentication(accessToken));
+//                accessor.setUser(getAuthentication(accessToken));
             }
         }
 

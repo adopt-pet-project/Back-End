@@ -12,7 +12,6 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-
 import java.util.Map;
 
 @EnableKafka
@@ -28,17 +27,19 @@ public class ListenerConfiguration {
 
     @Bean
     public ConsumerFactory<String, Message> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerConfigurations(), new StringDeserializer(), new JsonDeserializer<>());
+        JsonDeserializer<Message> deserializer = new JsonDeserializer<>();
+        deserializer.addTrustedPackages("*");
+
+        Map<String, Object> consumerConfigurations =
+                ImmutableMap.<String, Object>builder()
+                        .put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ConstantUtil.KAFKA_BROKER)
+                        .put(ConsumerConfig.GROUP_ID_CONFIG, ConstantUtil.GROUP_ID)
+                        .put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+                        .put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer)
+                        .put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest")
+                        .build();
+
+        return new DefaultKafkaConsumerFactory<>(consumerConfigurations, new StringDeserializer(), deserializer);
     }
 
-    @Bean
-    public Map<String, Object> consumerConfigurations() {
-        return ImmutableMap.<String, Object>builder()
-                .put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ConstantUtil.KAFKA_BROKER)
-                .put(ConsumerConfig.GROUP_ID_CONFIG, ConstantUtil.GROUP_ID)
-                .put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-                .put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class)
-                .put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest")
-                .build();
-    }
 }
