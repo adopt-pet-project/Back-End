@@ -31,6 +31,6 @@ public enum ImageTypeEnum {
     public static ImageTypeEnum from(String type){
         // 주어진 타입(type)에 해당하는 ImageTypeEnum 값을 반환
         return Optional.ofNullable(CODE_MAP.get(type))
-                .orElseThrow(ErrorCode::throwImageTypeNotFound);
+                .orElseThrow(ErrorCode::throwTypeNotFound);
     }
 }

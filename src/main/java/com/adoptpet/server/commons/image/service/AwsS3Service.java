@@ -211,7 +211,7 @@ public class AwsS3Service {
                 imageInfo = saveAdoptImage(saveImageData);
                 break;
             default:
-                throw new CustomException(IMAGE_TYPE_NOT_FOUND);
+                throw new CustomException(TYPE_NOT_FOUND);
         }
 
         return imageInfo;
