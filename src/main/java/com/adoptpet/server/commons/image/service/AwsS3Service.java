@@ -156,7 +156,7 @@ public class AwsS3Service {
         objectMetadata.setContentLength(file.getSize());          // 파일 크기
         objectMetadata.setContentType(file.getContentType());     // 파일 타입
 
-        // 토큰이 있을 경우 해당 토큰에서 이메일을 얻어 수정자 ID 초기화
+        // 토큰이 있을 경우 해당 토큰에서 이메일을 얻어 등록자 ID 초기화
         if(StringUtils.hasText(accessToken)){
             regId = SecurityUtils.getUser().getEmail();
         }
