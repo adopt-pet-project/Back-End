@@ -17,7 +17,7 @@ public class MessageReceiver {
 
     @KafkaListener(topics = ConstantUtil.KAFKA_TOPIC)
     public void receiveMessage(Message message) {
-        log.info("message = {}", message);
+        // 메시지객체 내부의 채팅방번호를 참조하여, 해당 채팅방 구독자에게 메시지를 발송한다.
         template.convertAndSend("/subscribe/public/" + message.getChatNo(), message);
     }
 }
