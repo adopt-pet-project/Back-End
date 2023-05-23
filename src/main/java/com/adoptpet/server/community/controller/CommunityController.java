@@ -7,8 +7,12 @@ import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.dto.ArticleDetailInfo;
 import com.adoptpet.server.community.dto.CommunityDto;
 import com.adoptpet.server.community.dto.request.RegisterArticleRequest;
+import com.adoptpet.server.community.dto.request.RegisterCommentRequest;
 import com.adoptpet.server.community.dto.request.UpdateArticleRequest;
 import com.adoptpet.server.community.dto.response.ArticleInfoResponse;
+import com.adoptpet.server.community.dto.response.ArticleListResponse;
+import com.adoptpet.server.community.dto.response.CommentListResponse;
+import com.adoptpet.server.community.service.CommentService;
 import com.adoptpet.server.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +31,30 @@ import static com.adoptpet.server.commons.support.StatusResponseDto.*;
 public class CommunityController {
 
     private final CommunityService communityService;
+
+    private final CommentService commentService;
+
+
+//    @GetMapping("/comment/{boardId}")
+//    public ResponseEntity<CommentListResponse> readCommentList(
+//            @PathVariable("boardId") Integer articleNo){
+//
+//        communityService.readCommentList(articleNo);
+//
+//        return ResponseEntity.ok();
+//    }
+
+//    @PostMapping("/comment")
+//    public ResponseEntity<StatusResponseDto> writeComment(@RequestBody RegisterCommentRequest request){
+//
+//    }
+
+
+    @GetMapping("/list")
+    public ResponseEntity<ArticleListResponse> readArticleList(){
+
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping("/article/{articleNo}")
     public ResponseEntity<ArticleInfoResponse> readArticle(
@@ -84,5 +112,6 @@ public class CommunityController {
 
         return ResponseEntity.ok(success());
     }
+
 
 }
