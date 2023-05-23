@@ -13,5 +13,5 @@ public abstract class ConstantUtil {
 
     public static final String KAFKA_TOPIC = "adopt-chat";
     public static final String GROUP_ID = "adopt";
-    public static final String KAFKA_BROKER = "localhost:9092";
+    public static final String KAFKA_BROKER = "3.36.132.160:9092";
 }

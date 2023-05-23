@@ -19,11 +19,13 @@ import java.util.Map;
 @Configuration
 public class ProducerConfiguration {
 
+    // Kafka ProducerFactory를 생성하는 Bean 메서드
     @Bean
     public ProducerFactory<String, Message> producerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigurations());
     }
 
+    // Kafka Producer 구성을 위한 설정값들을 포함한 맵을 반환하는 메서드
     @Bean
     public Map<String, Object> producerConfigurations() {
         return ImmutableMap.<String, Object>builder()
@@ -33,6 +35,7 @@ public class ProducerConfiguration {
                 .build();
     }
 
+    // KafkaTemplate을 생성하는 Bean 메서드
     @Bean
     public KafkaTemplate<String, Message> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());

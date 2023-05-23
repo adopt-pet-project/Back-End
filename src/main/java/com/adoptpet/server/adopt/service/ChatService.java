@@ -2,14 +2,22 @@ package com.adoptpet.server.adopt.service;
 
 import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.Chat;
+import com.adoptpet.server.adopt.domain.mongo.Chatting;
+import com.adoptpet.server.adopt.dto.chat.Message;
 import com.adoptpet.server.adopt.dto.request.ChatRequestDto;
 import com.adoptpet.server.adopt.repository.ChatRepository;
+import com.adoptpet.server.adopt.repository.mongo.ChatMongoRepository;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
+import com.adoptpet.server.commons.security.service.JwtUtil;
+import com.adoptpet.server.commons.util.ConstantUtil;
+import com.adoptpet.server.user.domain.Member;
+import com.adoptpet.server.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -19,6 +27,10 @@ public class ChatService {
 
     private final ChatRepository chatRepository;
     private final AdoptQueryService queryService;
+    private final ChatMongoRepository chatMongoRepository;
+    private final MessageSender sender;
+    private final MemberRepository memberRepository;
+    private final JwtUtil jwtUtil;
 
     @Transactional
     public Chat makeChatRoom(SecurityUserDto userDto, ChatRequestDto requestDto) {
@@ -40,4 +52,25 @@ public class ChatService {
         return chatRepository.save(chat);
 
     }
+
+    public List<Chat> getChatList(SecurityUserDto userDto) {
+        return chatRepository.findChattingRoom(userDto.getMemberNo());
+    }
+
+    @Transactional
+    public void sendMessage(Message message, String accessToken) {
+        // 메시지 전송 요청 헤더에 포함된 Access Token에서 email로 회원을 조회한다.
+        Member findMember = memberRepository.findByEmail(jwtUtil.getUid(accessToken))
+                        .orElseThrow(IllegalStateException::new);
+        // message 객체에 보낸시간, 보낸사람 memberNo, 닉네임을 셋팅해준다.
+        message.setSendTimeAndSender(LocalDateTime.now(), findMember.getMemberNo(), findMember.getNickname());
+        // Message 객체를 채팅 엔티티로 변환한다.
+        Chatting chatting = message.convertEntity();
+        // 채팅 내용을 저장한다.
+        chatMongoRepository.save(chatting);
+        // 메시지를 전송한다.
+        sender.send(ConstantUtil.KAFKA_TOPIC, message);
+    }
+
+
 }
