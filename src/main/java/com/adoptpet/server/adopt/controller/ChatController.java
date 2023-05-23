@@ -1,28 +1,24 @@
 package com.adoptpet.server.adopt.controller;
 
+import com.adoptpet.server.adopt.domain.Chat;
 import com.adoptpet.server.adopt.domain.mongo.Chatting;
 import com.adoptpet.server.adopt.dto.chat.Message;
 import com.adoptpet.server.adopt.dto.request.ChatRequestDto;
 import com.adoptpet.server.adopt.repository.mongo.ChatMongoRepository;
 import com.adoptpet.server.adopt.service.ChatService;
 import com.adoptpet.server.commons.support.StatusResponseDto;
-import com.adoptpet.server.commons.util.ConstantUtil;
 import com.adoptpet.server.commons.util.SecurityUtils;
+import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
-import java.util.concurrent.ExecutionException;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -30,10 +26,10 @@ import java.util.concurrent.ExecutionException;
 public class ChatController {
 
     private final ChatService chatService;
-    private final KafkaTemplate<String, Message> kafkaTemplate;
     private final ChatMongoRepository chatMongoRepository;
+    private final MemberService memberService;
 
-    @PostMapping("/chat")
+    @PostMapping("/chatroom")
     public ResponseEntity<StatusResponseDto> createChatRoom(@RequestBody @Valid final ChatRequestDto requestDto, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -46,18 +42,24 @@ public class ChatController {
         return ResponseEntity.ok(StatusResponseDto.addStatus(200));
     }
 
-    @PostMapping("/publish")
-    public void sendMessage(@RequestBody Message message) {
-        log.info("Produce message : " + message.toString());
-        Chatting chatting = message.convertEntity();
-        chatting.setSendDateAndSender(SecurityUtils.getUser().getMemberNo(), LocalDateTime.now());
-        chatMongoRepository.save(chatting);
-        kafkaTemplate.send(ConstantUtil.KAFKA_TOPIC, message);
+    // 채팅내역 조회
+    @GetMapping("/chatroom/{roomNo}")
+    public ResponseEntity<List<Chatting>> chattingList(@PathVariable("roomNo") Integer roomNo) {
+        List<Chatting> chattingList = chatMongoRepository.findByChatRoomNo(roomNo);
+        return ResponseEntity.ok(chattingList);
     }
 
-    @MessageMapping("/sendMessage")
-    @SendTo("/topic/group")
-    public Message broadcastGroupMessage(@Payload Message message) {
-        return message;
+    // 채팅방 리스트 조회
+    @GetMapping("/chatroom")
+    public ResponseEntity<List<Chat>> chatRoomList() {
+        List<Chat> chatList = chatService.getChatList(SecurityUtils.getUser());
+        return ResponseEntity.ok(chatList);
+    }
+
+    @MessageMapping("/message")
+    public void sendMessage(@Valid Message message, @Header("Authorization") final String accessToken) {
+
+        log.info("Produce message : " + message.toString());
+        chatService.sendMessage(message, accessToken);
     }
 }

@@ -1,6 +1,7 @@
 package com.adoptpet.server.user.domain;
 
 import com.adoptpet.server.adopt.domain.AdoptBookmark;
+import com.adoptpet.server.community.domain.Comment;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 
@@ -53,5 +54,8 @@ public class Member {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<AdoptBookmark> adoptBookmarkList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<Comment> commentList = new ArrayList<>();
 
 }

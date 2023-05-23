@@ -1,7 +1,11 @@
 package com.adoptpet.server.community.domain;
 
+import com.adoptpet.server.commons.support.BaseTimeEntity;
+import com.adoptpet.server.community.dto.CommentDto;
 import com.adoptpet.server.user.domain.Member;
+import com.nimbusds.jose.util.IntegerUtils;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,7 +18,7 @@ import java.util.List;
 @Entity
 @Table(name = "COMMENT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Comment {
+public class Comment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_no")
@@ -23,17 +27,11 @@ public class Comment {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "reg_date")
-    private LocalDateTime regDate;
-
-    @Column(name = "mod_date")
-    private LocalDateTime modDate;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_no")
     private Comment parent;
 
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent",orphanRemoval = true)
     private List<Comment> child = new ArrayList<>();
 
     @Column(name = "reg_id")
@@ -65,5 +63,21 @@ public class Comment {
     @OneToMany(mappedBy = "comment")
     private List<CommentHeart> commentHearts = new ArrayList<>();
 
+    @Builder
+    public Comment(String content, Comment parent, String regId, String modId, LogicalDelEnum logicalDel, BlindYnEnum blindYn) {
+        this.content = content;
+        this.parent = parent;
+        this.regId = regId;
+        this.modId = modId;
+        this.logicalDel = logicalDel;
+        this.blindYn = blindYn;
+    }
 
+    public void addParent(Comment parent){
+        this.parent = parent;
+    }
+
+    public void addMember(Member member) {
+        this.member = member;
+    }
 }
