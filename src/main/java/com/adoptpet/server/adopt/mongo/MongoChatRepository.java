@@ -13,8 +13,4 @@ import java.util.List;
 public interface MongoChatRepository extends MongoRepository<Chatting, String> {
 
     List<Chatting> findByChatRoomNo(Integer chatNo);
-
-
-
-
 }

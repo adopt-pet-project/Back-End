@@ -24,7 +24,8 @@ public class ChatQueryService {
                 chat.joinMember,
                 chat.saleNo,
                 chat.regDate
-                )).from(chat)
+                ))
+                .from(chat)
                 .where(chat.createMember.eq(memberNo).or(chat.joinMember.eq(memberNo)))
                 .fetch();
     }

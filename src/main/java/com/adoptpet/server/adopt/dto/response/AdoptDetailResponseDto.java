@@ -50,7 +50,6 @@ public class AdoptDetailResponseDto {
 
     @Getter
     @Setter
-//    @AllArgsConstructor
     public static class Header {
         private String title;
         private Integer status;

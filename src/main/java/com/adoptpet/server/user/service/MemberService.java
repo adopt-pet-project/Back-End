@@ -40,38 +40,27 @@ public class MemberService {
         memberRepository.findByEmail(registerDto.getEmail())
                 .ifPresent(member -> {throw new IllegalArgumentException("이미 존재하는 회원입니다.");});
 
+        Member member = registerDto.toEntity();
+
+        if (Objects.isNull(registerDto.getImgNo())) {
+            // 첨부된 사진이 없을 경우 기본 이미지를 등록한다.
+            member.addProfileImage(ConstantUtil.DEFAULT_PROFILE);
+        }
+
         // 회원을 저장한다.
-        Member member = memberRepository.save(registerDto.toEntity());
+        Member savedMember = memberRepository.save(member);
+        System.out.println("member = " + member);
 
         if (Objects.nonNull(registerDto.getImgNo())) {
             // 첨부된 사진이 있을 경우, 현재 회원의 프로필 사진으로 업데이트 해준다.
-            profileImageRepository.updateProfileImage(member.getMemberNo(), registerDto.getImgNo());
+            profileImageRepository.updateProfileImage(savedMember.getMemberNo(), registerDto.getImgNo());
         }
 
-        // 첨부된 사진이 없을 경우 기본 이미지를 등록한다.
-        ProfileImage profileImage = getProfile(member);
-        profileImageRepository.save(profileImage);
-
-        return memberRepository.save(member);
+        return savedMember;
     }
 
     public MemberResponseDto findMemberInfo(Integer memberNo) {
         return memberNo == 0 ? queryService.getUserInfo(SecurityUtils.getUser().getMemberNo()) : queryService.getUserInfo(memberNo);
-    }
-
-
-
-    private ProfileImage getProfile(Member member) {
-        ProfileImage profileImage = ProfileImage.builder()
-                .memberNo(member.getMemberNo())
-                .build();
-
-        profileImage.addRagId(member.getEmail());
-        profileImage.addImageName("기본 이미지");
-        profileImage.addImageType("기본 이미지");
-        profileImage.addImageUrl(ConstantUtil.DEFAULT_PROFILE);
-
-        return profileImage;
     }
 
 
