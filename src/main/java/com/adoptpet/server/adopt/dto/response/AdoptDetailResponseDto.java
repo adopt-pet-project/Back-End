@@ -50,7 +50,7 @@ public class AdoptDetailResponseDto {
     @AllArgsConstructor
     public static class Header {
         private String title;
-        private AdoptStatus status;
+        private Integer status;
         private LocalDateTime publishedAt;
     }
 

@@ -6,6 +6,7 @@ import com.adoptpet.server.adopt.domain.AdoptStatus;
 import com.adoptpet.server.adopt.dto.request.AdoptImageRequestDto;
 import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
 import com.adoptpet.server.adopt.dto.request.AdoptStatusRequestDto;
+import com.adoptpet.server.adopt.dto.request.AdoptUpdateRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import com.adoptpet.server.adopt.repository.AdoptBookmarkRepository;
 import com.adoptpet.server.adopt.repository.AdoptImageRepository;
@@ -45,8 +46,17 @@ public class AdoptService {
                 .orElseThrow(IllegalStateException::new);
     }
 
+    public void isMine(Integer saleNo, SecurityUserDto user) {
+        Optional<Adopt> adopt = adoptRepository.findAdoptIsMine(user.getEmail(), saleNo);
+        if (adopt.isEmpty()) {
+            throw new IllegalStateException("삭제 또는 수정하려는 분양글이 본인의 글이 아닙니다.");
+        }
+    }
+
     @Transactional
-    public void deleteAdopt(Integer saleNo) {
+    public void deleteAdopt(Integer saleNo, SecurityUserDto user) {
+        // 현재 분양글이 본인 글이 맞는지 확인
+        isMine(saleNo, user);
         // 분양글과 북마크를 제거
         removeBookMarkAndAdopt(saleNo);
         // 삭제한 분양글과 관계가 있는 이미지의 key 값을 전부 null로 업데이트 한다.
@@ -74,19 +84,22 @@ public class AdoptService {
 
 
     @Transactional
-    public Adopt updateAdopt(AdoptRequestDto adoptDto, SecurityUserDto user, Integer saleNo) {
+    public Adopt updateAdopt(AdoptUpdateRequestDto adoptDto, SecurityUserDto user, Integer saleNo) {
+        // 현재 분양글이 본인의 분양글인지 확인
+        isMine(saleNo, user);
         // 분양글의 고유번호로 분양글을 조회한다.
         Adopt adopt = findBySaleNo(saleNo);
         // AdoptRequestDto의 내용으로 분양글 엔티티의 내용을 변경한다.
         adopt.updateAdopt(adoptDto, user);
+        log.info("adopt = {}", adopt);
         // 이미지 배열 중 가장 첫번째 URL을 썸네일 이미지로 넣어준다.
-        if (Objects.nonNull(adoptDto.getImage())) {
+        if (Objects.nonNull(adoptDto.getImage()) && adoptDto.getImage().length != 0) {
             adopt.addThumbnail(adoptDto.getImage()[0].getImgUrl());
+            // 분양 글과 연관있는 이미지들의 데이터를 업데이트 해준다.
+            updateAdoptImageSaleNo(adoptDto.getImage(), saleNo);
         }
         // 분양 글을 업데이트 한다.
         Adopt updatedAdopt = adoptRepository.save(adopt);
-        // 분양 글과 연관있는 이미지들의 데이터를 업데이트 해준다.
-        updateAdoptImageSaleNo(adoptDto.getImage(), saleNo);
         return updatedAdopt;
     }
 
@@ -120,7 +133,7 @@ public class AdoptService {
         AdoptDetailResponseDto responseDto = queryService.selectAdoptAndMember(saleNo);
         // 현재 분양 게시글과 관련이 있는 이미지 url을 조회해온다.
         String[] images = queryService.selectAdoptImages(saleNo).toArray(String[]::new);
-
+        log.info("responseDto = {}", responseDto);
         // 현재 분양 게시글을 보는 회원이 권한이 있는지 여부는 기본 false
         responseDto.addIsMine(false);
 
@@ -198,12 +211,13 @@ public class AdoptService {
         Adopt adopt = adoptDto.toEntity();
 
         // 이미지 객체가 비어있지 않다면, 가장 첫 이미지를 대표 이미지로 지정해준다.
-        if (Objects.nonNull(adoptDto.getImage())) {
+        if (Objects.nonNull(adoptDto.getImage()) && adoptDto.getImage().length != 0) {
             adopt.addThumbnail(adoptDto.getImage()[0].getImgUrl());
+        } else {
+            // 이미지 객체가 비어있다면 기본 분양 이미지를 넣어준다.
+            adopt.addThumbnail(ConstantUtil.DEFAULT_ADOPT_IMAGE);
         }
 
-        // 이미지 객체가 비어있다면 기본 분양 이미지를 넣어준다.
-        adopt.addThumbnail(ConstantUtil.DEFAULT_ADOPT_IMAGE);
 
         // 등록자 ID와 수정자 ID를 넣어준다.
         adopt.addRegIdAndModId(user.getEmail(), user.getEmail());
