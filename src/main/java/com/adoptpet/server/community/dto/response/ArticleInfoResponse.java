@@ -1,5 +1,6 @@
 package com.adoptpet.server.community.dto.response;
 
+import com.adoptpet.server.commons.image.dto.ImageInfoDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,6 +45,6 @@ public class ArticleInfoResponse {
     @AllArgsConstructor
     public static class Context{
         private String context; //content
-        private List<String> imageList; // images
+        private List<ImageInfoDto> imageList; // images
     }
 }

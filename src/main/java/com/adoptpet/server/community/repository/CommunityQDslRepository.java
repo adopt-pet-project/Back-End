@@ -1,9 +1,11 @@
 package com.adoptpet.server.community.repository;
 
+import com.adoptpet.server.commons.image.dto.ImageInfoDto;
 import com.adoptpet.server.community.domain.Community;
-import com.adoptpet.server.community.dto.ArticleDetailInfo;
+import com.adoptpet.server.community.domain.LogicalDelEnum;
+import com.adoptpet.server.community.dto.ArticleDetailInfoDto;
 import com.adoptpet.server.community.dto.ArticleListDto;
-import com.adoptpet.server.community.dto.QArticleDetailInfo;
+import com.adoptpet.server.community.dto.QArticleDetailInfoDto;
 import com.adoptpet.server.community.dto.TrendingArticleDto;
 import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.*;
@@ -22,6 +24,7 @@ import java.util.Objects;
 import static com.adoptpet.server.community.domain.QArticleBookmark.articleBookmark;
 import static com.adoptpet.server.community.domain.QArticleHeart.articleHeart;
 import static com.adoptpet.server.community.domain.QCommunity.community;
+import static com.adoptpet.server.community.domain.QCommunityImage.communityImage;
 import static com.adoptpet.server.user.domain.QMember.member;
 import static com.adoptpet.server.user.domain.QProfileImage.profileImage;
 import static com.adoptpet.server.community.domain.QComment.comment;
@@ -56,10 +59,10 @@ public class CommunityQDslRepository {
                 .fetch();
     }
 
-    //== 게시글 상세내용 Join ==//
-    public ArticleDetailInfo findArticleDetail(Integer articleNo){
+    //== 게시글 상세내용 조회 ==//
+    public ArticleDetailInfoDto findArticleDetail(Integer articleNo){
         return query
-                .select(new QArticleDetailInfo(
+                .select(new QArticleDetailInfoDto(
                         community.articleNo,
                         community.title,
                         member.nickname,
@@ -72,8 +75,8 @@ public class CommunityQDslRepository {
                         community.content
                 ))
                 .from(community)
-                .join(profileImage).on(community.regId.eq(profileImage.regId))
-                .join(member).on(community.regId.eq(member.email))
+                .leftJoin(profileImage).on(community.regId.eq(profileImage.regId))
+                .leftJoin(member).on(community.regId.eq(member.email))
                 .leftJoin(articleHeart).on(community.articleNo.eq(articleHeart.community.articleNo))
                 .leftJoin(comment).on(community.articleNo.eq(comment.community.articleNo))
                 .where(community.articleNo.eq(articleNo))
@@ -82,7 +85,7 @@ public class CommunityQDslRepository {
                 .fetchFirst();
     }
 
-    //게시글의 소유자인지 이메일로 검증
+    //== 게시글의 소유자인지 이메일로 검증 ==//
     public boolean isMine(String email, Integer articleNo) {
             return query.select(community.articleNo)
                     .from(community)
@@ -141,7 +144,7 @@ public class CommunityQDslRepository {
                 ))
                 .from(community)
                 .leftJoin(member).on(community.regId.eq(member.email))
-                .where(searchCondition)
+                .where(searchCondition,community.logicalDel.eq(LogicalDelEnum.NORMAL))
                 .groupBy(community.articleNo,community.title,community.content,
                         member.nickname,community.viewCount,community.regDate,
                         community.thumbnail)
@@ -184,6 +187,20 @@ public class CommunityQDslRepository {
                 .groupBy(community.articleNo,community.title,community.content,
                         member.nickname,community.viewCount,community.regDate,
                         community.thumbnail);
+    }
+
+
+    public List<ImageInfoDto> findImageUrlByArticleNo(Integer articleNo){
+
+        return query.select(Projections.constructor(ImageInfoDto.class,
+                        communityImage.pictureNo.as("ImageNo"),
+                        communityImage.imageUrl
+                ))
+                .from(communityImage)
+                .where(communityImage.articleNo.eq(articleNo))
+                .orderBy(communityImage.sort.asc())
+                .fetch();
+
     }
 
     public void deleteBookmark(Community community){
