@@ -62,4 +62,5 @@ public class MemberQueryService {
                 .join(profileImage).on(profileImage.memberNo.eq(memberNo))
                 .fetchOne();
     }
+
 }

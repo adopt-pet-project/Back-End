@@ -21,6 +21,7 @@ public class RegisterDto {
     @NotBlank
     private String provider;
     private Integer imgNo;
+    private String imgUrl;
 
     public Member toEntity() {
         return Member.builder()
@@ -28,6 +29,7 @@ public class RegisterDto {
                 .address(address)
                 .nickname(nickname)
                 .platform(provider)
+                .profile(imgUrl)
                 .regDate(LocalDateTime.now())
                 .passModDate(LocalDateTime.now())
                 .nickModDate(LocalDateTime.now())
