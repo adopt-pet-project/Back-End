@@ -4,7 +4,9 @@ import com.adoptpet.server.adopt.domain.Chat;
 import com.adoptpet.server.adopt.domain.mongo.Chatting;
 import com.adoptpet.server.adopt.dto.chat.Message;
 import com.adoptpet.server.adopt.dto.request.ChatRequestDto;
-import com.adoptpet.server.adopt.repository.mongo.ChatMongoRepository;
+import com.adoptpet.server.adopt.dto.response.ChatResponseDto;
+import com.adoptpet.server.adopt.dto.response.ChatRoomResponseDto;
+import com.adoptpet.server.adopt.mongo.MongoChatRepository;
 import com.adoptpet.server.adopt.service.ChatService;
 import com.adoptpet.server.commons.support.StatusResponseDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
@@ -26,7 +28,7 @@ import java.util.List;
 public class ChatController {
 
     private final ChatService chatService;
-    private final ChatMongoRepository chatMongoRepository;
+    private final MongoChatRepository mongoChatRepository;
     private final MemberService memberService;
 
     @PostMapping("/chatroom")
@@ -44,15 +46,15 @@ public class ChatController {
 
     // 채팅내역 조회
     @GetMapping("/chatroom/{roomNo}")
-    public ResponseEntity<List<Chatting>> chattingList(@PathVariable("roomNo") Integer roomNo) {
-        List<Chatting> chattingList = chatMongoRepository.findByChatRoomNo(roomNo);
+    public ResponseEntity<List<ChatResponseDto>> chattingList(@PathVariable("roomNo") Integer roomNo) {
+        List<ChatResponseDto> chattingList = chatService.getChattingList(roomNo);
         return ResponseEntity.ok(chattingList);
     }
 
     // 채팅방 리스트 조회
     @GetMapping("/chatroom")
-    public ResponseEntity<List<Chat>> chatRoomList() {
-        List<Chat> chatList = chatService.getChatList(SecurityUtils.getUser());
+    public ResponseEntity<List<ChatRoomResponseDto>> chatRoomList() {
+        List<ChatRoomResponseDto> chatList = chatService.getChatList(SecurityUtils.getUser());
         return ResponseEntity.ok(chatList);
     }
 
