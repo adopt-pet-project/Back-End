@@ -160,7 +160,12 @@ public class AdoptQueryService {
                     // AdoptResponseDto의 내부 클래스의 값은 중첩 생성자 Projection으로 채워준다.
                     Projections.constructor(AdoptDetailResponseDto.Header.class,
                             adopt.title,
-                            adopt.status,
+                            adopt.status
+                                    .when(AdoptStatus.ADOPTING).then(0)
+                                    .when(AdoptStatus.RESERVED).then(1)
+                                    .when(AdoptStatus.END).then(2)
+                                    .when(AdoptStatus.CANCEL).then(3)
+                                    .otherwise(9),
                             adopt.regDate
                     ),
                     Projections.constructor(AdoptDetailResponseDto.Metadata.class,

@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 public interface AdoptRepository extends JpaRepository<Adopt, Integer> {
 
 
@@ -24,6 +26,9 @@ public interface AdoptRepository extends JpaRepository<Adopt, Integer> {
     @Query("update Adopt a set a.status = :status where a.saleNo = :saleNo")
     @Modifying(clearAutomatically = true)
     void updateAdoptStatus(@Param("status") AdoptStatus status, @Param("saleNo") Integer saleNo);
+
+    @Query("select a from Adopt a where a.regId = :regId and a.saleNo = :saleNo")
+    Optional<Adopt> findAdoptIsMine(@Param("regId") String regId, @Param("saleNo") Integer saleNo);
 
 
 }

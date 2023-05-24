@@ -2,6 +2,7 @@ package com.adoptpet.server.adopt.controller;
 
 import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
 import com.adoptpet.server.adopt.dto.request.AdoptStatusRequestDto;
+import com.adoptpet.server.adopt.dto.request.AdoptUpdateRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
 import com.adoptpet.server.adopt.service.AdoptQueryService;
@@ -61,7 +62,7 @@ public class AdoptController {
     // 분양글 삭제
     @DeleteMapping("/adopt/{saleNo}")
     public ResponseEntity<StatusResponseDto> deleteAdopt(@PathVariable("saleNo") Integer saleNo) {
-        adoptService.deleteAdopt(saleNo);
+        adoptService.deleteAdopt(saleNo, SecurityUtils.getUser());
         return ResponseEntity.ok(StatusResponseDto.addStatus(200));
     }
 
@@ -77,8 +78,8 @@ public class AdoptController {
 
     // 분양글 수정
     @PatchMapping("/adopt/{saleNo}")
-    public ResponseEntity<StatusResponseDto> updateAdopt(@RequestBody @Valid AdoptRequestDto adoptDto, BindingResult bindingResult,
-                                            @PathVariable("saleNo") Integer saleNo) {
+    public ResponseEntity<StatusResponseDto> updateAdopt(@RequestBody @Valid AdoptUpdateRequestDto adoptDto, BindingResult bindingResult,
+                                                         @PathVariable("saleNo") Integer saleNo) {
         // 유효성 검증에 실패할경우 400번 에러를 내려준다.
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(StatusResponseDto.addStatus(400));

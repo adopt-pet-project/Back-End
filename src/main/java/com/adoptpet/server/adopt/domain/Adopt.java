@@ -1,6 +1,7 @@
 package com.adoptpet.server.adopt.domain;
 
 import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
+import com.adoptpet.server.adopt.dto.request.AdoptUpdateRequestDto;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.support.BaseTimeEntity;
 import lombok.*;
@@ -94,7 +95,7 @@ public class Adopt extends BaseTimeEntity {
     }
 
     // 분양 엔티티의 정보를 업데이트
-    public void updateAdopt(AdoptRequestDto adoptDto, SecurityUserDto user) {
+    public void updateAdopt(AdoptUpdateRequestDto adoptDto, SecurityUserDto user) {
         this.title = adoptDto.getTitle();
         this.content = adoptDto.getContent();
         this.age = adoptDto.getAge();
