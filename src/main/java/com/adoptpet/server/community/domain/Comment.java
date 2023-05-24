@@ -1,16 +1,13 @@
 package com.adoptpet.server.community.domain;
 
 import com.adoptpet.server.commons.support.BaseTimeEntity;
-import com.adoptpet.server.community.dto.CommentDto;
 import com.adoptpet.server.user.domain.Member;
-import com.nimbusds.jose.util.IntegerUtils;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,10 +36,6 @@ public class Comment extends BaseTimeEntity {
 
     @Column(name = "mod_id")
     private String modId;
-
-    @Column(name = "visible_yn")
-    @Convert(converter = VisibleYnEnum.VisibleConverter.class)
-    private VisibleYnEnum visibleYn;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "logical_del")
@@ -73,11 +66,25 @@ public class Comment extends BaseTimeEntity {
         this.blindYn = blindYn;
     }
 
+    public void addMember(Member member) {
+        this.member = member;
+    }
+
+    public void addCommunity(Community community) {
+        this.community = community;
+    }
+
     public void addParent(Comment parent){
         this.parent = parent;
     }
 
-    public void addMember(Member member) {
-        this.member = member;
+    public static Comment createComment(String content, String email){
+       return Comment.builder()
+               .content(content)
+               .regId(email)
+               .modId(email)
+               .logicalDel(LogicalDelEnum.NORMAL)
+               .blindYn(BlindYnEnum.NORMAL)
+               .build();
     }
 }
