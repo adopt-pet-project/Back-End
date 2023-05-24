@@ -11,5 +11,5 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class TrendingArticleDto {
     private Integer articleNo;
-    private Integer likeCnt;
+    private Long likeCnt;
 }

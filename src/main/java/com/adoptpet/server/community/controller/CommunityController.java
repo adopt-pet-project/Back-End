@@ -59,22 +59,22 @@ public class CommunityController {
             @RequestParam(value = "option", required = false) Integer option,
             @RequestParam(value = "keyword", required = false) String keyword){
 
-        Map<String, ArticleListDto> trendingArticleMap = null;
+        ArticleListResponse.ArticleListResponseBuilder responseBuilder = ArticleListResponse.builder();
+        Map<String, ArticleListDto> trendingArticleMap;
 
-        // 첫페이지 조회시 인기 게시글 조회
+        // 첫페이지를 조회할 경우 인기 게시글 조회
         if(Objects.isNull(pageNum) || pageNum == 1){
-                   trendingArticleMap = communityService.getTrendingArticleDayAndWeekly();
+            // 인기글 조회
+            trendingArticleMap = communityService.getTrendingArticleDayAndWeekly();
+            // 응답 형태로 변환
+            responseBuilder.hot(trendingArticleMap.get("day"))
+                    .weekly(trendingArticleMap.get("weekly"));
         }
 
         // 요청 리소스로 게시글 목록 조회
         List<ArticleListDto> articleList = communityService.readArticleList(order,pageNum,option,keyword);
-
-        // 응답 형태로 변환
-        ArticleListResponse response = ArticleListResponse.builder()
-                .hot(trendingArticleMap.get("hot"))
-                .weekly(trendingArticleMap.get("weekly"))
-                .list(articleList)
-                .build();
+        // 응답 형태로 변환 후 빌드
+        ArticleListResponse response = responseBuilder.list(articleList).build();
 
         return ResponseEntity.ok(response);
     }

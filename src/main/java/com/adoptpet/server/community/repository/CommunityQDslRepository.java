@@ -42,16 +42,16 @@ public class CommunityQDslRepository {
                                                         Integer limit)
     {
         // order by에서 alias 인식할수 있도록 객체 생성
-        StringPath like = Expressions.stringPath("like");
+        NumberPath<Long> aliasLike = Expressions.numberPath(Long.class,"likes");
 
         return query.select(Projections.constructor(TrendingArticleDto.class,
-                articleHeart.community,
-                articleHeart.community.count().as("like")
+                articleHeart.community.articleNo,
+                articleHeart.community.count().as("likes")
                 ))
                 .from(articleHeart)
                 .where(articleHeart.regDate.between(startAt,endAt))
-                .groupBy(community.articleNo)
-                .orderBy(like.desc())
+                .groupBy(articleHeart.community.articleNo)
+                .orderBy(aliasLike.desc())
                 .limit(limit)
                 .fetch();
     }

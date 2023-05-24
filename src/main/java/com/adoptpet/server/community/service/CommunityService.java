@@ -53,29 +53,27 @@ public class CommunityService {
         final LocalDateTime endAt = LocalDateTime.now();
         final LocalDateTime startAtOfDay = endAt.minusDays(1);
         final LocalDateTime startAtOfWeekly = endAt.minusWeeks(1);
-        final Integer limit = 5;
+        final Integer limit = 2;
 
         List<TrendingArticleDto> articleOfDay
                 = communityQDslRepository.findTrendingArticle(startAtOfDay, endAt, limit);
         List<TrendingArticleDto> articleOfWeekly
                 = communityQDslRepository.findTrendingArticle(startAtOfWeekly, endAt, limit);
 
-        Collections.shuffle(articleOfDay);
+        for(TrendingArticleDto dto :articleOfWeekly){
+            log.info("weekly"+1+"  {} , {}", dto.getArticleNo(),dto.getLikeCnt());
+        }
 
-        final int selectedArticleNoOfDay = articleOfDay.get(1).getArticleNo();
+        final TrendingArticleDto trendingDay = articleOfDay.get(0);
+        TrendingArticleDto trendingWeekly = articleOfWeekly.get(0);
 
-        int selectedArticleNoOfWeekly = 0;
-
-        for(int i=0; i < articleOfWeekly.size(); i++){
-            int randomArticleNoOfWeekly = articleOfWeekly.get(i).getArticleNo();
-            if(selectedArticleNoOfDay != randomArticleNoOfWeekly){
-                selectedArticleNoOfWeekly = randomArticleNoOfWeekly;
-            }
+        if(trendingDay.getLikeCnt() >= trendingWeekly.getLikeCnt()){
+            trendingWeekly = articleOfWeekly.get(1);
         }
 
         Map<String,ArticleListDto> result = new HashMap<>();
-        ArticleListDto articleDataOfDay = communityQDslRepository.findArticleOneForList(selectedArticleNoOfDay);
-        ArticleListDto articleDataOfWeekly = communityQDslRepository.findArticleOneForList(selectedArticleNoOfWeekly);
+        ArticleListDto articleDataOfDay = communityQDslRepository.findArticleOneForList(trendingDay.getArticleNo());
+        ArticleListDto articleDataOfWeekly = communityQDslRepository.findArticleOneForList(trendingWeekly.getArticleNo());
 
         result.put("day",articleDataOfDay);
         result.put("weekly",articleDataOfWeekly);

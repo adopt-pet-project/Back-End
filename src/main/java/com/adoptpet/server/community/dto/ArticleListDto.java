@@ -20,8 +20,8 @@ public class ArticleListDto {
     private String content; // community
     @JsonProperty("author")
     private String nickname;// member
-    @JsonProperty
-    private Integer view; // community
+    @JsonProperty("view")
+    private Integer viewCount; // community
     @JsonProperty("comment")
     private Integer commentCnt; // Comment
     @JsonProperty("like")
