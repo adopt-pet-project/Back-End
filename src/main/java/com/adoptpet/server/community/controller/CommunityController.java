@@ -9,6 +9,7 @@ import com.adoptpet.server.community.dto.CommunityDto;
 import com.adoptpet.server.community.dto.request.RegisterArticleRequest;
 import com.adoptpet.server.community.dto.request.UpdateArticleRequest;
 import com.adoptpet.server.community.dto.response.ArticleInfoResponse;
+import com.adoptpet.server.community.dto.response.ArticleListResponse;
 import com.adoptpet.server.community.service.CommentService;
 import com.adoptpet.server.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static com.adoptpet.server.commons.support.StatusResponseDto.*;
 
@@ -48,17 +51,32 @@ public class CommunityController {
 //
 //    }
 
-
+    //== 게시글 목록 조회 ==//
     @GetMapping("/list/{order}")
-    public ResponseEntity<List<ArticleListDto>> readArticleList(
+    public ResponseEntity<ArticleListResponse> readArticleList(
             @PathVariable("order") String order,
             @RequestParam(value = "page",required = false) Integer pageNum,
             @RequestParam(value = "option", required = false) Integer option,
             @RequestParam(value = "keyword", required = false) String keyword){
 
+        Map<String, ArticleListDto> trendingArticleMap = null;
+
+        // 첫페이지 조회시 인기 게시글 조회
+        if(Objects.isNull(pageNum) || pageNum == 1){
+                   trendingArticleMap = communityService.getTrendingArticleDayAndWeekly();
+        }
+
+        // 요청 리소스로 게시글 목록 조회
         List<ArticleListDto> articleList = communityService.readArticleList(order,pageNum,option,keyword);
 
-        return ResponseEntity.ok(articleList);
+        // 응답 형태로 변환
+        ArticleListResponse response = ArticleListResponse.builder()
+                .hot(trendingArticleMap.get("hot"))
+                .weekly(trendingArticleMap.get("weekly"))
+                .list(articleList)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/article/{articleNo}")

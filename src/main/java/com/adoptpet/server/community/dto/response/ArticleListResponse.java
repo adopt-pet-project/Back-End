@@ -1,0 +1,17 @@
+package com.adoptpet.server.community.dto.response;
+
+import com.adoptpet.server.community.dto.ArticleListDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
+import java.util.List;
+
+@Getter
+@Builder
+@AllArgsConstructor
+public class ArticleListResponse {
+    private ArticleListDto hot;
+    private ArticleListDto weekly;
+    private List<ArticleListDto> list;
+}

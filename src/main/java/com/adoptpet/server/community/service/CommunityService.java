@@ -5,10 +5,7 @@ import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.domain.Category;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
-import com.adoptpet.server.community.dto.ArticleDetailInfo;
-import com.adoptpet.server.community.dto.ArticleImageDto;
-import com.adoptpet.server.community.dto.ArticleListDto;
-import com.adoptpet.server.community.dto.CommunityDto;
+import com.adoptpet.server.community.dto.*;
 import com.adoptpet.server.community.repository.CategoryRepository;
 import com.adoptpet.server.community.repository.CommunityImageRepository;
 import com.adoptpet.server.community.repository.CommunityQDslRepository;
@@ -20,9 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static com.adoptpet.server.commons.exception.ErrorCode.*;
 
@@ -47,6 +43,47 @@ public class CommunityService {
 
         return articleList;
     }
+
+    /**
+    * 게시글 목록의 인기글(HOT,WEEKLY) 조회
+    **/
+    @Transactional
+    public Map<String,ArticleListDto> getTrendingArticleDayAndWeekly(){
+
+        final LocalDateTime endAt = LocalDateTime.now();
+        final LocalDateTime startAtOfDay = endAt.minusDays(1);
+        final LocalDateTime startAtOfWeekly = endAt.minusWeeks(1);
+        final Integer limit = 5;
+
+        List<TrendingArticleDto> articleOfDay
+                = communityQDslRepository.findTrendingArticle(startAtOfDay, endAt, limit);
+        List<TrendingArticleDto> articleOfWeekly
+                = communityQDslRepository.findTrendingArticle(startAtOfWeekly, endAt, limit);
+
+        Collections.shuffle(articleOfDay);
+
+        final int selectedArticleNoOfDay = articleOfDay.get(1).getArticleNo();
+
+        int selectedArticleNoOfWeekly = 0;
+
+        for(int i=0; i < articleOfWeekly.size(); i++){
+            int randomArticleNoOfWeekly = articleOfWeekly.get(i).getArticleNo();
+            if(selectedArticleNoOfDay != randomArticleNoOfWeekly){
+                selectedArticleNoOfWeekly = randomArticleNoOfWeekly;
+            }
+        }
+
+        Map<String,ArticleListDto> result = new HashMap<>();
+        ArticleListDto articleDataOfDay = communityQDslRepository.findArticleOneForList(selectedArticleNoOfDay);
+        ArticleListDto articleDataOfWeekly = communityQDslRepository.findArticleOneForList(selectedArticleNoOfWeekly);
+
+        result.put("day",articleDataOfDay);
+        result.put("weekly",articleDataOfWeekly);
+
+        return result;
+    }
+
+
 
 
     /**
