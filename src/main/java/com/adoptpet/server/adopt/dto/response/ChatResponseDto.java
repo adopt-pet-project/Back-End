@@ -15,8 +15,9 @@ public class ChatResponseDto {
     private String content;
     private long sendDate;
     private long readCount;
+    private boolean isMine;
 
-    public ChatResponseDto(Chatting chatting) {
+    public ChatResponseDto(Chatting chatting, Integer memberNo) {
         this.id = chatting.getId();
         this.chatRoomNo = chatting.getChatRoomNo();
         this.senderNo = chatting.getSenderNo();
@@ -25,5 +26,6 @@ public class ChatResponseDto {
         this.content = chatting.getContent();
         this.sendDate = chatting.getSendDate().atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
         this.readCount = chatting.getReadCount();
+        this.isMine = chatting.getSenderNo().equals(memberNo);
     }
 }

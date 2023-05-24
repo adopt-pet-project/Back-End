@@ -42,7 +42,7 @@ public class JwtUtil {
 
     public String generateRefreshToken(String email, String role) {
         // 토큰의 유효 기간을 밀리초 단위로 설정.
-        long refreshPeriod = 1000L * 60L * 60L * 24L * 30L * 3L; // 3개월
+        long refreshPeriod = 1000L * 60L * 60L * 24L * 14; // 2주
 
         // 새로운 클레임 객체를 생성하고, 이메일과 역할(권한)을 셋팅
         Claims claims = Jwts.claims().setSubject(email);
@@ -65,8 +65,7 @@ public class JwtUtil {
 
 
     public String generateAccessToken(String email, String role) {
-//        long tokenPeriod = 1000L * 60L * 30L;
-        long tokenPeriod = 1000L * 60L * 60L * 24L * 30L * 3L; // 3개월
+        long tokenPeriod = 1000L * 60L * 30L; // 30분
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("role", role);
         log.info("Claims = {}", claims);
