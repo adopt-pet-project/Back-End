@@ -122,7 +122,7 @@ public class AdoptQueryService {
                 .from(adopt)
                 .orderBy(adopt.saleNo.desc())
                 .innerJoin(member).on(adopt.regId.eq(member.email))
-                .where(saleNoGt(saleNo), searchCondition, kindLike(filter))
+                .where(saleNoLt(saleNo), searchCondition, kindLike(filter))
                 .limit(10)
                 .fetch();
     }
@@ -274,8 +274,8 @@ public class AdoptQueryService {
     *   BooleanExpression을 사용하여 검색 조건과 기타 조건들을 조합해서 사용할 수 있는
     *   Composition을 사용한다.
     * */
-    private BooleanExpression saleNoGt(Integer saleNo) {
-        return Objects.isNull(saleNo) ? null : adopt.saleNo.gt(saleNo);
+    private BooleanExpression saleNoLt(Integer saleNo) {
+        return Objects.isNull(saleNo) ? null : adopt.saleNo.lt(saleNo);
     }
 
     private BooleanExpression contentLike(String content) {

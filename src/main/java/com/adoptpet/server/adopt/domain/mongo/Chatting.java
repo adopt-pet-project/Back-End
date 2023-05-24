@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter @ToString
 @Setter
 @AllArgsConstructor @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 // MongoDB Chatting 모델
 public class Chatting {
 
@@ -24,6 +24,6 @@ public class Chatting {
     private String type;
     private String content;
     private LocalDateTime sendDate;
-    private Integer readCount;
+    private long readCount;
 
 }

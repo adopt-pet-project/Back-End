@@ -11,14 +11,10 @@ public interface MongoChatRepository extends MongoRepository<Chatting, String> {
 
     List<Chatting> findByChatRoomNo(Integer chatNo);
 
-    @Query("{'chatRoomNo': {$in: ?0}, 'sendMemberNo': {$ne: ?1}, 'readCount': 1}")
+    @Query("{'chatRoomNo': { $in: ?0 }, 'senderNo': { $ne: ?1 }, 'readCount': 1}")
     List<Long> findUnreadChattingCount(List<Integer> chatNos, int sendMemberNo);
 
     @Query("{'chatRoomNo': ?0}")
     long updateReadCountToZeroByChatRoomNo(long chatRoomNo);
-
-    @Query("{'chatRoomNo': ?0}")
-    int updateReadCountToOneByChatRoomNo(long chatRoomNo);
-
 
 }

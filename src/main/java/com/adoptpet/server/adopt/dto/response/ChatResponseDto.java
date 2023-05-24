@@ -14,7 +14,7 @@ public class ChatResponseDto {
     private String type;
     private String content;
     private long sendDate;
-    private Integer readCount;
+    private long readCount;
 
     public ChatResponseDto(Chatting chatting) {
         this.id = chatting.getId();

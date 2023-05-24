@@ -64,7 +64,13 @@ public class ChatService {
         List<Integer> chatNos = chatRoomList.stream()
                 .map(ChatRoomResponseDto::getChatNo)
                 .collect(Collectors.toList());
-        mongoChatRepository.updateReadCountToOneByChatRoomNo(chatRoomList.get(0).getChatNo());
+
+        List<Chatting> chat = mongoChatRepository.findAll();
+        for (Chatting chatting : chat) {
+            chatting.setReadCount(1);
+        }
+
+        mongoChatRepository.saveAll(chat);
 
         List<Long> unReadCounts = mongoChatRepository.findUnreadChattingCount(chatNos, userDto.getMemberNo());
 
@@ -72,7 +78,8 @@ public class ChatService {
         log.info("chatReadCounts = {}", unReadCounts);
 
         for (int i = 0; i<chatRoomList.size(); i++) {
-            chatRoomList.get(i).setUnReadCount(unReadCounts.get(i));
+            long totalCount = 0;
+            chatRoomList.get(i).setUnReadCount(totalCount);
         }
 
         return chatRoomList;
