@@ -33,7 +33,8 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(CONFLICT, "이메일이 이미 존재합니다."),
 
     /* 500 : */
-    UNSUCCESSFUL_UPLOAD(INTERNAL_SERVER_ERROR,"이미지 파일 업로드에 실패했습니다.");
+    UNSUCCESSFUL_UPLOAD(INTERNAL_SERVER_ERROR,"이미지 파일 업로드에 실패했습니다."),
+    UNSUCCESSFUL_COMMENT(INTERNAL_SERVER_ERROR,"댓글 저장이 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String detail;
