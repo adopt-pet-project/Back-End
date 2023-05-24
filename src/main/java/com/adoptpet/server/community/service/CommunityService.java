@@ -1,13 +1,13 @@
 package com.adoptpet.server.community.service;
 
 import com.adoptpet.server.commons.exception.CustomException;
-import com.adoptpet.server.commons.exception.ErrorCode;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.domain.Category;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.dto.ArticleDetailInfo;
 import com.adoptpet.server.community.dto.ArticleImageDto;
+import com.adoptpet.server.community.dto.ArticleListDto;
 import com.adoptpet.server.community.dto.CommunityDto;
 import com.adoptpet.server.community.repository.CategoryRepository;
 import com.adoptpet.server.community.repository.CommunityImageRepository;
@@ -37,7 +37,21 @@ public class CommunityService {
     private final CommunityImageRepository communityImageRepository;
     private final CategoryRepository categoryRepository;
 
-    //== 게시글 유무 검증 ==//
+    /**
+    * 게시글 목록 조회
+    **/
+    @Transactional
+    public List<ArticleListDto> readArticleList(String order, Integer pageNum, Integer option, String keyword){
+
+        List<ArticleListDto> articleList = communityQDslRepository.selectArticleList(order,pageNum,option,keyword);
+
+        return articleList;
+    }
+
+
+    /**
+    * 게시글 유무 검증
+    **/
     @Transactional(readOnly = true)
     public Community findByArticleNo(Integer articleNo){
         // 게시글 번호로 게시글을 조회하고, 조회되지 않을 경우 예외를 발생시킨다.
