@@ -7,6 +7,7 @@ import com.adoptpet.server.community.dto.ArticleDetailInfo;
 import com.adoptpet.server.community.dto.ArticleListDto;
 import com.adoptpet.server.community.dto.CommunityDto;
 import com.adoptpet.server.community.dto.request.RegisterArticleRequest;
+import com.adoptpet.server.community.dto.request.RegisterCommentRequest;
 import com.adoptpet.server.community.dto.request.UpdateArticleRequest;
 import com.adoptpet.server.community.dto.response.ArticleInfoResponse;
 import com.adoptpet.server.community.dto.response.ArticleListResponse;
@@ -46,10 +47,14 @@ public class CommunityController {
 //        return ResponseEntity.ok();
 //    }
 
-//    @PostMapping("/comment")
-//    public ResponseEntity<StatusResponseDto> writeComment(@RequestBody RegisterCommentRequest request){
-//
-//    }
+    //== 댓글 등록 ==//
+    @PostMapping("/comment")
+    public ResponseEntity<StatusResponseDto> registerComment(@Valid @RequestBody RegisterCommentRequest request){
+
+        commentService.insertComment(request.getContent(), request.getParentNo(), request.getArticleNo());
+
+        return ResponseEntity.ok(success());
+    }
 
     //== 게시글 목록 조회 ==//
     @GetMapping("/list/{order}")
@@ -90,8 +95,8 @@ public class CommunityController {
     }
 
     @PostMapping("/article")
-    public ResponseEntity<StatusResponseDto> writeArticle (
-            @RequestBody @Valid RegisterArticleRequest request, BindingResult bindingResult){
+    public ResponseEntity<StatusResponseDto> registerArticle(
+            @Valid @RequestBody RegisterArticleRequest request, BindingResult bindingResult){
 
         // 유효성 검증에 실패할경우 400번 에러를 응답한다.
         if (bindingResult.hasErrors()) {
