@@ -2,12 +2,14 @@ package com.adoptpet.server.adopt.service;
 
 import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.AdoptBookmark;
+import com.adoptpet.server.adopt.domain.AdoptImage;
 import com.adoptpet.server.adopt.domain.AdoptStatus;
 import com.adoptpet.server.adopt.dto.request.AdoptImageRequestDto;
 import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
 import com.adoptpet.server.adopt.dto.request.AdoptStatusRequestDto;
 import com.adoptpet.server.adopt.dto.request.AdoptUpdateRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
+import com.adoptpet.server.adopt.dto.response.AdoptImageResponseDto;
 import com.adoptpet.server.adopt.repository.AdoptBookmarkRepository;
 import com.adoptpet.server.adopt.repository.AdoptImageRepository;
 import com.adoptpet.server.adopt.repository.AdoptRepository;
@@ -27,6 +29,7 @@ import org.springframework.util.StringUtils;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -132,7 +135,8 @@ public class AdoptService {
         // Adopt 테이블과 Member 테이블을 조인해서 가져올 수 있는 데이터를 먼저 채운다.
         AdoptDetailResponseDto responseDto = queryService.selectAdoptAndMember(saleNo);
         // 현재 분양 게시글과 관련이 있는 이미지 url을 조회해온다.
-        String[] images = queryService.selectAdoptImages(saleNo).toArray(String[]::new);
+        List<AdoptImageResponseDto> images = queryService.selectAdoptImages(saleNo);
+        log.info("imgaes = {}", images);
         log.info("responseDto = {}", responseDto);
         // 현재 분양 게시글을 보는 회원이 권한이 있는지 여부는 기본 false
         responseDto.addIsMine(false);

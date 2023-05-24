@@ -44,6 +44,7 @@ public class Message implements Serializable {
                 .content(contentType)
                 .content(content)
                 .sendDate(sendTime)
+                .readCount(1)
                 .build();
     }
 }
