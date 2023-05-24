@@ -1,15 +1,25 @@
 package com.adoptpet.server.community.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
+@Getter
+@NoArgsConstructor
 public class RegisterCommentRequest {
 
-    @JsonProperty("boardId")
+    @Min(value = 0)
+    @JsonAlias("boardId")
     private Integer articleNo;
 
-    @JsonProperty("parentId")
+    @Min(value = 0)
+    @JsonAlias("parentId")
     private Integer parentNo;
 
-    @JsonProperty("context")
+    @NotNull
+    @JsonAlias("context")
     private String content;
 }

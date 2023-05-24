@@ -2,18 +2,17 @@ package com.adoptpet.server.community.dto.request;
 
 import com.adoptpet.server.community.domain.BlindYnEnum;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
-import com.adoptpet.server.community.domain.VisibleYnEnum;
 import com.adoptpet.server.community.dto.ArticleImageDto;
 import com.adoptpet.server.community.dto.CommunityDto;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 
 @Getter
@@ -21,23 +20,23 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RegisterArticleRequest {
 
-    @NotNull
-    @JsonProperty("categoryId")
+    @Min(value = 0)
+    @JsonAlias("categoryId")
     private Integer categoryNo;
 
-    @JsonProperty("title")
     @NotBlank
     @Length(max = 100)
+    @JsonAlias("title")
     private String title;
 
-    @JsonProperty("context")
     @NotBlank
+    @JsonAlias("context")
     private String content;
 
-    @JsonProperty("imageList")
+    @JsonAlias("imageList")
     private ArticleImageDto[] image;
 
-    @JsonProperty("thumbnail")
+    @JsonAlias("thumbnail")
     private String thumbnail;
 
     public CommunityDto toDto(String userId){
