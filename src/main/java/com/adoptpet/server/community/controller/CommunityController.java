@@ -3,14 +3,16 @@ package com.adoptpet.server.community.controller;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.support.StatusResponseDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
-import com.adoptpet.server.community.dto.ArticleDetailInfo;
+import com.adoptpet.server.community.dto.ArticleDetailInfoDto;
 import com.adoptpet.server.community.dto.ArticleListDto;
+import com.adoptpet.server.community.dto.CommentListDto;
 import com.adoptpet.server.community.dto.CommunityDto;
 import com.adoptpet.server.community.dto.request.RegisterArticleRequest;
 import com.adoptpet.server.community.dto.request.RegisterCommentRequest;
 import com.adoptpet.server.community.dto.request.UpdateArticleRequest;
 import com.adoptpet.server.community.dto.response.ArticleInfoResponse;
 import com.adoptpet.server.community.dto.response.ArticleListResponse;
+import com.adoptpet.server.community.dto.response.CommentListResponse;
 import com.adoptpet.server.community.service.CommentService;
 import com.adoptpet.server.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +22,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.adoptpet.server.commons.support.StatusResponseDto.*;
 
@@ -37,15 +41,18 @@ public class CommunityController {
 
     private final CommentService commentService;
 
+    //== 댓글 조회 ==//
+    @GetMapping("/comment/{boardId}")
+    public ResponseEntity<List<CommentListResponse>> readCommentList(
+            @PathVariable("boardId") @Min(value = 0) Integer articleNo){
+        List<CommentListDto> commentList = commentService.readCommentList(articleNo);
 
-//    @GetMapping("/comment/{boardId}")
-//    public ResponseEntity<CommentListResponse> readCommentList(
-//            @PathVariable("boardId") Integer articleNo){
-//
-//        communityService.readCommentList(articleNo);
-//
-//        return ResponseEntity.ok();
-//    }
+        List<CommentListResponse> response = commentList.stream()
+                .map(CommentListDto::toResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
+    }
 
     //== 댓글 등록 ==//
     @PostMapping("/comment")
@@ -89,9 +96,9 @@ public class CommunityController {
             @PathVariable("articleNo") Integer articleNo,
             @RequestHeader(value = "Authorization",required = false) String accessToken){
 
-        ArticleDetailInfo articleDetailInfo = communityService.readArticle(articleNo,accessToken);
+        ArticleDetailInfoDto articleDetailInfoDto = communityService.readArticle(articleNo,accessToken);
 
-        return ResponseEntity.ok(articleDetailInfo.toResponse());
+        return ResponseEntity.ok(articleDetailInfoDto.toResponse());
     }
 
     @PostMapping("/article")

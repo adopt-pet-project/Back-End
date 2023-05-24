@@ -1,6 +1,7 @@
 package com.adoptpet.server.community.service;
 
 import com.adoptpet.server.commons.exception.CustomException;
+import com.adoptpet.server.commons.image.dto.ImageInfoDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.domain.Category;
 import com.adoptpet.server.community.domain.Community;
@@ -141,12 +142,12 @@ public class CommunityService {
     * 게시글 상세 내용 조회
     **/
     @Transactional(readOnly = true)
-    public ArticleDetailInfo readArticle(Integer articleNo, String accessToken){
+    public ArticleDetailInfoDto readArticle(Integer articleNo, String accessToken){
         // 게시글 고유키로 게시글 검증
         findByArticleNo(articleNo);
 
         // 게시글 정보 조회
-        ArticleDetailInfo articleDetail = communityQDslRepository.findArticleDetail(articleNo);
+        ArticleDetailInfoDto articleDetail = communityQDslRepository.findArticleDetail(articleNo);
 
         // 조회 유저 검증 기본 값 지정
         articleDetail.addIsMine(false);
@@ -159,8 +160,7 @@ public class CommunityService {
         }
 
         // 이미지 URL 조회 -> 없을 시 null 반환
-        List<String> images = communityImageRepository.findImageUrlByArticleNo(articleNo)
-                    .orElse(null);
+        List<ImageInfoDto> images = communityQDslRepository.findImageUrlByArticleNo(articleNo);
 
         // 이미지 URL 리스트 추가
         articleDetail.addImages(images);
