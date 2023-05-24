@@ -47,7 +47,7 @@ public class ChatController {
     // 채팅내역 조회
     @GetMapping("/chatroom/{roomNo}")
     public ResponseEntity<List<ChatResponseDto>> chattingList(@PathVariable("roomNo") Integer roomNo) {
-        List<ChatResponseDto> chattingList = chatService.getChattingList(roomNo);
+        List<ChatResponseDto> chattingList = chatService.getChattingList(roomNo, SecurityUtils.getUser());
         return ResponseEntity.ok(chattingList);
     }
 
@@ -63,5 +63,12 @@ public class ChatController {
 
         log.info("Produce message : " + message.toString());
         chatService.sendMessage(message, accessToken);
+    }
+
+    // 채팅 카운트 읽음 처리
+    @PostMapping("/chatroom/chat")
+    public ResponseEntity<Message> readChat(@Valid @RequestBody Message message, @RequestHeader("Authorization") final String accessToken) {
+        Message recievedMessage = chatService.updateCountToZero(message, accessToken);
+        return ResponseEntity.ok(recievedMessage);
     }
 }
