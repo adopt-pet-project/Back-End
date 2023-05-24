@@ -43,6 +43,9 @@ public class Member {
     @Column(name = "platform")
     private String platform;
 
+    @Column(name = "profile")
+    private String profile;
+
     @Column(name = "reg_date", nullable = false)
     private LocalDateTime regDate;
 
@@ -58,4 +61,8 @@ public class Member {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Comment> commentList = new ArrayList<>();
 
+
+    public void addProfileImage(String imgUrl) {
+        this.profile = imgUrl;
+    }
 }
