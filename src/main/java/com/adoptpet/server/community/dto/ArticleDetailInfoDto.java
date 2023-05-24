@@ -1,5 +1,6 @@
 package com.adoptpet.server.community.dto;
 
+import com.adoptpet.server.commons.image.dto.ImageInfoDto;
 import com.adoptpet.server.community.dto.response.ArticleInfoResponse;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.*;
@@ -10,7 +11,7 @@ import java.util.List;
 @ToString
 @Getter
 @NoArgsConstructor
-public class ArticleDetailInfo {
+public class ArticleDetailInfoDto {
 
     private Integer articleNo; //  community
     private boolean mine;
@@ -23,14 +24,14 @@ public class ArticleDetailInfo {
     private Integer comment; // comment
     private LocalDateTime regDate; // community
     private String content; // community
-    private List<String> images;// communityImage
+    private List<ImageInfoDto> images;// communityImage
 
-    public void addImages(List<String> images){
+    public void addImages(List<ImageInfoDto> images){
         this.images = images;
     }
 
     @QueryProjection
-    public ArticleDetailInfo(Integer articleNo, String title, String nickname, Integer memberNo, String profile, Integer view, Integer like, Integer comment, LocalDateTime regDate, String content) {
+    public ArticleDetailInfoDto(Integer articleNo, String title, String nickname, Integer memberNo, String profile, Integer view, Integer like, Integer comment, LocalDateTime regDate, String content) {
         this.articleNo = articleNo;
         this.title = title;
         this.nickname = nickname;

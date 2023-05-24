@@ -1,5 +1,6 @@
 package com.adoptpet.server.community.repository;
 
+import com.adoptpet.server.commons.image.dto.ImageInfoDto;
 import com.adoptpet.server.community.domain.CommunityImage;
 import com.adoptpet.server.user.domain.ProfileImage;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,10 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommunityImageRepository extends JpaRepository<CommunityImage,Integer> {
-    void deleteByArticleNo(Integer articleNo);
-
-    @Query("SELECT c.imageUrl FROM CommunityImage c WHERE c.articleNo = :articleNo ORDER BY c.sort asc ")
-    Optional<List<String>> findImageUrlByArticleNo(@Param("articleNo") Integer articleNo);
 
     @Modifying(clearAutomatically = true)
     @Query("update CommunityImage c set c.articleNo = :articleNo, c.sort = :sort where c.pictureNo = :pictureNo")
