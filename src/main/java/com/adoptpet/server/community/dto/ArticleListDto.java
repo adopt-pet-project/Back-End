@@ -21,11 +21,11 @@ public class ArticleListDto {
     @JsonProperty("author")
     private String nickname;// member
     @JsonProperty("view")
-    private Integer viewCount; // Article Heart
+    private Integer viewCount; // community
     @JsonProperty("comment")
     private Integer commentCnt; // Comment
     @JsonProperty("like")
-    private Integer likeCnt;
+    private Integer likeCnt; //
     @JsonProperty("publishedAt")
     private LocalDateTime regDate; //community
     @JsonProperty

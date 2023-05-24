@@ -5,10 +5,7 @@ import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.domain.Category;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
-import com.adoptpet.server.community.dto.ArticleDetailInfo;
-import com.adoptpet.server.community.dto.ArticleImageDto;
-import com.adoptpet.server.community.dto.ArticleListDto;
-import com.adoptpet.server.community.dto.CommunityDto;
+import com.adoptpet.server.community.dto.*;
 import com.adoptpet.server.community.repository.CategoryRepository;
 import com.adoptpet.server.community.repository.CommunityImageRepository;
 import com.adoptpet.server.community.repository.CommunityQDslRepository;
@@ -20,9 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static com.adoptpet.server.commons.exception.ErrorCode.*;
 
@@ -47,6 +43,45 @@ public class CommunityService {
 
         return articleList;
     }
+
+    /**
+    * 게시글 목록의 인기글(HOT,WEEKLY) 조회
+    **/
+    @Transactional
+    public Map<String,ArticleListDto> getTrendingArticleDayAndWeekly(){
+
+        final LocalDateTime endAt = LocalDateTime.now();
+        final LocalDateTime startAtOfDay = endAt.minusDays(1);
+        final LocalDateTime startAtOfWeekly = endAt.minusWeeks(1);
+        final Integer limit = 2;
+
+        List<TrendingArticleDto> articleOfDay
+                = communityQDslRepository.findTrendingArticle(startAtOfDay, endAt, limit);
+        List<TrendingArticleDto> articleOfWeekly
+                = communityQDslRepository.findTrendingArticle(startAtOfWeekly, endAt, limit);
+
+        for(TrendingArticleDto dto :articleOfWeekly){
+            log.info("weekly"+1+"  {} , {}", dto.getArticleNo(),dto.getLikeCnt());
+        }
+
+        final TrendingArticleDto trendingDay = articleOfDay.get(0);
+        TrendingArticleDto trendingWeekly = articleOfWeekly.get(0);
+
+        if(trendingDay.getLikeCnt() >= trendingWeekly.getLikeCnt()){
+            trendingWeekly = articleOfWeekly.get(1);
+        }
+
+        Map<String,ArticleListDto> result = new HashMap<>();
+        ArticleListDto articleDataOfDay = communityQDslRepository.findArticleOneForList(trendingDay.getArticleNo());
+        ArticleListDto articleDataOfWeekly = communityQDslRepository.findArticleOneForList(trendingWeekly.getArticleNo());
+
+        result.put("day",articleDataOfDay);
+        result.put("weekly",articleDataOfWeekly);
+
+        return result;
+    }
+
+
 
 
     /**
