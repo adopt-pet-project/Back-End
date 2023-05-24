@@ -9,6 +9,8 @@ import com.adoptpet.server.adopt.domain.AdoptStatus;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import static com.adoptpet.server.user.domain.QMember.*;
 import static com.adoptpet.server.user.domain.QProfileImage.*;
+
+import com.adoptpet.server.adopt.dto.response.AdoptImageResponseDto;
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
 import com.adoptpet.server.adopt.dto.response.MyAdoptResponse;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
@@ -35,8 +37,11 @@ public class AdoptQueryService {
 
 
     // 분양 게시글과 관련있는 이미지를 조회하는 메서드
-    public List<String> selectAdoptImages(Integer saleNo) {
-        return jpaQueryFactory.select(adoptImage.imageUrl)
+    public List<AdoptImageResponseDto> selectAdoptImages(Integer saleNo) {
+        return jpaQueryFactory.select(Projections.constructor(AdoptImageResponseDto.class,
+                        adoptImage.pictureNo,
+                        adoptImage.imageUrl
+                        ))
                 .from(adoptImage)
                 .where(adoptImage.saleNo.eq(saleNo))
                 .orderBy(adoptImage.sort.asc())

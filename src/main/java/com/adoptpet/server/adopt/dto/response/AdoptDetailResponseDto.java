@@ -5,13 +5,16 @@ import com.adoptpet.server.adopt.domain.Gender;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AdoptDetailResponseDto {
 
     private Integer id;
-    private String[] imageList;
+    private List<AdoptImageResponseDto> imageList;
     private boolean isMine;
     private Coords coords;
     private Header header;
@@ -31,7 +34,7 @@ public class AdoptDetailResponseDto {
     public void addIsMine(boolean isMine) {
         this.isMine = isMine;
     }
-    public void addImages(String[] imageList) {
+    public void addImages(List<AdoptImageResponseDto> imageList) {
         this.imageList = imageList;
     }
 
@@ -47,11 +50,17 @@ public class AdoptDetailResponseDto {
 
     @Getter
     @Setter
-    @AllArgsConstructor
+//    @AllArgsConstructor
     public static class Header {
         private String title;
         private Integer status;
-        private LocalDateTime publishedAt;
+        private long publishedAt;
+
+        public Header(String title, Integer status, LocalDateTime publishedAt) {
+            this.title = title;
+            this.status = status;
+            this.publishedAt = publishedAt.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
+        }
     }
 
     @Getter
