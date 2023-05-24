@@ -17,7 +17,6 @@ import java.util.List;
 @SpringBootApplication
 @EnableScheduling // SpringScheduling 사용 설정
 @RequiredArgsConstructor
-@EnableMongoRepositories(basePackages = "com.adoptpet.server.adopt.mongo")
 public class BackEndApplication implements CommandLineRunner {
     private final MongoChatRepository mongoChatRepository;
 

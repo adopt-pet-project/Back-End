@@ -12,10 +12,17 @@ import com.adoptpet.server.adopt.mongo.MongoChatRepository;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.security.service.JwtUtil;
 import com.adoptpet.server.commons.util.ConstantUtil;
+import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +44,7 @@ public class ChatService {
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
     private final ChatQueryService chatQueryService;
+    private final MongoTemplate mongoTemplate;
 
     @Transactional
     public Chat makeChatRoom(SecurityUserDto userDto, ChatRequestDto requestDto) {
@@ -61,35 +69,21 @@ public class ChatService {
 
     public List<ChatRoomResponseDto> getChatList(SecurityUserDto userDto) {
         List<ChatRoomResponseDto> chatRoomList = chatQueryService.getChattingList(userDto.getMemberNo());
-        List<Integer> chatNos = chatRoomList.stream()
-                .map(ChatRoomResponseDto::getChatNo)
-                .collect(Collectors.toList());
 
-        List<Chatting> chat = mongoChatRepository.findAll();
-        for (Chatting chatting : chat) {
-            chatting.setReadCount(1);
-        }
-
-        mongoChatRepository.saveAll(chat);
-
-        List<Long> unReadCounts = mongoChatRepository.findUnreadChattingCount(chatNos, userDto.getMemberNo());
-
-        log.info("chatRoomList = {}", chatRoomList);
-        log.info("chatReadCounts = {}", unReadCounts);
-
-        for (int i = 0; i<chatRoomList.size(); i++) {
-            long totalCount = 0;
-            chatRoomList.get(i).setUnReadCount(totalCount);
+        for (ChatRoomResponseDto chat : chatRoomList) {
+            long unReadCount = countUnReadMessages(chat.getChatNo(), userDto.getMemberNo());
+            chat.setUnReadCount(unReadCount);
         }
 
         return chatRoomList;
     }
 
-    public List<ChatResponseDto> getChattingList(Integer chatRoomNo) {
+    public List<ChatResponseDto> getChattingList(Integer chatRoomNo, SecurityUserDto user) {
+        updateCountAllZero(chatRoomNo, user.getMemberNo());
         List<Chatting> chattingList = mongoChatRepository.findByChatRoomNo(chatRoomNo);
 
         return chattingList.stream()
-                .map(ChatResponseDto::new)
+                .map(chat -> new ChatResponseDto(chat, user.getMemberNo()))
                 .collect(Collectors.toList());
     }
 
@@ -103,9 +97,44 @@ public class ChatService {
         // Message 객체를 채팅 엔티티로 변환한다.
         Chatting chatting = message.convertEntity();
         // 채팅 내용을 저장한다.
-        mongoChatRepository.save(chatting);
+        Chatting savedChat = mongoChatRepository.save(chatting);
+        // 저장된 고유 ID를 반환한다.
+        message.setId(savedChat.getId());
         // 메시지를 전송한다.
         sender.send(ConstantUtil.KAFKA_TOPIC, message);
+    }
+
+    // 현재 보낸 메시지가 상대방이 접속 중이라면 메시지 상태를 읽음 상태로 업데이트
+    public Message updateCountToZero(Message message, String accessToken) {
+        Member findMember = memberRepository.findByEmail(jwtUtil.getUid(accessToken))
+                .orElseThrow(IllegalStateException::new);
+
+        if (!message.getSenderNo().equals(findMember.getMemberNo())) {
+            Update update = new Update().set("readCount", 0);
+            Query query = new Query(Criteria.where("_id").is(message.getId()));
+
+            mongoTemplate.updateMulti(query, update, Chatting.class);
+        }
+
+        return message;
+    }
+
+    // 읽지 않은 메시지 채팅장 입장시 읽음 처리
+    public void updateCountAllZero(Integer chatNo, Integer senderNo) {
+        Update update = new Update().set("readCount", 0);
+        Query query = new Query(Criteria.where("chatRoomNo").is(chatNo)
+                .and("senderNo").ne(senderNo));
+
+        mongoTemplate.updateMulti(query, update, Chatting.class);
+    }
+
+    // 읽지 않은 메시지 카운트
+    long countUnReadMessages(Integer chatRoomNo, Integer senderNo) {
+        Query query = new Query(Criteria.where("chatRoomNo").is(chatRoomNo)
+                .and("readCount").is(1)
+                .and("senderNo").ne(senderNo));
+
+        return mongoTemplate.count(query, Chatting.class);
     }
 
 

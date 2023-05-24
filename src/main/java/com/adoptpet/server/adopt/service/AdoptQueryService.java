@@ -94,7 +94,7 @@ public class AdoptQueryService {
                 .select(Projections.constructor(AdoptResponseDto.class,
                         adopt.saleNo,
                         adopt.title,
-                        member.address,
+                        adopt.address,
                         // select subQuery를 이용하여 집계함수를 사용
                         ExpressionUtils.as(
                                 JPAExpressions.select(adoptBookmark.count())
