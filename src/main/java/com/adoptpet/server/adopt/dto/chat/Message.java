@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 @ToString
 public class Message implements Serializable {
 
+    private String id;
+
     @NotNull
     private Integer chatNo;
 
@@ -34,6 +36,10 @@ public class Message implements Serializable {
         this.senderName = senderName;
         this.sendTime = sendTime;
         this.senderNo = senderNo;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Chatting convertEntity() {
