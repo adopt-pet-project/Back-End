@@ -4,6 +4,7 @@ import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.dto.ArticleDetailInfo;
 import com.adoptpet.server.community.dto.ArticleListDto;
 import com.adoptpet.server.community.dto.QArticleDetailInfo;
+import com.adoptpet.server.community.dto.TrendingArticleDto;
 import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.JPAExpressions;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,19 +36,25 @@ public class CommunityQDslRepository {
         this.query = new JPAQueryFactory(em);
     }
 
+    //== 인기 게시글 조회  ==//
+    public List<TrendingArticleDto> findTrendingArticle(LocalDateTime startAt,
+                                                        LocalDateTime endAt,
+                                                        Integer limit)
+    {
+        // order by에서 alias 인식할수 있도록 객체 생성
+        NumberPath<Long> aliasLike = Expressions.numberPath(Long.class,"likes");
 
-    public void deleteBookmark(Community community){
-        query.delete(articleBookmark)
-                .where(articleBookmark.community.eq(community))
-                .execute();
+        return query.select(Projections.constructor(TrendingArticleDto.class,
+                articleHeart.community.articleNo,
+                articleHeart.community.count().as("likes")
+                ))
+                .from(articleHeart)
+                .where(articleHeart.regDate.between(startAt,endAt))
+                .groupBy(articleHeart.community.articleNo)
+                .orderBy(aliasLike.desc())
+                .limit(limit)
+                .fetch();
     }
-
-    public void deleteArticleLike(Community community){
-        query.delete(articleHeart)
-                .where(articleHeart.community.eq(community))
-                .execute();
-    }
-
 
     //== 게시글 상세내용 Join ==//
     public ArticleDetailInfo findArticleDetail(Integer articleNo){
@@ -141,6 +149,55 @@ public class CommunityQDslRepository {
                 .offset(offset).limit(limit)
                 .fetch();
     }
+
+    //== 게시글 목록에 추가를 위한 단일 게시글 데이터 조회 ==//
+    public ArticleListDto  findArticleOneForList(Integer articleNo){
+
+        return findArticleListQuery()
+                .where(community.articleNo.eq(articleNo))
+                .fetchOne();
+    }
+
+
+    private JPQLQuery<ArticleListDto> findArticleListQuery(){
+        JPQLQuery<Integer> likeCntByCommunity = JPAExpressions.select(articleHeart.count().intValue())
+                .from(articleHeart)
+                .where(articleHeart.community.eq(community));
+
+        JPQLQuery<Integer> commentCntByCommunity = JPAExpressions.select(comment.count().intValue())
+                .from(comment)
+                .where(comment.community.eq(community));
+
+        return query.select(Projections.fields(ArticleListDto.class,
+                        community.articleNo,
+                        community.title,
+                        community.content,
+                        member.nickname,
+                        community.viewCount,
+                        Expressions.as(likeCntByCommunity,"likeCnt"),
+                        Expressions.as(commentCntByCommunity,"commentCnt"),
+                        community.regDate,
+                        community.thumbnail
+                ))
+                .from(community)
+                .leftJoin(member).on(community.regId.eq(member.email))
+                .groupBy(community.articleNo,community.title,community.content,
+                        member.nickname,community.viewCount,community.regDate,
+                        community.thumbnail);
+    }
+
+    public void deleteBookmark(Community community){
+        query.delete(articleBookmark)
+                .where(articleBookmark.community.eq(community))
+                .execute();
+    }
+
+    public void deleteArticleLike(Community community){
+        query.delete(articleHeart)
+                .where(articleHeart.community.eq(community))
+                .execute();
+    }
+
 
     private BooleanExpression titleLike(String title) {
         return !StringUtils.hasText(title) ? null : community.title.contains(title);
