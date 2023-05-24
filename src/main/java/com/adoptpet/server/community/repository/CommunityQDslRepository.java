@@ -1,10 +1,11 @@
 package com.adoptpet.server.community.repository;
 
+import com.adoptpet.server.commons.image.dto.ImageInfoDto;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
-import com.adoptpet.server.community.dto.ArticleDetailInfo;
+import com.adoptpet.server.community.dto.ArticleDetailInfoDto;
 import com.adoptpet.server.community.dto.ArticleListDto;
-import com.adoptpet.server.community.dto.QArticleDetailInfo;
+import com.adoptpet.server.community.dto.QArticleDetailInfoDto;
 import com.adoptpet.server.community.dto.TrendingArticleDto;
 import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.*;
@@ -23,6 +24,7 @@ import java.util.Objects;
 import static com.adoptpet.server.community.domain.QArticleBookmark.articleBookmark;
 import static com.adoptpet.server.community.domain.QArticleHeart.articleHeart;
 import static com.adoptpet.server.community.domain.QCommunity.community;
+import static com.adoptpet.server.community.domain.QCommunityImage.communityImage;
 import static com.adoptpet.server.user.domain.QMember.member;
 import static com.adoptpet.server.user.domain.QProfileImage.profileImage;
 import static com.adoptpet.server.community.domain.QComment.comment;
@@ -58,9 +60,9 @@ public class CommunityQDslRepository {
     }
 
     //== 게시글 상세내용 조회 ==//
-    public ArticleDetailInfo findArticleDetail(Integer articleNo){
+    public ArticleDetailInfoDto findArticleDetail(Integer articleNo){
         return query
-                .select(new QArticleDetailInfo(
+                .select(new QArticleDetailInfoDto(
                         community.articleNo,
                         community.title,
                         member.nickname,
@@ -185,6 +187,20 @@ public class CommunityQDslRepository {
                 .groupBy(community.articleNo,community.title,community.content,
                         member.nickname,community.viewCount,community.regDate,
                         community.thumbnail);
+    }
+
+
+    public List<ImageInfoDto> findImageUrlByArticleNo(Integer articleNo){
+
+        return query.select(Projections.constructor(ImageInfoDto.class,
+                        communityImage.pictureNo.as("ImageNo"),
+                        communityImage.imageUrl
+                ))
+                .from(communityImage)
+                .where(communityImage.articleNo.eq(articleNo))
+                .orderBy(communityImage.sort.asc())
+                .fetch();
+
     }
 
     public void deleteBookmark(Community community){
