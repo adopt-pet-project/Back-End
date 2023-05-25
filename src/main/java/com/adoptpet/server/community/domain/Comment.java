@@ -43,7 +43,7 @@ public class Comment extends BaseTimeEntity {
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "blind_yn")
-    private BlindYnEnum blindYn;
+    private BlindEnum blindYn;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_no")
@@ -57,7 +57,7 @@ public class Comment extends BaseTimeEntity {
     private List<CommentHeart> commentHearts = new ArrayList<>();
 
     @Builder
-    public Comment(String content, Comment parent, String regId, String modId, LogicalDelEnum logicalDel, BlindYnEnum blindYn) {
+    public Comment(String content, Comment parent, String regId, String modId, LogicalDelEnum logicalDel, BlindEnum blindYn) {
         this.content = content;
         this.parent = parent;
         this.regId = regId;
@@ -85,7 +85,7 @@ public class Comment extends BaseTimeEntity {
                .regId(email)
                .modId(email)
                .logicalDel(LogicalDelEnum.NORMAL)
-               .blindYn(BlindYnEnum.NORMAL)
+               .blindYn(BlindEnum.NORMAL)
                .build();
     }
 

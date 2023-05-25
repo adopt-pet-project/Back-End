@@ -33,7 +33,7 @@ public class ArticleDto {
     private LogicalDelEnum logicalDel;
 
     @NotBlank
-    private BlindYnEnum blindYn;
+    private BlindEnum blindYn;
 
     private String thumbnail;
 

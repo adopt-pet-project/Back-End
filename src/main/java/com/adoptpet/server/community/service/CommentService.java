@@ -186,15 +186,18 @@ public class CommentService {
 
     //== converter ==//
     private static CommentListDto commentToDto(Comment comment, String type) {
+
         return CommentListDto.builder()
                 .type(type)
                 .commentNo(comment.getCommentNo())
                 .nickname(comment.getMember().getNickname())
                 .memberId(comment.getMember().getMemberNo())
+                .profile(comment.getMember().getProfile())
                 .content(comment.getContent())
                 .regDate(comment.getRegDate())
                 .commentHeart(comment.getCommentHearts().size())
-                .type(type)
+                .logicalDel(comment.getLogicalDel())
+                .blindYn(comment.getBlindYn())
                 .build();
     }
 

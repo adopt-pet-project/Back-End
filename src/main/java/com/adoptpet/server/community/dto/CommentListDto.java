@@ -1,5 +1,7 @@
 package com.adoptpet.server.community.dto;
 
+import com.adoptpet.server.community.domain.BlindEnum;
+import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.dto.response.CommentListResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,6 +32,10 @@ public class CommentListDto {
     private String profile;
     @JsonProperty("publishedAt")
     private LocalDateTime regDate;
+    @JsonProperty("deleteStatus")
+    private LogicalDelEnum logicalDel;
+    @JsonProperty("blindStatus")
+    private BlindEnum blindYn;
     @JsonIgnore
     private List<CommentListDto> childComment;
 
@@ -48,6 +54,8 @@ public class CommentListDto {
                 .profile(this.profile)
                 .publishedAt(this.regDate)
                 .like(this.commentHeart)
+                .deleteStatus(this.logicalDel)
+                .blindStatus(this.blindYn)
                 .comments(this.childComment)
                 .build();
     }

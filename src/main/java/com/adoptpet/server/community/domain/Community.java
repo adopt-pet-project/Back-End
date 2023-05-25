@@ -47,7 +47,7 @@ public class Community extends BaseTimeEntity {
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "blind_yn")
-    private BlindYnEnum blindYn;
+    private BlindEnum blindYn;
 
     @Column(name = "thumbnail")
     private String thumbnail;
@@ -62,7 +62,7 @@ public class Community extends BaseTimeEntity {
     private List<ArticleBookmark> articleBookmarks = new ArrayList<>();
 
     @Builder
-    public Community(Integer categoryNo, String title, String content, Integer viewCount, String regId, String modId, LogicalDelEnum logicalDel, BlindYnEnum blindYn, String thumbnail) {
+    public Community(Integer categoryNo, String title, String content, Integer viewCount, String regId, String modId, LogicalDelEnum logicalDel, BlindEnum blindYn, String thumbnail) {
         this.categoryNo = categoryNo;
         this.title = title;
         this.content = content;

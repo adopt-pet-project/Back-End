@@ -1,10 +1,11 @@
 package com.adoptpet.server.community.dto.request;
 
-import com.adoptpet.server.community.domain.BlindYnEnum;
+import com.adoptpet.server.community.domain.BlindEnum;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.dto.ArticleImageDto;
 import com.adoptpet.server.community.dto.ArticleDto;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,22 +22,22 @@ import javax.validation.constraints.NotBlank;
 public class RegisterArticleRequest {
 
     @Min(value = 0)
-    @JsonAlias("categoryId")
+    @JsonProperty("categoryId")
     private Integer categoryNo;
 
     @NotBlank
     @Length(max = 100)
-    @JsonAlias("title")
+    @JsonProperty("title")
     private String title;
 
     @NotBlank
-    @JsonAlias("context")
+    @JsonProperty("context")
     private String content;
 
-    @JsonAlias("imageList")
+    @JsonProperty("imageList")
     private ArticleImageDto[] image;
 
-    @JsonAlias("thumbnail")
+    @JsonProperty("thumbnail")
     private String thumbnail;
 
     public ArticleDto toDto(String userId){
@@ -48,7 +49,7 @@ public class RegisterArticleRequest {
                 .regId(userId)
                 .modId(userId)
                 .logicalDel(LogicalDelEnum.NORMAL)
-                .blindYn(BlindYnEnum.NORMAL);
+                .blindYn(BlindEnum.NORMAL);
         // 등록한 이미지가 있을 경우
         if (this.image != null && this.image.length > 0) {
             builder.image(this.image)
