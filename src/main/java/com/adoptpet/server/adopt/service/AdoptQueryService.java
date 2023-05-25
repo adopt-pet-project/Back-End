@@ -198,7 +198,7 @@ public class AdoptQueryService {
                     Projections.constructor(AdoptDetailResponseDto.Author.class,
                             member.memberNo,
                             member.nickname,
-                            profileImage.imageUrl,
+                            member.profile,
                             member.address
                     ),
                     Projections.constructor(AdoptDetailResponseDto.Coords.class,
@@ -210,7 +210,6 @@ public class AdoptQueryService {
                 ))
                 .from(adopt)
                 .join(member).on(adopt.regId.eq(member.email))
-                .join(profileImage).on(profileImage.memberNo.eq(member.memberNo))
                 .where(adopt.saleNo.eq(saleNo))
                 .fetchOne();
 
