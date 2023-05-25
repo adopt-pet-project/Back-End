@@ -7,6 +7,7 @@ import com.adoptpet.server.community.dto.ArticleDetailInfoDto;
 import com.adoptpet.server.community.dto.ArticleListDto;
 import com.adoptpet.server.community.dto.ArticleDto;
 import com.adoptpet.server.community.dto.CommentListDto;
+import com.adoptpet.server.community.dto.request.ModifyCommentRequest;
 import com.adoptpet.server.community.dto.request.RegisterArticleRequest;
 import com.adoptpet.server.community.dto.request.RegisterCommentRequest;
 import com.adoptpet.server.community.dto.request.UpdateArticleRequest;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -65,21 +67,31 @@ public class CommunityController {
 
 
     //== 댓글 수정 ==//
+    @PatchMapping("/comment")
+    public ResponseEntity<StatusResponseDto> modifyComment(
+            @Valid @RequestBody ModifyCommentRequest request, BindingResult bindingResult
+    ){
+
+        // 유효성 검증에 실패할경우 400번 에러를 응답한다.
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(addStatus(400));
+        }
+
+        commentService.updateComment(request.getCommentNo(), request.getContent());
+
+        return ResponseEntity.ok(success());
+    }
 
 
+    //== 댓글 삭제  ==//
+    @DeleteMapping("/comment/{commentId}")
+    public ResponseEntity<StatusResponseDto> deleteComment(
+            @PathVariable("commentId") Integer commentNo) {
 
+        commentService.deleteComment(commentNo);
 
-
-
-
-
-    //== 댓글 삭제 ==//
-
-
-
-
-
-
+        return ResponseEntity.ok(success());
+    }
 
 
     //== 게시글 목록 조회 ==//
@@ -140,7 +152,7 @@ public class CommunityController {
     }
 
     @PatchMapping("/article/{articleNo}")
-    public ResponseEntity<StatusResponseDto> updateArticle(
+    public ResponseEntity<StatusResponseDto> modifyArticle(
             @RequestBody @Valid UpdateArticleRequest request,
             @PathVariable("articleNo") Integer articleNo,BindingResult bindingResult){
 
@@ -159,7 +171,7 @@ public class CommunityController {
 
 
     @DeleteMapping("/article/{articleNo}")
-    public ResponseEntity<StatusResponseDto> deleteAdopt(
+    public ResponseEntity<StatusResponseDto> deleteArticle(
             @PathVariable("articleNo") Integer articleNo) {
 
         communityService.softDeleteArticle(articleNo);

@@ -28,7 +28,7 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "parent_no")
     private Comment parent;
 
-    @OneToMany(mappedBy = "parent",orphanRemoval = true)
+    @OneToMany(mappedBy = "parent", orphanRemoval = true)
     private List<Comment> child = new ArrayList<>();
 
     @Column(name = "reg_id")
@@ -78,6 +78,7 @@ public class Comment extends BaseTimeEntity {
         this.parent = parent;
     }
 
+    //== 생성 메서드 ==//
     public static Comment createComment(String content, String email){
        return Comment.builder()
                .content(content)
@@ -86,5 +87,17 @@ public class Comment extends BaseTimeEntity {
                .logicalDel(LogicalDelEnum.NORMAL)
                .blindYn(BlindYnEnum.NORMAL)
                .build();
+    }
+
+    //== 수정 로직 ==//
+    public void updateComment(String content, String email){
+        this.content = content;
+        this.modId = email;
+    }
+
+
+    //== 삭제 로직 ==//
+    public void softDeleteComment(){
+        this.logicalDel = LogicalDelEnum.DELETE;
     }
 }
