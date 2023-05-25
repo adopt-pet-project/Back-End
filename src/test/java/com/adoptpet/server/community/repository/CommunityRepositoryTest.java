@@ -4,7 +4,6 @@ package com.adoptpet.server.community.repository;
 import com.adoptpet.server.community.domain.BlindYnEnum;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
-import com.adoptpet.server.community.domain.VisibleYnEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
