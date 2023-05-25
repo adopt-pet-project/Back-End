@@ -1,6 +1,6 @@
 package com.adoptpet.server.community.dto.request;
 
-import com.adoptpet.server.community.domain.BlindYnEnum;
+import com.adoptpet.server.community.domain.BlindEnum;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.dto.ArticleImageDto;
 import com.adoptpet.server.community.dto.ArticleDto;
@@ -48,7 +48,7 @@ public class RegisterArticleRequest {
                 .regId(userId)
                 .modId(userId)
                 .logicalDel(LogicalDelEnum.NORMAL)
-                .blindYn(BlindYnEnum.NORMAL);
+                .blindYn(BlindEnum.NORMAL);
         // 등록한 이미지가 있을 경우
         if (this.image != null && this.image.length > 0) {
             builder.image(this.image)
