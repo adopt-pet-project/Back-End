@@ -12,7 +12,7 @@ import static com.adoptpet.server.user.domain.QProfileImage.*;
 
 import com.adoptpet.server.adopt.dto.response.AdoptImageResponseDto;
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
-import com.adoptpet.server.adopt.dto.response.MyAdoptResponse;
+import com.adoptpet.server.adopt.dto.response.MyAdoptResponseDto;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
@@ -217,8 +217,8 @@ public class AdoptQueryService {
     }
 
     // 상태값 별 마이페이지 분양 리스트 반환
-    public List<MyAdoptResponse> myAdoptList(String status, SecurityUserDto userDto) {
-        return jpaQueryFactory.select(Projections.constructor(MyAdoptResponse.class,
+    public List<MyAdoptResponseDto> myAdoptList(String status, SecurityUserDto userDto) {
+        return jpaQueryFactory.select(Projections.constructor(MyAdoptResponseDto.class,
                 adopt.saleNo,
                 adopt.title,
                 adopt.content,
@@ -240,8 +240,8 @@ public class AdoptQueryService {
     }
 
     // 나의 관심 분양 글 조회
-    public List<MyAdoptResponse> myInterestedAdoptList(List<Integer> keys) {
-        return jpaQueryFactory.select(Projections.constructor(MyAdoptResponse.class,
+    public List<MyAdoptResponseDto> myInterestedAdoptList(List<Integer> keys) {
+        return jpaQueryFactory.select(Projections.constructor(MyAdoptResponseDto.class,
                 adopt.saleNo,
                 adopt.title,
                 adopt.content,

@@ -32,9 +32,13 @@ public enum ErrorCode {
     /* DUPLICATE : (다른 무엇과) 똑같은 */
     DUPLICATE_EMAIL(CONFLICT, "이메일이 이미 존재합니다."),
 
+    DUPLICATE_EQUAL_REG_USER(CONFLICT, "해당 글의 작성자와 정보가 일치하지 않습니다."),
+
     /* 500 : */
     UNSUCCESSFUL_UPLOAD(INTERNAL_SERVER_ERROR,"이미지 파일 업로드에 실패했습니다."),
-    UNSUCCESSFUL_COMMENT(INTERNAL_SERVER_ERROR,"댓글 저장이 실패했습니다.");
+
+    UNSUCCESSFUL_INSERT(INTERNAL_SERVER_ERROR,"해당 정보 저장이 실패했습니다."),
+    UNSUCCESSFUL_MODIFY(INTERNAL_SERVER_ERROR,"해당 정보의 상태 변경에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String detail;

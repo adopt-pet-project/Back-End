@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommunityDto {
+public class ArticleDto {
 
     @NotBlank
     private Integer categoryNo;

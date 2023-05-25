@@ -117,19 +117,19 @@ public class CommunityService {
     * 게시글 수정
     **/
     @Transactional
-    public Community updateArticle(CommunityDto communityDto, Integer articleNo){
+    public Community updateArticle(ArticleDto articleDto, Integer articleNo){
 
         // 게시글 고유키로 게시글 검증
         Community community = findByArticleNo(articleNo);
 
         // 게시글 데이터 엔티티 저장
-        community.updateArticleByMod(communityDto, SecurityUtils.getUser().getEmail());
+        community.updateArticleByMod(articleDto, SecurityUtils.getUser().getEmail());
 
         // 카테고리 번호 검증
         checkCategoryNo(community.getCategoryNo());
 
         // 이미지 업데이트
-        updateImageByArticleNo(communityDto.getImage(),articleNo);
+        updateImageByArticleNo(articleDto.getImage(),articleNo);
 
         // 게시글 업데이트
         Community updatedArticle = communityRepository.save(community);
@@ -172,16 +172,16 @@ public class CommunityService {
 
     /**
     * 게시글 등록 메서드
-     *  @param communityDto  : 게시글 생성 정보
+     *  @param articleDto  : 게시글 생성 정보
      *  @return response     : 생성 완료된 게시글 정보
     **/
     @Transactional
-    public CommunityDto insertArticle(CommunityDto communityDto){
+    public ArticleDto insertArticle(ArticleDto articleDto){
         // CreateArticleMapper 인스턴스 생성
         final CreateArticleMapper createArticleMapper = CreateArticleMapper.INSTANCE;
 
         // DTO를 Entity로 매핑
-        Community community = createArticleMapper.toEntity(communityDto);
+        Community community = createArticleMapper.toEntity(articleDto);
 
         // 카테고리 번호 검증
         checkCategoryNo(community.getCategoryNo());
@@ -190,11 +190,11 @@ public class CommunityService {
         Community saveArticle = communityRepository.save(community);
 
         // 이미지 업데이트
-        ArticleImageDto[] images = communityDto.getImage();
-        updateImageByArticleNo(communityDto.getImage(), saveArticle.getArticleNo());
+        ArticleImageDto[] images = articleDto.getImage();
+        updateImageByArticleNo(articleDto.getImage(), saveArticle.getArticleNo());
 
         // 저장된 Community를 DTO로 변환
-        CommunityDto response = createArticleMapper.toDTO(saveArticle);
+        ArticleDto response = createArticleMapper.toDTO(saveArticle);
 
         // 반환값에 null 대신 image 기입
         response.addImgNo(images);

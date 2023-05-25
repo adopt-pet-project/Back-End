@@ -32,24 +32,30 @@ public class CommentService {
     private final CommunityRepository communityRepository;
 
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Comment findCommentByNo(Integer commentNo){
         return commentRepository.findById(commentNo)
                 .orElseThrow(ErrorCode::throwCommentNotFound);
     }
 
-    private Member findMemberByEmail(String email){
+    @Transactional(readOnly = true)
+    public Member findMemberByEmail(String email){
         return memberRepository.findByEmail(email)
                 .orElseThrow(ErrorCode::throwEmailNotFound);
     }
 
-    private Community findArticleByNo(Integer articleNo){
+    @Transactional(readOnly = true)
+    public Community findArticleByNo(Integer articleNo){
         return communityRepository.findById(articleNo)
                 .orElseThrow(ErrorCode::throwArticleNotFound);
     }
 
-
-    //== 댓글 저장 ==//
+    /**
+    * 댓글 등록
+     * @param content   : 댓글 내용
+     * @param parentNo  : (대댓글일 경우) 부모 댓글 고유키
+     * @param articleNo : 게시글 고유키
+    **/
     @Transactional
     public void insertComment(String content,Integer parentNo,Integer articleNo){
         // security 이메일로 회원 조회
@@ -73,12 +79,15 @@ public class CommentService {
             commentRepository.save(comment);
         } catch (RuntimeException ex){
             log.error("comment insert failed :: "+ ex.getLocalizedMessage());
-            throw new CustomException(ErrorCode.UNSUCCESSFUL_COMMENT);
+            throw new CustomException(ErrorCode.UNSUCCESSFUL_INSERT);
         }
     }
 
 
-    //== 게시글 고유키로 댓글 목록 조회 ==//
+    /**
+    * 댓글 목록 조회
+     * @param articleNo : 게시글 고유키
+    **/
     @Transactional(readOnly = true)
     public List<CommentListDto> readCommentList(Integer articleNo) {
 
@@ -111,6 +120,69 @@ public class CommentService {
         return commentList;
     }
 
+    /**
+    * 댓글 수정
+     * @param commentNo : 댓글/대댓글 교유키
+     * @param content   : 수정할 댓글 내용
+    **/
+    @Transactional
+    public void updateComment(Integer commentNo, String content) {
+
+        // 댓글 조회
+        Comment comment = findCommentByNo(commentNo);
+        final String commentModEmailId = SecurityUtils.getUserId();
+        // 댓글 권한 체크
+        compareRegIdAndModId(comment.getRegId(),commentModEmailId);
+        // 수정 내용 적용
+        comment.updateComment(content,commentModEmailId);
+
+        try{
+            // 댓글 update 요청
+            commentRepository.save(comment);
+        } catch (RuntimeException ex){
+            log.error("comment update failed :: "+ ex.getLocalizedMessage());
+            throw new CustomException(ErrorCode.UNSUCCESSFUL_MODIFY);
+        }
+
+    }
+
+
+    /**
+    * 댓글 삭제
+     * - 삭제를 요청한 댓글의 대댓글 유무에 따른 분기 처리
+     *   1. 대댓글이 있을 경우 논리 삭제
+     *   2. 대댓글이 없을 경우 물리 삭데
+    **/
+    @Transactional
+    public void deleteComment(Integer commentNo) {
+        // 댓글 조회
+        Comment comment = findCommentByNo(commentNo);
+        // 댓글 권한 체크
+        compareRegIdAndModId(comment.getRegId(),SecurityUtils.getUserId());
+        try {
+            // 대댓글 여부 확인
+            if(!comment.getChild().isEmpty()){
+                // 대댓글이 있을 경우 논리 삭제
+                comment.softDeleteComment();
+                commentRepository.save(comment);
+            } else {
+                // 대댓글이 없을 경우 물리 삭제
+                commentRepository.delete(comment);
+            }
+
+        } catch (RuntimeException ex){
+            log.error("comment delete failed :: "+ ex.getLocalizedMessage());
+            throw new CustomException(ErrorCode.UNSUCCESSFUL_MODIFY);
+        }
+    }
+
+
+    //== 작성자와 수정자 비교 메서드 ==//
+    private static void compareRegIdAndModId(String regEmailId,String accessEmailId) {
+        if(!regEmailId.equals(accessEmailId)){
+            throw new CustomException(ErrorCode.DUPLICATE_EQUAL_REG_USER);
+        }
+    }
 
     //== converter ==//
     private static CommentListDto commentToDto(Comment comment, String type) {
