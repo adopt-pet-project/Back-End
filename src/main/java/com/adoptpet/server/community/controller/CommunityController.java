@@ -22,6 +22,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
@@ -42,6 +44,12 @@ public class CommunityController {
 
     private final CommentService commentService;
 
+
+    //== 응답 status 200 반환 ==//
+    private static ResponseEntity<StatusResponseDto> success() {
+        return ResponseEntity.ok(StatusResponseDto.success());
+    }
+
     //== 댓글 조회 ==//
     @GetMapping("/comment/{boardId}")
     public ResponseEntity<List<CommentListResponse>> readCommentList(
@@ -57,17 +65,17 @@ public class CommunityController {
 
     //== 댓글 등록 ==//
     @PostMapping("/comment")
-    public ResponseEntity<StatusResponseDto> registerComment(@Valid @RequestBody RegisterCommentRequest request){
+    public ResponseEntity<StatusResponseDto> commentRegistration(@Valid @RequestBody RegisterCommentRequest request){
 
         commentService.insertComment(request.getContent(), request.getParentNo(), request.getArticleNo());
 
-        return ResponseEntity.ok(success());
+        return success();
     }
 
 
     //== 댓글 수정 ==//
     @PatchMapping("/comment")
-    public ResponseEntity<StatusResponseDto> modifyComment(
+    public ResponseEntity<StatusResponseDto> commentModification(
             @Valid @RequestBody ModifyCommentRequest request, BindingResult bindingResult
     ){
 
@@ -78,18 +86,18 @@ public class CommunityController {
 
         commentService.updateComment(request.getCommentNo(), request.getContent());
 
-        return ResponseEntity.ok(success());
+        return success();
     }
 
 
     //== 댓글 삭제  ==//
     @DeleteMapping("/comment/{commentId}")
-    public ResponseEntity<StatusResponseDto> deleteComment(
+    public ResponseEntity<StatusResponseDto> commentDeletion(
             @PathVariable("commentId") Integer commentNo) {
 
         commentService.deleteComment(commentNo);
 
-        return ResponseEntity.ok(success());
+        return success();
     }
 
 
@@ -124,15 +132,17 @@ public class CommunityController {
     @GetMapping("/article/{articleNo}")
     public ResponseEntity<ArticleInfoResponse> readArticle(
             @PathVariable("articleNo") Integer articleNo,
-            @RequestHeader(value = "Authorization",required = false) String accessToken){
+            @RequestHeader(value = "Authorization",required = false) String accessToken,
+            HttpServletRequest request, HttpServletResponse response){
 
-        ArticleDetailInfoDto articleDetailInfoDto = communityService.readArticle(articleNo,accessToken);
+        ArticleDetailInfoDto articleDetailInfoDto =
+                communityService.readArticle(articleNo,accessToken, request, response);
 
         return ResponseEntity.ok(articleDetailInfoDto.toResponse());
     }
 
     @PostMapping("/article")
-    public ResponseEntity<StatusResponseDto> registerArticle(
+    public ResponseEntity<StatusResponseDto> articleRegistration(
             @Valid @RequestBody RegisterArticleRequest request, BindingResult bindingResult){
 
         // 유효성 검증에 실패할경우 400번 에러를 응답한다.
@@ -147,11 +157,11 @@ public class CommunityController {
         // 게시글 등록
         communityService.insertArticle(articleDto);
 
-        return ResponseEntity.ok(success());
+        return success();
     }
 
     @PatchMapping("/article/{articleNo}")
-    public ResponseEntity<StatusResponseDto> modifyArticle(
+    public ResponseEntity<StatusResponseDto> articleModification(
             @RequestBody @Valid UpdateArticleRequest request,
             @PathVariable("articleNo") Integer articleNo,BindingResult bindingResult){
 
@@ -165,18 +175,34 @@ public class CommunityController {
         // DB Update
         communityService.updateArticle(articleDto,articleNo);
 
-        return ResponseEntity.ok(success());
+        return success();
     }
 
 
     @DeleteMapping("/article/{articleNo}")
-    public ResponseEntity<StatusResponseDto> deleteArticle(
+    public ResponseEntity<StatusResponseDto> articleDeletion(
             @PathVariable("articleNo") Integer articleNo) {
 
         communityService.softDeleteArticle(articleNo);
 
-        return ResponseEntity.ok(success());
+        return success();
     }
 
+    @PostMapping("/bookmark/{articleNo}")
+    public ResponseEntity<StatusResponseDto> articleBookmarkAddition(
+            @PathVariable("articleNo") Integer articleNo){
 
+        communityService.insertArticleBookmark(SecurityUtils.getUser(), articleNo);
+
+        return success();
+    }
+
+    @DeleteMapping("/bookmark/{articleNo}")
+    public ResponseEntity<StatusResponseDto> articleBookmarkDeletion(
+            @PathVariable("articleNo") Integer articleNo){
+
+        communityService.deleteArticleBookmark(SecurityUtils.getUser(), articleNo);
+
+        return success();
+    }
 }
