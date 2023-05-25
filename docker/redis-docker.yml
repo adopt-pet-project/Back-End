@@ -1,6 +1,5 @@
 version: '3.7'
 services:
-  
   redis-refresh-token:
     image: redis:alpine
     command: redis-server /usr/local/etc/redis-refresh-token/redis.conf

@@ -25,7 +25,6 @@ class AdoptRepositoryTest {
     void deleteAdoptBySaleNo() {
         // given
         Adopt adopt = Adopt.builder()
-                .categoryNo(3)
                 .title("사모예드 분양해요")
                 .content("이 귀여운 사모예드 너무 이뻐서 미치겠다.. 너무 귀여워")
                 .age("1년 반")

@@ -1,6 +1,6 @@
 package com.adoptpet.server.user.controller;
 
-import com.adoptpet.server.adopt.dto.response.MyAdoptResponse;
+import com.adoptpet.server.adopt.dto.response.MyAdoptResponseDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.user.service.MyAdoptService;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +20,8 @@ public class MyAdoptController {
     private final MyAdoptService myAdoptService;
 
     @GetMapping("/mypage/adopt")
-    public ResponseEntity<List<MyAdoptResponse>> myAdopt(@RequestParam("status") final String status) {
-        List<MyAdoptResponse> myAdoptList = myAdoptService.myAdoptList(status, SecurityUtils.getUser());
+    public ResponseEntity<List<MyAdoptResponseDto>> myAdopt(@RequestParam("status") final String status) {
+        List<MyAdoptResponseDto> myAdoptList = myAdoptService.myAdoptList(status, SecurityUtils.getUser());
         return ResponseEntity.ok(myAdoptList);
     }
 }
