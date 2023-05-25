@@ -8,23 +8,27 @@ import com.adoptpet.server.community.domain.Comment;
 import com.adoptpet.server.community.domain.CommentHeart;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.dto.CommentListDto;
+import com.adoptpet.server.community.dto.CommentTypeEnum;
 import com.adoptpet.server.community.repository.CommentHeartRepository;
 import com.adoptpet.server.community.repository.CommentRepository;
+import com.adoptpet.server.community.repository.CommunityQDslRepository;
 import com.adoptpet.server.community.repository.CommunityRepository;
 import com.adoptpet.server.user.domain.Member;
-import com.adoptpet.server.user.repository.MemberRepository;
 import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.adoptpet.server.commons.exception.ErrorCode.DUPLICATE_NOT_HEART;
+import static com.adoptpet.server.community.dto.CommentTypeEnum.*;
 
 @Slf4j
 @Service
@@ -34,7 +38,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
 
-    private final MemberRepository memberRepository;
+    private final CommunityQDslRepository communityQDslRepository;
 
     private final CommunityRepository communityRepository;
 
@@ -48,11 +52,6 @@ public class CommentService {
                 .orElseThrow(ErrorCode::throwCommentNotFound);
     }
 
-    @Transactional(readOnly = true)
-    public Member findMemberByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(ErrorCode::throwEmailNotFound);
-    }
 
     @Transactional(readOnly = true)
     public Community findArticleByNo(Integer articleNo) {
@@ -97,39 +96,46 @@ public class CommentService {
 
     /**
      * 댓글 목록 조회
-     *
      * @param articleNo : 게시글 고유키
      **/
     @Transactional(readOnly = true)
-    public List<CommentListDto> readCommentList(Integer articleNo) {
+    public List<CommentListDto> readCommentList(Integer articleNo, String accessToken) {
 
-        // 게시글 고유키 검증
-        Community community = findArticleByNo(articleNo);
-        // 게시글 엔티티로 댓글 조회
-        List<Comment> comments = community.getComments();
+        List<CommentListDto> commentDtoList = new ArrayList<>();
 
-        List<CommentListDto> commentList = new ArrayList<>();
-        List<CommentListDto> childListDto = new ArrayList<>();
+        // 게시글 엔티티로 댓글 목록 조회
+        List<Comment> comments = commentRepository.findByArticleNo(articleNo);
+        // 댓글이 없을 경우
+        if(comments.isEmpty()){
+            // 빈 List로 반환
+            commentDtoList = new ArrayList<>(0);
+        } else {
+            for(Comment comment : comments) {
+                // 댓글의 자식 댓글이 있을 경우
+                if( !comment.getChild().isEmpty()) {
+                    // 대댓글을 DTO로 변환 후 List에 저장
+                    List<CommentListDto> childDtoList = comment.getChild()
+                            .stream()
+                            .map(child -> convertToDto(child, REPLY, accessToken))
+                            .collect(Collectors.toList());
+                    // 댓글 DTO로 변환
+                    CommentListDto parentDto = convertToDto(comment, COMMENT, accessToken);
+                    // 대댓글 저장
+                    parentDto.addChildCommentList(childDtoList);
+                    // 반환할 DTO List에 추가
+                    commentDtoList.add(parentDto);
 
-        for (Comment comment : comments) {
-            // 댓글 Entity to DTO
-            CommentListDto commentData = commentToDto(comment, "comment");
-            // 댓글의 대댓글이 있을 경우
-            if (!comment.getChild().isEmpty()) {
-                // 대댓글 조회
-                List<Comment> child = comment.getChild();
-                // 대댓글 Entity to DTO
-                child.stream()
-                        .map(ch -> commentToDto(ch, "reply"))
-                        .forEach(childListDto::add);
-                // 댓글 DTO에 대댓글 데이터 추가
-                commentData.addChildCommentList(childListDto);
+                // 댓글의 부모 댓글이 없을 경우
+                } else if(Objects.isNull(comment.getParent())) {
+                    // 댓글을 DTO로 변환
+                    CommentListDto commentDto = convertToDto(comment, COMMENT, accessToken);
+                    // 반환할 DTO List에 추가
+                    commentDtoList.add(commentDto);
+                }
             }
-            // List에 댓글 DTO 추가
-            commentList.add(commentData);
         }
 
-        return commentList;
+        return commentDtoList;
     }
 
     /**
@@ -238,14 +244,27 @@ public class CommentService {
         }
     }
 
+
     //== converter ==//
-    private static CommentListDto commentToDto(Comment comment, String type) {
+    private static CommentListDto convertToDto(Comment comment, CommentTypeEnum type, String accessToken) {
+
+        boolean mine = false;
+
+        final int commentMemberNo = comment.getMember().getMemberNo();
+
+        if(StringUtils.hasText(accessToken)){
+            Integer memberNo = SecurityUtils.getUser().getMemberNo();
+            if(memberNo.equals(commentMemberNo)){
+                mine = true;
+            }
+        }
 
         return CommentListDto.builder()
                 .type(type)
+                .mine(mine)
                 .commentNo(comment.getCommentNo())
                 .nickname(comment.getMember().getNickname())
-                .memberId(comment.getMember().getMemberNo())
+                .memberNo(comment.getMember().getMemberNo())
                 .profile(comment.getMember().getProfile())
                 .content(comment.getContent())
                 .regDate(comment.getRegDate())
