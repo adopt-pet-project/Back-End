@@ -34,6 +34,8 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(CONFLICT, "이메일이 이미 존재합니다."),
     DUPLICATE_EQUAL_REG_USER(CONFLICT, "해당 글의 작성자와 정보가 일치하지 않습니다."),
     DUPLICATE_BOOKMARK(CONFLICT, "해당 게시글은 이미 관심글로 등록되어 있습니다."),
+    DUPLICATE_HEART(CONFLICT, "해당 글을 좋아요한 상태입니다."),
+    DUPLICATE_NOT_HEART(NOT_FOUND, "해당 글을 좋아요 하지 않은 상태입니다."),
 
 
     /* 500 : */
