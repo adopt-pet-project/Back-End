@@ -36,7 +36,6 @@ public enum ErrorCode {
 
     /* 500 : */
     UNSUCCESSFUL_UPLOAD(INTERNAL_SERVER_ERROR,"이미지 파일 업로드에 실패했습니다."),
-
     UNSUCCESSFUL_INSERT(INTERNAL_SERVER_ERROR,"해당 정보 저장이 실패했습니다."),
     UNSUCCESSFUL_MODIFY(INTERNAL_SERVER_ERROR,"해당 정보의 상태 변경에 실패했습니다.");
 

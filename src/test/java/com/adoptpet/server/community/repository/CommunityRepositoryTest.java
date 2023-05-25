@@ -1,10 +1,9 @@
 package com.adoptpet.server.community.repository;
 
 
-import com.adoptpet.server.community.domain.BlindYnEnum;
+import com.adoptpet.server.community.domain.BlindEnum;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
-import com.adoptpet.server.community.domain.VisibleYnEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,7 @@ class CommunityRepositoryTest {
     @BeforeEach
     void init(){
         save = Community.builder()
-                .blindYn(BlindYnEnum.NORMAL)
+                .blindYn(BlindEnum.NORMAL)
                 .categoryNo(1)
                 .content("조회 테스트1")
                 .logicalDel(LogicalDelEnum.NORMAL)

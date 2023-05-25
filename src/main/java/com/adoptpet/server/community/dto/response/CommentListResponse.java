@@ -1,5 +1,7 @@
 package com.adoptpet.server.community.dto.response;
 
+import com.adoptpet.server.community.domain.BlindEnum;
+import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.dto.CommentListDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,5 +25,7 @@ public class CommentListResponse {
     private String profile; // profileImage
     private LocalDateTime publishedAt; // comment
     private Integer like; // commentHeart
+    private LogicalDelEnum deleteStatus; // comment
+    private BlindEnum blindStatus; // comment
     private List<CommentListDto> comments;
 }
