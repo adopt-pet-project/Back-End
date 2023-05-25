@@ -2,14 +2,13 @@ package com.adoptpet.server.community.domain;
 
 
 import com.adoptpet.server.user.domain.Member;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 import static javax.persistence.FetchType.*;
-
+@Getter
 @Entity
 @Table(name = "ARTICLE_HEART")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,4 +32,20 @@ public class ArticleHeart {
     @JoinColumn(name = "article_no")
     private Community community;
 
+    @Builder
+    public ArticleHeart(LocalDateTime regDate, String regId, Member member, Community community) {
+        this.regDate = regDate;
+        this.regId = regId;
+        this.member = member;
+        this.community = community;
+    }
+
+    public static ArticleHeart createArticleHeart(String regId, Community community, Member member){
+        return ArticleHeart.builder()
+                .regId(regId)
+                .regDate(LocalDateTime.now())
+                .community(community)
+                .member(member)
+                .build();
+    }
 }

@@ -1,15 +1,14 @@
 package com.adoptpet.server.community.domain;
 
 import com.adoptpet.server.user.domain.Member;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static javax.persistence.FetchType.*;
 
+@Getter
 @Entity
 @Table(name = "COMMENT_HEART")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,14 +22,8 @@ public class CommentHeart {
     @Column(name = "reg_date")
     private LocalDateTime regDate;
 
-    @Column(name = "mod_date")
-    private LocalDateTime modDate;
-
     @Column(name = "reg_id")
     private String regId;
-
-    @Column(name = "mod_id")
-    private String modId;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_no")
@@ -40,4 +33,20 @@ public class CommentHeart {
     @JoinColumn(name = "comment_no")
     private Comment comment;
 
+    @Builder
+    public CommentHeart(LocalDateTime regDate, String regId, Member member, Comment comment) {
+        this.regDate = regDate;
+        this.regId = regId;
+        this.member = member;
+        this.comment = comment;
+    }
+
+    public static CommentHeart createHeart(String regId, Member member, Comment comment) {
+        return CommentHeart.builder()
+                .regId(regId)
+                .regDate(LocalDateTime.now())
+                .member(member)
+                .comment(comment)
+                .build();
+    }
 }

@@ -78,6 +78,11 @@ public class Comment extends BaseTimeEntity {
         this.parent = parent;
     }
 
+    public Integer getHeartCnt(){
+        return this.getCommentHearts().size();
+    }
+
+
     //== 생성 메서드 ==//
     public static Comment createComment(String content, String email){
        return Comment.builder()

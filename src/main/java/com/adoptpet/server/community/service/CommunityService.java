@@ -1,13 +1,11 @@
 package com.adoptpet.server.community.service;
 
 import com.adoptpet.server.commons.exception.CustomException;
+import com.adoptpet.server.commons.exception.ErrorCode;
 import com.adoptpet.server.commons.image.dto.ImageInfoDto;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
-import com.adoptpet.server.community.domain.ArticleBookmark;
-import com.adoptpet.server.community.domain.Category;
-import com.adoptpet.server.community.domain.Community;
-import com.adoptpet.server.community.domain.LogicalDelEnum;
+import com.adoptpet.server.community.domain.*;
 import com.adoptpet.server.community.dto.*;
 import com.adoptpet.server.community.repository.*;
 import com.adoptpet.server.community.service.mapper.CreateArticleMapper;
@@ -39,6 +37,7 @@ public class CommunityService {
     private final CategoryRepository categoryRepository;
     private final MemberService memberService;
     private final ArticleBookmarkRepository articleBookmarkRepository;
+    private final ArticleHeartRepository articleHeartRepository;
 
     /**
     * 게시글 목록 조회
@@ -328,5 +327,48 @@ public class CommunityService {
             response.addCookie(newCookie);
         }
 
+    }
+
+    @Transactional
+    public Integer insertArticleHeart(SecurityUserDto userDto, Integer articleNo) {
+
+        // member 엔티티 조회
+        Member member = memberService.findByMemberNo(userDto.getMemberNo());
+        // community 엔티티 조회
+        Community community = findByArticleNo(articleNo);
+
+        Optional<ArticleHeart> findHeart
+                = articleHeartRepository.findByCommunityAndMember(community, member);
+        // 해당 멤버가 해당 게시글에 좋아요를 이미 눌렀는지 확인
+        if(findHeart.isPresent()){
+            throw new CustomException(ErrorCode.DUPLICATE_HEART);
+        }
+        // ArticleHeart 엔티티 생성
+        ArticleHeart articleHeart = ArticleHeart.createArticleHeart(userDto.getEmail(), community, member);
+        // 좋아요를 저장
+        articleHeartRepository.save(articleHeart);
+        // 업데이트된 좋아요 개수 반환
+        return community.getHeartCnt();
+    }
+
+    @Transactional
+    public Integer deleteArticleHeart(SecurityUserDto dto, Integer articleNo) {
+        // member 엔티티 조회
+        Member member = memberService.findByMemberNo(dto.getMemberNo());
+        // community 엔티티 조회
+        Community community = findByArticleNo(articleNo);
+
+        Optional<ArticleHeart> findHeart = articleHeartRepository.findByCommunityAndMember(community, member);
+        // 해당 멤버가 해당 게시글의 좋아요를 안가졌는지 확인
+        if(findHeart.isEmpty()){
+            throw new CustomException(DUPLICATE_NOT_HEART);
+        }
+        // 좋아요를 제거
+        articleHeartRepository.deleteByHeartNo(findHeart.get().getHeartNo());
+
+        Community resultArticle = findByArticleNo(articleNo);
+
+        // 업데이트된 좋아요 개수 반환
+        return resultArticle.getHeartCnt();
     }
 }
