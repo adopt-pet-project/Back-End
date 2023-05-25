@@ -3,7 +3,7 @@ package com.adoptpet.server.community.dto.request;
 import com.adoptpet.server.community.domain.BlindYnEnum;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.dto.ArticleImageDto;
-import com.adoptpet.server.community.dto.CommunityDto;
+import com.adoptpet.server.community.dto.ArticleDto;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -39,8 +39,8 @@ public class RegisterArticleRequest {
     @JsonAlias("thumbnail")
     private String thumbnail;
 
-    public CommunityDto toDto(String userId){
-        CommunityDto.CommunityDtoBuilder builder = CommunityDto.builder()
+    public ArticleDto toDto(String userId){
+        ArticleDto.ArticleDtoBuilder builder = ArticleDto.builder()
                 .categoryNo(this.categoryNo)
                 .title(this.title)
                 .content(this.content)

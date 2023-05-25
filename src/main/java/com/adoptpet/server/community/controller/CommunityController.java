@@ -5,8 +5,9 @@ import com.adoptpet.server.commons.support.StatusResponseDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.dto.ArticleDetailInfoDto;
 import com.adoptpet.server.community.dto.ArticleListDto;
+import com.adoptpet.server.community.dto.ArticleDto;
 import com.adoptpet.server.community.dto.CommentListDto;
-import com.adoptpet.server.community.dto.CommunityDto;
+import com.adoptpet.server.community.dto.request.ModifyCommentRequest;
 import com.adoptpet.server.community.dto.request.RegisterArticleRequest;
 import com.adoptpet.server.community.dto.request.RegisterCommentRequest;
 import com.adoptpet.server.community.dto.request.UpdateArticleRequest;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -62,6 +64,35 @@ public class CommunityController {
 
         return ResponseEntity.ok(success());
     }
+
+
+    //== 댓글 수정 ==//
+    @PatchMapping("/comment")
+    public ResponseEntity<StatusResponseDto> modifyComment(
+            @Valid @RequestBody ModifyCommentRequest request, BindingResult bindingResult
+    ){
+
+        // 유효성 검증에 실패할경우 400번 에러를 응답한다.
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(addStatus(400));
+        }
+
+        commentService.updateComment(request.getCommentNo(), request.getContent());
+
+        return ResponseEntity.ok(success());
+    }
+
+
+    //== 댓글 삭제  ==//
+    @DeleteMapping("/comment/{commentId}")
+    public ResponseEntity<StatusResponseDto> deleteComment(
+            @PathVariable("commentId") Integer commentNo) {
+
+        commentService.deleteComment(commentNo);
+
+        return ResponseEntity.ok(success());
+    }
+
 
     //== 게시글 목록 조회 ==//
     @GetMapping("/list/{order}")
@@ -113,15 +144,15 @@ public class CommunityController {
         // 현재 회원의 인증 객체를 가져온다.
         SecurityUserDto user = SecurityUtils.getUser();
         // 게시글 dto 생성
-        CommunityDto communityDto = request.toDto(user.getEmail());
+        ArticleDto articleDto = request.toDto(user.getEmail());
         // 게시글 등록
-        communityService.insertArticle(communityDto);
+        communityService.insertArticle(articleDto);
 
         return ResponseEntity.ok(success());
     }
 
     @PatchMapping("/article/{articleNo}")
-    public ResponseEntity<StatusResponseDto> updateArticle(
+    public ResponseEntity<StatusResponseDto> modifyArticle(
             @RequestBody @Valid UpdateArticleRequest request,
             @PathVariable("articleNo") Integer articleNo,BindingResult bindingResult){
 
@@ -131,16 +162,16 @@ public class CommunityController {
         }
 
         // UpdateArticleRequest -> CommunityDto
-        CommunityDto communityDto = request.toDto();
+        ArticleDto articleDto = request.toDto();
         // DB Update
-        communityService.updateArticle(communityDto,articleNo);
+        communityService.updateArticle(articleDto,articleNo);
 
         return ResponseEntity.ok(success());
     }
 
 
     @DeleteMapping("/article/{articleNo}")
-    public ResponseEntity<StatusResponseDto> deleteAdopt(
+    public ResponseEntity<StatusResponseDto> deleteArticle(
             @PathVariable("articleNo") Integer articleNo) {
 
         communityService.softDeleteArticle(articleNo);
