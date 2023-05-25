@@ -68,7 +68,6 @@ public class JwtUtil {
         long tokenPeriod = 1000L * 60L * 30L; // 30분
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("role", role);
-        log.info("Claims = {}", claims);
 
         Date now = new Date();
         return
