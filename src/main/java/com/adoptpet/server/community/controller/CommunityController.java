@@ -101,8 +101,11 @@ public class CommunityController {
     //== 댓글 조회 ==//
     @GetMapping("/comment/{articleId}")
     public ResponseEntity<List<CommentListResponse>> readCommentList(
-            @PathVariable("articleId") @Min(value = 0) Integer articleNo){
-        List<CommentListDto> commentList = commentService.readCommentList(articleNo);
+            @PathVariable("articleId") @Min(value = 0) Integer articleNo,
+            @RequestHeader(value = "Authorization",required = false) String accessToken
+    ){
+        List<CommentListDto> commentList
+                = commentService.readCommentList(articleNo,accessToken);
 
         List<CommentListResponse> response = commentList.stream()
                 .map(CommentListDto::toResponse)
