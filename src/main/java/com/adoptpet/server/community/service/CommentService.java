@@ -180,7 +180,7 @@ public class CommentService {
     //== 작성자와 수정자 비교 메서드 ==//
     private static void compareRegIdAndModId(String regEmailId,String accessEmailId) {
         if(!regEmailId.equals(accessEmailId)){
-            throw new CustomException(ErrorCode.DUPLICATE_EQUER_REG_USER);
+            throw new CustomException(ErrorCode.DUPLICATE_EQUAL_REG_USER);
         }
     }
 
