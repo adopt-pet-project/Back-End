@@ -8,7 +8,7 @@ import java.time.ZoneId;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MyAdoptResponse {
+public class MyAdoptResponseDto {
 
     private Integer id;
     private String title;
@@ -19,7 +19,7 @@ public class MyAdoptResponse {
     private long publishedAt;
     private String thumb;
 
-    public MyAdoptResponse(Integer id, String title, String context, String author, Integer view, long like, LocalDateTime publishedAt, String thumb) {
+    public MyAdoptResponseDto(Integer id, String title, String context, String author, Integer view, long like, LocalDateTime publishedAt, String thumb) {
         this.id = id;
         this.title = title;
         this.context = context;

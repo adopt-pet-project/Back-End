@@ -1,16 +1,12 @@
 package com.adoptpet.server.adopt.controller;
 
-import com.adoptpet.server.adopt.domain.Chat;
-import com.adoptpet.server.adopt.domain.mongo.Chatting;
 import com.adoptpet.server.adopt.dto.chat.Message;
 import com.adoptpet.server.adopt.dto.request.ChatRequestDto;
 import com.adoptpet.server.adopt.dto.response.ChatResponseDto;
 import com.adoptpet.server.adopt.dto.response.ChatRoomResponseDto;
-import com.adoptpet.server.adopt.mongo.MongoChatRepository;
 import com.adoptpet.server.adopt.service.ChatService;
 import com.adoptpet.server.commons.support.StatusResponseDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
-import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +24,6 @@ import java.util.List;
 public class ChatController {
 
     private final ChatService chatService;
-    private final MongoChatRepository mongoChatRepository;
-    private final MemberService memberService;
 
     @PostMapping("/chatroom")
     public ResponseEntity<StatusResponseDto> createChatRoom(@RequestBody @Valid final ChatRequestDto requestDto, BindingResult bindingResult) {
