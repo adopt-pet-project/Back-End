@@ -82,7 +82,7 @@ public class OAuth2Attribute {
     }
 
 
-    // Oauth2User 객체에 넣어주기 위해서 Map으로 값들을 반환해준다.
+    // OAuth2User 객체에 넣어주기 위해서 Map으로 값들을 반환해준다.
     Map<String, Object> convertToMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("id", attributeKey);
