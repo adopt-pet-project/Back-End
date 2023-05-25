@@ -1,6 +1,6 @@
 package com.adoptpet.server.user.service;
 
-import com.adoptpet.server.adopt.dto.response.MyAdoptResponse;
+import com.adoptpet.server.adopt.dto.response.MyAdoptResponseDto;
 import com.adoptpet.server.adopt.service.AdoptQueryService;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ public class MyAdoptService {
 
     private final AdoptQueryService adoptQueryService;
 
-    public List<MyAdoptResponse> myAdoptList(String status, SecurityUserDto userDto) {
+    public List<MyAdoptResponseDto> myAdoptList(String status, SecurityUserDto userDto) {
         if (status.equals("interested")) {
             List<Integer> keys = adoptQueryService.myInterestedAdoptKeys(userDto);
             return adoptQueryService.myInterestedAdoptList(keys);
