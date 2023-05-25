@@ -1,6 +1,7 @@
 package com.adoptpet.server.user.controller;
 
 import com.adoptpet.server.commons.support.StatusResponseDto;
+import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.user.dto.request.RegisterDto;
 import com.adoptpet.server.user.dto.response.MemberResponseDto;
 import com.adoptpet.server.user.service.MemberService;
@@ -33,7 +34,15 @@ public class MemberController {
     @GetMapping("/member/{id}")
     public ResponseEntity<MemberResponseDto> userInfo(@PathVariable(value = "id") final Integer memberNo) {
         MemberResponseDto responseDto = memberService.findMemberInfo(memberNo);
+        log.info("response Dto = {}", responseDto);
 
         return ResponseEntity.ok(responseDto);
+    }
+
+    @DeleteMapping("/member")
+    public ResponseEntity<StatusResponseDto> removeUser() {
+        memberService.removeMember(SecurityUtils.getUser());
+
+        return ResponseEntity.ok(StatusResponseDto.addStatus(200));
     }
 }

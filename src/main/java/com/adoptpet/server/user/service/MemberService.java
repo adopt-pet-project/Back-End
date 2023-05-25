@@ -1,5 +1,6 @@
 package com.adoptpet.server.user.service;
 
+import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.util.ConstantUtil;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.user.domain.Member;
@@ -59,8 +60,25 @@ public class MemberService {
         return savedMember;
     }
 
+    // 회원탈퇴 메서드
+    @Transactional
+    public void removeMember(SecurityUserDto user) {
+        Member findMember = memberRepository.findById(user.getMemberNo())
+                .orElseThrow(IllegalStateException::new);
+
+        memberRepository.delete(findMember);
+    }
+
     public MemberResponseDto findMemberInfo(Integer memberNo) {
-        return memberNo == 0 ? queryService.getUserInfo(SecurityUtils.getUser().getMemberNo()) : queryService.getUserInfo(memberNo);
+        MemberResponseDto memberResponseDto = memberNo == 0 ? queryService.getUserInfo(SecurityUtils.getUser().getMemberNo()) :
+                queryService.getUserInfo(memberNo);
+
+        if (Objects.isNull(memberResponseDto)) {
+            throw new IllegalArgumentException("조회하려는 회원은 없는 회원입니다.");
+        }
+
+        return memberResponseDto;
+
     }
 
 
