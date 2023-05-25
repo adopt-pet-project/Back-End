@@ -27,12 +27,14 @@ public enum ErrorCode {
     ARTICLE_NOT_FOUND(NOT_FOUND,"해당 게시글을 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND(NOT_FOUND,"해당 카테고리를 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(NOT_FOUND,"해당 댓글을 찾을 수 없습니다."),
+    BOOKMARK_NOT_FOUND(NOT_FOUND, "해당 관심글을 찾을 수 없습니다."),
 
     /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     /* DUPLICATE : (다른 무엇과) 똑같은 */
     DUPLICATE_EMAIL(CONFLICT, "이메일이 이미 존재합니다."),
-
     DUPLICATE_EQUAL_REG_USER(CONFLICT, "해당 글의 작성자와 정보가 일치하지 않습니다."),
+    DUPLICATE_BOOKMARK(CONFLICT, "해당 게시글은 이미 관심글로 등록되어 있습니다."),
+
 
     /* 500 : */
     UNSUCCESSFUL_UPLOAD(INTERNAL_SERVER_ERROR,"이미지 파일 업로드에 실패했습니다."),
@@ -69,4 +71,5 @@ public enum ErrorCode {
     public static CustomException throwArticleNotFound() {
         throw new CustomException(ARTICLE_NOT_FOUND);
     }
+    public static CustomException throwDuplicateBookmark(){throw new CustomException(DUPLICATE_BOOKMARK);}
 }

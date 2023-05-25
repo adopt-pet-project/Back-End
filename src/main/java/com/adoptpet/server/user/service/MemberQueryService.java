@@ -30,7 +30,7 @@ public class MemberQueryService {
         return jpaQueryFactory
                 .select(Projections.constructor(MemberResponseDto.class,
                     member.memberNo,
-                    profileImage.imageUrl,
+                    member.profile,
                     member.nickname,
                     member.address,
                     Projections.constructor(MemberResponseDto.Activity.class,
@@ -59,7 +59,6 @@ public class MemberQueryService {
                 ))
                 .from(member)
                 .where(member.memberNo.eq(memberNo))
-                .join(profileImage).on(profileImage.memberNo.eq(memberNo))
                 .fetchOne();
     }
 
