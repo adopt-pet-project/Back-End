@@ -17,7 +17,9 @@ import java.util.List;
 @AllArgsConstructor
 public class CommentListDto {
     @JsonProperty("type")
-    private String type;
+    private CommentTypeEnum type;
+    @JsonProperty("mine")
+    private boolean mine;
     @JsonProperty("id")
     private Integer commentNo;
     @JsonProperty("like")
@@ -25,7 +27,7 @@ public class CommentListDto {
     @JsonProperty("author")
     private String nickname;
     @JsonProperty("authorId")
-    private Integer memberId;
+    private Integer memberNo;
     @JsonProperty("context")
     private String content;
     @JsonProperty("profile")
@@ -47,9 +49,10 @@ public class CommentListDto {
 
         return CommentListResponse.builder()
                 .type(this.type)
+                .mine(this.mine)
                 .id(this.commentNo)
                 .author(this.nickname)
-                .authorId(this.memberId)
+                .authorId(this.memberNo)
                 .context(this.content)
                 .profile(this.profile)
                 .publishedAt(this.regDate)
