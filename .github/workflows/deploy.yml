@@ -40,6 +40,9 @@ jobs:
         touch ./application-aws.yml
         touch ./application-oauth.yml
         touch ./application-app.yml
+        touch ./application-mongo.yml
+        
+        echo "$APPLICATION_MONGO" > ./application-mongo.yml
         echo "$APPLICATION_OAUTH" > ./application-oauth.yml
         echo "$APPLICATION_APP" > ./application-app.yml
         echo "$APPLICATION" > ./application.yml
@@ -49,6 +52,7 @@ jobs:
         APPLICATION_APP: ${{ secrets.APPLICATION_APP }}
         APPLICATION: ${{ secrets.APPLICATION }}
         APPLICATION_AWS: ${{ secrets.APPLICATION_AWS }}
+        APPLICATION_MONGO : ${{ secrets.APPLICATION_MONGO }}
       shell: bash
 
     - name: Gradle 권한 부여
