@@ -2,7 +2,7 @@ package com.adoptpet.server.community.domain;
 
 
 import com.adoptpet.server.commons.support.BaseTimeEntity;
-import com.adoptpet.server.community.dto.CommunityDto;
+import com.adoptpet.server.community.dto.ArticleDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -74,14 +74,14 @@ public class Community extends BaseTimeEntity {
         this.thumbnail = thumbnail;
     }
 
-    public void updateArticleByMod(CommunityDto communityDto, String modId) {
-        this.categoryNo = communityDto.getCategoryNo();
-        this.title = communityDto.getTitle();
-        this.content = communityDto.getContent();
+    public void updateArticleByMod(ArticleDto articleDto, String modId) {
+        this.categoryNo = articleDto.getCategoryNo();
+        this.title = articleDto.getTitle();
+        this.content = articleDto.getContent();
         this.modId = modId;
         // 이미지 배열 중 가장 첫번째 URL을 썸네일 이미지로 넣어준다.
-        if (Objects.nonNull(communityDto.getImage())) {
-            this.thumbnail = communityDto.getImage()[0].getImageUrl();
+        if (Objects.nonNull(articleDto.getImage())) {
+            this.thumbnail = articleDto.getImage()[0].getImageUrl();
         } else {
             this.thumbnail = "NONE";
         }

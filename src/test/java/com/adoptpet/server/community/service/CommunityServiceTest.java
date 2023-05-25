@@ -1,15 +1,8 @@
 package com.adoptpet.server.community.service;
 
-import com.adoptpet.server.community.domain.BlindYnEnum;
-import com.adoptpet.server.community.domain.LogicalDelEnum;
-import com.adoptpet.server.community.domain.VisibleYnEnum;
-import com.adoptpet.server.community.dto.CommunityDto;
 import com.adoptpet.server.community.repository.CommunityQDslRepository;
 import com.adoptpet.server.community.repository.CommunityRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,7 @@
 package com.adoptpet.server.community.dto.request;
 
-import com.adoptpet.server.community.domain.VisibleYnEnum;
 import com.adoptpet.server.community.dto.ArticleImageDto;
-import com.adoptpet.server.community.dto.CommunityDto;
+import com.adoptpet.server.community.dto.ArticleDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,8 +24,8 @@ public class UpdateArticleRequest {
     @JsonProperty("imageList")
     private ArticleImageDto[] image;
 
-    public CommunityDto toDto(){
-        CommunityDto.CommunityDtoBuilder builder = CommunityDto.builder()
+    public ArticleDto toDto(){
+        ArticleDto.ArticleDtoBuilder builder = ArticleDto.builder()
                 .categoryNo(this.categoryNo)
                 .title(this.title)
                 .content(this.content);
