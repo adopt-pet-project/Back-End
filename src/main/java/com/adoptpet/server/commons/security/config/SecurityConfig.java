@@ -3,6 +3,7 @@ package com.adoptpet.server.commons.security.config;
 import com.adoptpet.server.commons.security.config.handler.MyAuthenticationFailureHandler;
 import com.adoptpet.server.commons.security.config.handler.MyAuthenticationSuccessHandler;
 import com.adoptpet.server.commons.security.filter.JwtAuthFilter;
+import com.adoptpet.server.commons.security.filter.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final JwtAuthFilter jwtAuthFilter;
     private final MyAuthenticationFailureHandler oAuth2LoginFailureHandler;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -60,6 +62,7 @@ public class SecurityConfig {
 
         // JWT 인증 필터를 UsernamePasswordAuthenticationFilter 앞에 추가한다.
         return http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtAuthFilter.class)
                 .build();
     }
 

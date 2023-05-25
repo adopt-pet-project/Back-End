@@ -96,8 +96,6 @@ public class JwtUtil {
                     .getExpiration()
                     .after(new Date());  // 만료 시간이 현재 시간 이후인지 확인하여 유효성 검사 결과를 반환
         } catch (Exception e) {
-            log.error("토큰 파싱 중 에러 발생!");
-            log.error("에러 발생 토큰 = {}", token);
             return false;
         }
     }
