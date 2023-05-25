@@ -17,10 +17,11 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalCatcher {
 
-//    @ExceptionHandler({Exception.class, RuntimeException.class})
-//    protected ResponseEntity<StatusResponseDto> catchException() {
-//        return ResponseEntity.internalServerError().body(StatusResponseDto.addStatus(500));
-//    }
+    @ExceptionHandler({Exception.class, RuntimeException.class})
+    protected ResponseEntity<StatusResponseDto> catchException() {
+        log.info("예외 핸들링");
+        return ResponseEntity.internalServerError().body(StatusResponseDto.addStatus(500));
+    }
 
     @ExceptionHandler(MissingServletRequestPartException.class)
     protected ResponseEntity<ErrorResponse> handleMissingServletRequestPartException(MissingServletRequestPartException ex){
