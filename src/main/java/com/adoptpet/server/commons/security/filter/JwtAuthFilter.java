@@ -1,5 +1,6 @@
 package com.adoptpet.server.commons.security.filter;
 
+import com.adoptpet.server.commons.exception.JwtException;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.security.service.JwtUtil;
 import com.adoptpet.server.user.domain.Member;
@@ -42,8 +43,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // AccessToken을 검증하고, 만료되었을경우 예외를 발생시킨다.
         if (!jwtUtil.verifyToken(atc)) {
-            log.error("Access Token 만료!");
-            throw new IllegalStateException("Access Token 만료!");
+            throw new JwtException("Access Token 만료!");
         }
 
         // AccessToken의 값이 있고, 유효한 경우에 진행한다.
