@@ -91,7 +91,7 @@ public class Community extends BaseTimeEntity {
         this.logicalDel = logicalDel;
     }
 
-    public void addThumbnail(String imageUrl) {
-        this.thumbnail = imageUrl;
+    public Integer getHeartCnt(){
+        return this.getArticleHearts().size();
     }
 }

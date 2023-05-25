@@ -7,13 +7,11 @@ import com.adoptpet.server.community.dto.ArticleDetailInfoDto;
 import com.adoptpet.server.community.dto.ArticleListDto;
 import com.adoptpet.server.community.dto.ArticleDto;
 import com.adoptpet.server.community.dto.CommentListDto;
-import com.adoptpet.server.community.dto.request.ModifyCommentRequest;
-import com.adoptpet.server.community.dto.request.RegisterArticleRequest;
-import com.adoptpet.server.community.dto.request.RegisterCommentRequest;
-import com.adoptpet.server.community.dto.request.UpdateArticleRequest;
+import com.adoptpet.server.community.dto.request.*;
 import com.adoptpet.server.community.dto.response.ArticleInfoResponse;
 import com.adoptpet.server.community.dto.response.ArticleListResponse;
 import com.adoptpet.server.community.dto.response.CommentListResponse;
+import com.adoptpet.server.community.dto.response.HeartCountResponse;
 import com.adoptpet.server.community.service.CommentService;
 import com.adoptpet.server.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
@@ -41,19 +39,69 @@ import static com.adoptpet.server.commons.support.StatusResponseDto.*;
 public class CommunityController {
 
     private final CommunityService communityService;
-
     private final CommentService commentService;
-
 
     //== 응답 status 200 반환 ==//
     private static ResponseEntity<StatusResponseDto> success() {
         return ResponseEntity.ok(StatusResponseDto.success());
     }
 
+    private static ResponseEntity<StatusResponseDto> success(Object responseData) {
+        return ResponseEntity.ok(StatusResponseDto.success(responseData));
+    }
+
+    @PostMapping("/heart")
+    public ResponseEntity<StatusResponseDto> heartRegistration(@Valid @RequestBody HeartRequest request){
+
+        Integer like = null;
+
+        final String target = request.getTarget();
+        final Integer targetNo = request.getTargetNo();
+
+        if (target.equals("article")){
+            // 게시글 좋아요 등록
+            like = communityService.insertArticleHeart(SecurityUtils.getUser(), targetNo);
+
+        } else if(target.equals("comment")) {
+            // 댓글 좋아요 등록
+            like = commentService.insertCommentHeart(SecurityUtils.getUser(), targetNo);
+
+        } else {
+            //TODO 400 예외
+        }
+
+        return success(like);
+    }
+
+
+    @DeleteMapping("/heart/{target}/{targetId}")
+    public ResponseEntity<StatusResponseDto> heartDeletion(
+            @PathVariable("target") String target,
+            @PathVariable("targetId") Integer targetNo
+    )
+    {
+
+        Integer like = null;
+
+        if (target.equals("article")){
+            // 게시글 좋아요 삭제
+            like = communityService.deleteArticleHeart(SecurityUtils.getUser(), targetNo);
+        } else if(target.equals("comment")) {
+            // 댓글 좋아요 삭제
+            like = commentService.deleteCommentHeart(SecurityUtils.getUser(), targetNo);
+        } else {
+            //TODO 400 예외
+        }
+
+        return success(like);
+    }
+
+
+
     //== 댓글 조회 ==//
-    @GetMapping("/comment/{boardId}")
+    @GetMapping("/comment/{articleId}")
     public ResponseEntity<List<CommentListResponse>> readCommentList(
-            @PathVariable("boardId") @Min(value = 0) Integer articleNo){
+            @PathVariable("articleId") @Min(value = 0) Integer articleNo){
         List<CommentListDto> commentList = commentService.readCommentList(articleNo);
 
         List<CommentListResponse> response = commentList.stream()
