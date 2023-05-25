@@ -2,22 +2,26 @@ package com.adoptpet.server.community.service;
 
 import com.adoptpet.server.commons.exception.CustomException;
 import com.adoptpet.server.commons.image.dto.ImageInfoDto;
+import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
+import com.adoptpet.server.community.domain.ArticleBookmark;
 import com.adoptpet.server.community.domain.Category;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.dto.*;
-import com.adoptpet.server.community.repository.CategoryRepository;
-import com.adoptpet.server.community.repository.CommunityImageRepository;
-import com.adoptpet.server.community.repository.CommunityQDslRepository;
+import com.adoptpet.server.community.repository.*;
 import com.adoptpet.server.community.service.mapper.CreateArticleMapper;
-import com.adoptpet.server.community.repository.CommunityRepository;
+import com.adoptpet.server.user.domain.Member;
+import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -33,6 +37,8 @@ public class CommunityService {
     private final CommunityQDslRepository communityQDslRepository;
     private final CommunityImageRepository communityImageRepository;
     private final CategoryRepository categoryRepository;
+    private final MemberService memberService;
+    private final ArticleBookmarkRepository articleBookmarkRepository;
 
     /**
     * 게시글 목록 조회
@@ -142,7 +148,7 @@ public class CommunityService {
     * 게시글 상세 내용 조회
     **/
     @Transactional(readOnly = true)
-    public ArticleDetailInfoDto readArticle(Integer articleNo, String accessToken){
+    public ArticleDetailInfoDto readArticle(Integer articleNo, String accessToken, HttpServletRequest request, HttpServletResponse response){
         // 게시글 고유키로 게시글 검증
         findByArticleNo(articleNo);
 
@@ -164,6 +170,9 @@ public class CommunityService {
 
         // 이미지 URL 리스트 추가
         articleDetail.addImages(images);
+
+        // 게시글 조회수 증가
+        increaseCount(articleNo, request, response);
 
         // 조회된 게시글 정보 반환
         return articleDetail;
@@ -237,5 +246,87 @@ public class CommunityService {
         Community deletedCommunity = communityRepository.save(community);
 
         return deletedCommunity;
+    }
+
+
+    @Transactional
+    public void insertArticleBookmark(SecurityUserDto dto, Integer articleNo) {
+
+        // 게시글 조회
+        Community community = findByArticleNo(articleNo);
+        // 고유키로 Member 엔티티 조회
+        Member member = memberService.findByMemberNo(dto.getMemberNo());
+        // 회원 고유키와 게시글 고유키로 북마크 조회
+        Optional<ArticleBookmark> findBookmark =
+                articleBookmarkRepository.findByMemberNoAndArticleNo(member.getMemberNo(), community.getArticleNo());
+        // 이미 관심글로 등록되어 있을 경우 충돌 예외 처리
+        if(findBookmark.isPresent()) {
+            throw new CustomException(DUPLICATE_BOOKMARK);
+        }
+        // 북마크 엔티티 생성
+        ArticleBookmark createdBookmark = ArticleBookmark.createArticleBookmark(dto.getEmail(), member, community);
+        // DB 저장
+        articleBookmarkRepository.save(createdBookmark);
+    }
+
+    @Transactional
+    public void deleteArticleBookmark(SecurityUserDto dto, Integer articleNo){
+
+        // 회원 고유키와 게시글 고유키로 북마크 조회
+        Optional<ArticleBookmark> findBookmark =
+                articleBookmarkRepository.findByMemberNoAndArticleNo(dto.getMemberNo(), articleNo);
+        // 등록된 관심글이 아닐 경우
+        if(findBookmark.isEmpty()) {
+          throw new CustomException(BOOKMARK_NOT_FOUND);
+        }
+        // DB에서 제거
+        articleBookmarkRepository.delete(findBookmark.get());
+    }
+
+
+    @Transactional
+    public void increaseCount(Integer articleNo, HttpServletRequest request, HttpServletResponse response) {
+        Cookie oldCookie = null;
+        // 현재 브라우저의 쿠키를 전부 가져온다.
+        Cookie[] cookies = request.getCookies();
+
+        // 쿠키가 있을 경우 실행
+        if (Objects.nonNull(cookies)) {
+            // 반복문을 돌면서 communityView라는 이름을 가진 쿠키가 있을 경우 oldCookie에 값을 담아준다.
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("communityView")) {
+                    oldCookie = cookie;
+                }
+            }
+        }
+
+        // communityView 쿠키가 null이 아닐경우 실행한다.
+        if (Objects.nonNull(oldCookie)) {
+            // 현재 게시글 번호를 값으로 포함한 쿠키가 없을 경우 실행한다.
+            if (!oldCookie.getValue().contains("[" + articleNo + "]")) {
+                // 조회수를 1 증가시킨다.
+                communityRepository.increaseCount(articleNo);
+                // 현재 쿠키의 값에 조회한 게시글 번호를 이어서 저장해준다.
+                oldCookie.setValue(oldCookie.getValue() + "_[" + articleNo + "]");
+                // 이 쿠키는 모든 요청에 같이 전달되도록 설정
+                oldCookie.setPath("/");
+                // 쿠키의 유효기간을 하루로 설정
+                oldCookie.setMaxAge(60 * 60 * 24);
+                // 응답 객체(response)에 쿠키를 셋팅해준다.
+                response.addCookie(oldCookie);
+            }
+        } else {
+            // oldCookie의 값이 없다면 현재 조회한 게시글이 하나도 없는 상태이므로 조회 수 카운트를 올려준다.
+            communityRepository.increaseCount(articleNo);
+            // 쿠키를 새로 생성하면서 현재 게시글의 번호를 값으로 넣어준다.
+            Cookie newCookie = new Cookie("communityView", "[" + articleNo + "]");
+            // 이 쿠키는 모든 요청에 같이 전달되도록 설정
+            newCookie.setPath("/");
+            // 쿠키의 유효기간을 하루로 설정
+            newCookie.setMaxAge(60 * 60 * 24);
+            // 응답 객체(response)에 쿠키를 셋팅해준다.
+            response.addCookie(newCookie);
+        }
+
     }
 }
