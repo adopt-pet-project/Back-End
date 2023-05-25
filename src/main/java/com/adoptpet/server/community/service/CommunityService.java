@@ -276,7 +276,7 @@ public class CommunityService {
                 articleBookmarkRepository.findByMemberNoAndArticleNo(dto.getMemberNo(), articleNo);
         // 등록된 관심글이 아닐 경우
         if(findBookmark.isEmpty()) {
-          throw new CustomException(BOOKMARK_NOT_FOUND);
+          throw new CustomException(DUPLICATE_NOT_ADDITION_BOOKMARK);
         }
         // DB에서 제거
         articleBookmarkRepository.delete(findBookmark.get());
