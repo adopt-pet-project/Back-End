@@ -31,7 +31,7 @@ public enum ErrorCode {
     /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     /* DUPLICATE : (다른 무엇과) 똑같은 */
     DUPLICATE_EMAIL(CONFLICT, "이메일이 이미 존재합니다."),
-    DUPLICATE_EQUAL_REG_USER(CONFLICT, "해당 글의 작성자와 정보가 일치하지 않습니다."),
+    DUPLICATE_DIFFERENT_USER(CONFLICT, "해당 글의 작성자와 정보가 일치하지 않습니다."),
     DUPLICATE_BOOKMARK(CONFLICT, "해당 게시글은 이미 관심글로 등록되어 있습니다."),
     DUPLICATE_NOT_ADDITION_BOOKMARK(CONFLICT, "해당 글은 관심글로 등록되어 있지 않습니다."),
     DUPLICATE_HEART(CONFLICT, "해당 글을 좋아요한 상태입니다."),
