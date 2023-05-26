@@ -66,23 +66,32 @@ public class CommunityService {
         List<TrendingArticleDto> articleOfWeekly
                 = communityQDslRepository.findTrendingArticle(startAtOfWeekly, endAt, limit);
 
-        for(TrendingArticleDto dto :articleOfWeekly){
-            log.info("weekly"+1+"  {} , {}", dto.getArticleNo(),dto.getLikeCnt());
-        }
-
-        final TrendingArticleDto trendingDay = articleOfDay.get(0);
-        TrendingArticleDto trendingWeekly = articleOfWeekly.get(0);
-
-        if(trendingDay.getLikeCnt() >= trendingWeekly.getLikeCnt()){
-            trendingWeekly = articleOfWeekly.get(1);
-        }
-
         Map<String,ArticleListDto> result = new HashMap<>();
-        ArticleListDto articleDataOfDay = communityQDslRepository.findArticleOneForList(trendingDay.getArticleNo());
-        ArticleListDto articleDataOfWeekly = communityQDslRepository.findArticleOneForList(trendingWeekly.getArticleNo());
 
-        result.put("day",articleDataOfDay);
+        TrendingArticleDto trendingWeekly;
+        TrendingArticleDto trendingDay;
+
+        ArticleListDto articleDataOfDay = null;
+        ArticleListDto articleDataOfWeekly = null;
+
+        if(!articleOfWeekly.isEmpty()){
+            trendingWeekly = articleOfWeekly.get(0);
+
+            if(!articleOfDay.isEmpty()){
+                trendingDay = articleOfDay.get(0);
+
+                if(trendingDay.getLikeCnt() >= trendingWeekly.getLikeCnt()){
+                    trendingWeekly = articleOfWeekly.get(1);
+                }
+
+                articleDataOfDay = communityQDslRepository.findArticleOneForList(trendingDay.getArticleNo());
+            }
+
+            articleDataOfWeekly = communityQDslRepository.findArticleOneForList(trendingWeekly.getArticleNo());
+        }
+
         result.put("weekly",articleDataOfWeekly);
+        result.put("day",articleDataOfDay);
 
         return result;
     }

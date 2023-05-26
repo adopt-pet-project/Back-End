@@ -12,7 +12,6 @@ import java.util.List;
 @Getter
 @Builder
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ArticleListResponse {
     private ArticleListDto hot;
     private ArticleListDto weekly;
