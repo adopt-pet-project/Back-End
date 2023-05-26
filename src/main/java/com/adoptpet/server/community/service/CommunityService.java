@@ -348,7 +348,8 @@ public class CommunityService {
         // 좋아요를 저장
         articleHeartRepository.save(articleHeart);
         // 업데이트된 좋아요 개수 반환
-        return community.getHeartCnt();
+        Community resultArticle = findByArticleNo(articleNo);
+        return resultArticle.getHeartCnt();
     }
 
     @Transactional

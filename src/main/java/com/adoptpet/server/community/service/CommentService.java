@@ -195,6 +195,10 @@ public class CommentService {
         }
     }
 
+
+    /**
+    * 댓글 좋아요 저장
+    **/
     @Transactional
     public Integer insertCommentHeart(SecurityUserDto userDto, Integer commentNo) {
 
@@ -214,9 +218,13 @@ public class CommentService {
         // 좋아요를 저장
         commentHeartRepository.save(heart);
         // 업데이트된 좋아요 개수 반환
-        return comment.getHeartCnt();
+        Comment resultComment = findCommentByNo(commentNo);
+        return resultComment.getHeartCnt();
     }
 
+    /**
+    * 댓글 좋아요 제거
+    **/
     @Transactional
     public Integer deleteCommentHeart(SecurityUserDto dto, Integer commentNo) {
         // member 엔티티 조회
