@@ -276,7 +276,7 @@ public class CommunityService {
                 articleBookmarkRepository.findByMemberNoAndArticleNo(dto.getMemberNo(), articleNo);
         // 등록된 관심글이 아닐 경우
         if(findBookmark.isEmpty()) {
-          throw new CustomException(BOOKMARK_NOT_FOUND);
+          throw new CustomException(DUPLICATE_NOT_ADDITION_BOOKMARK);
         }
         // DB에서 제거
         articleBookmarkRepository.delete(findBookmark.get());
@@ -348,7 +348,8 @@ public class CommunityService {
         // 좋아요를 저장
         articleHeartRepository.save(articleHeart);
         // 업데이트된 좋아요 개수 반환
-        return community.getHeartCnt();
+        Community resultArticle = findByArticleNo(articleNo);
+        return resultArticle.getHeartCnt();
     }
 
     @Transactional
