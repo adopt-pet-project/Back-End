@@ -18,8 +18,8 @@ import java.util.List;
 public class GlobalCatcher {
 
     @ExceptionHandler({Exception.class, RuntimeException.class})
-    protected ResponseEntity<StatusResponseDto> catchException() {
-        log.info("예외 핸들링");
+    protected ResponseEntity<StatusResponseDto> catchException(RuntimeException ex) {
+        log.error("예외 핸들링",ex.getLocalizedMessage());
         return ResponseEntity.internalServerError().body(StatusResponseDto.addStatus(500));
     }
 
