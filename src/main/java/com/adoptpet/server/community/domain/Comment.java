@@ -57,13 +57,17 @@ public class Comment extends BaseTimeEntity {
     private List<CommentHeart> commentHearts = new ArrayList<>();
 
     @Builder
-    public Comment(String content, Comment parent, String regId, String modId, LogicalDelEnum logicalDel, BlindEnum blindYn) {
+    public Comment(String content, Comment parent, String regId,
+                   String modId, LogicalDelEnum logicalDel, BlindEnum blindYn,
+                    Member member, Community community) {
         this.content = content;
         this.parent = parent;
         this.regId = regId;
         this.modId = modId;
         this.logicalDel = logicalDel;
         this.blindYn = blindYn;
+        this.member = member;
+        this.community = community;
     }
 
     public void addMember(Member member) {
@@ -82,15 +86,16 @@ public class Comment extends BaseTimeEntity {
         return this.getCommentHearts().size();
     }
 
-
     //== 생성 메서드 ==//
-    public static Comment createComment(String content, String email){
+    public static Comment createComment(String content, Member member, Community community){
        return Comment.builder()
                .content(content)
-               .regId(email)
-               .modId(email)
+               .regId(member.getEmail())
+               .modId(member.getEmail())
                .logicalDel(LogicalDelEnum.NORMAL)
                .blindYn(BlindEnum.NORMAL)
+               .member(member)
+               .community(community)
                .build();
     }
 

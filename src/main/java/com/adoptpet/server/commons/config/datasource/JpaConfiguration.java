@@ -16,7 +16,8 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableJpaRepositories(basePackages = {"com.adoptpet.server.adopt.repository",
-        "com.adoptpet.server.community.repository", "com.adoptpet.server.user.repository"})
+        "com.adoptpet.server.community.repository", "com.adoptpet.server.user.repository",
+        "com.adoptpet.server.commons.notification.repository",})
 @EnableTransactionManagement // 트랜잭션 관리 기능을 활성화하는 애너테이션
 @Profile("local")
 public class JpaConfiguration {
