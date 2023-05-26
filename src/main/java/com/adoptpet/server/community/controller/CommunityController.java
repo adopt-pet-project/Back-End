@@ -161,12 +161,12 @@ public class CommunityController {
             @RequestParam(value = "keyword", required = false) String keyword){
 
         ArticleListResponse.ArticleListResponseBuilder responseBuilder = ArticleListResponse.builder();
-        Map<String, ArticleListDto> trendingArticleMap;
+
 
         // 첫페이지를 조회할 경우 인기 게시글 조회
         if(Objects.isNull(pageNum) || pageNum == 1){
             // 인기글 조회
-            trendingArticleMap = communityService.getTrendingArticleDayAndWeekly();
+            Map<String, ArticleListDto>  trendingArticleMap = communityService.getTrendingArticleDayAndWeekly();
             // 응답 형태로 변환
             responseBuilder.hot(trendingArticleMap.get("day"))
                     .weekly(trendingArticleMap.get("weekly"));
