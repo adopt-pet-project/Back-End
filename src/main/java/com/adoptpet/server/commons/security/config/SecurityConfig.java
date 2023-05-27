@@ -19,7 +19,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 @Profile("local") // Profile이 local인 경우에만 설정이 동작한다.
 public class SecurityConfig {
@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .httpBasic().disable() // HTTP 기본 인증을 비활성화
                 .cors().and() // CORS 활성화
                 .csrf().disable() // CSRF 보호 기능 비활성화
+                .formLogin().disable() // form 로그인 비활성화
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션관리 정책을 STATELESS(세션이 있으면 쓰지도 않고, 없으면 만들지도 않는다)
                 .and()
@@ -61,7 +62,8 @@ public class SecurityConfig {
 
 
         // JWT 인증 필터를 UsernamePasswordAuthenticationFilter 앞에 추가한다.
-        return http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+        return http
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtAuthFilter.class)
                 .build();
     }

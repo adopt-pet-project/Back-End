@@ -67,8 +67,8 @@ public class ChatService {
 
     }
 
-    public List<ChatRoomResponseDto> getChatList(SecurityUserDto userDto) {
-        List<ChatRoomResponseDto> chatRoomList = chatQueryService.getChattingList(userDto.getMemberNo());
+    public List<ChatRoomResponseDto> getChatList(SecurityUserDto userDto, Integer saleNo) {
+        List<ChatRoomResponseDto> chatRoomList = chatQueryService.getChattingList(userDto.getMemberNo(), saleNo);
 
         for (ChatRoomResponseDto chat : chatRoomList) {
             long unReadCount = countUnReadMessages(chat.getChatNo(), userDto.getMemberNo());
