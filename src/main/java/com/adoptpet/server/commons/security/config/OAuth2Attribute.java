@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ToString
-@Builder(access = AccessLevel.PRIVATE) // 기본 생성자는 외부에서 객체를 생성할 일이 없으므로 Private 제어자로 지정
+@Builder(access = AccessLevel.PRIVATE) // Builder 메서드를 외부에서 사용하지 않으므로, Private 제어자로 지정
 @Getter
 public class OAuth2Attribute {
     private Map<String, Object> attributes; // 사용자 속성 정보를 담는 Map
