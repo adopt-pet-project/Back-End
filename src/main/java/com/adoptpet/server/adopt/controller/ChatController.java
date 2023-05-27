@@ -47,8 +47,8 @@ public class ChatController {
 
     // 채팅방 리스트 조회
     @GetMapping("/chatroom")
-    public ResponseEntity<List<ChatRoomResponseDto>> chatRoomList() {
-        List<ChatRoomResponseDto> chatList = chatService.getChatList(SecurityUtils.getUser());
+    public ResponseEntity<List<ChatRoomResponseDto>> chatRoomList(@RequestParam(value = "saleNo", required = false) final Integer saleNo) {
+        List<ChatRoomResponseDto> chatList = chatService.getChatList(SecurityUtils.getUser(), saleNo);
         return ResponseEntity.ok(chatList);
     }
 

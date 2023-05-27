@@ -51,7 +51,6 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
         if (isExist) {
             // 회원이 존재하면 jwt token 발행을 시작한다.
             GeneratedToken token = jwtUtil.generateToken(email, role);
-            log.info("jwtToken = {}", token.getAccessToken());
 
             // accessToken을 쿼리스트링에 담는 url을 만들어준다.
            String targetUrl = UriComponentsBuilder.fromUriString("http://3.39.72.204/loginSuccess")
@@ -59,7 +58,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
                     .build()
                     .encode(StandardCharsets.UTF_8)
                     .toUriString();
-           log.info("redirect 준비");
+
            // 로그인 확인 페이지로 리다이렉트 시킨다.
            getRedirectStrategy().sendRedirect(request, response, targetUrl);
 
