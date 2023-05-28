@@ -23,10 +23,10 @@ public class NotificationController {
     **/
     @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter connect(
+            @RequestHeader(name = "Authorization") String accessToken,
             @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-        return notificationService.subscribe(SecurityUtils.getUser(), lastEventId);
+        return notificationService.subscribe(accessToken, lastEventId);
     }
-
 
     /**
      * @title 로그인 한 유저의 모든 알림 조회
@@ -39,7 +39,7 @@ public class NotificationController {
     /**
      * @title 알림 읽음 상태 변경
      */
-    @PatchMapping("/notifications/{id}")
+    @PatchMapping("/read")
     public ResponseEntity<Void> readNotification(@PathVariable Long id) {
         notificationService.readNotification(id);
         return ResponseEntity.noContent().build();

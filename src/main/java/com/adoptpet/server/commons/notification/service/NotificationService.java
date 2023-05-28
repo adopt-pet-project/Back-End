@@ -1,5 +1,6 @@
 package com.adoptpet.server.commons.notification.service;
 
+import com.adoptpet.server.commons.exception.ErrorCode;
 import com.adoptpet.server.commons.notification.domain.Notification;
 import com.adoptpet.server.commons.notification.domain.NotifiTypeEnum;
 import com.adoptpet.server.commons.notification.dto.NotificationResponse;
@@ -7,6 +8,7 @@ import com.adoptpet.server.commons.notification.dto.NotificationsResponse;
 import com.adoptpet.server.commons.notification.repository.EmitterRepository;
 import com.adoptpet.server.commons.notification.repository.NotificationRepository;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
+import com.adoptpet.server.commons.security.service.JwtUtil;
 import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +32,13 @@ public class NotificationService {
     private final EmitterRepository emitterRepository;
     private final MemberService memberService;
     private final NotificationRepository notificationRepository;
+    private final JwtUtil jwtUtil;
 
     @Transactional
-    public SseEmitter subscribe(SecurityUserDto loginMember, String lastEventId) {
+    public SseEmitter subscribe(String accessToken, String lastEventId) {
+
+        Member loginMember = memberService.findByEmail(jwtUtil.getUid(accessToken))
+                .orElseThrow(ErrorCode::throwEmailNotFound);
 
         Integer memberNo = loginMember.getMemberNo();
         // Emitter 캐시에 저장하기 위한 key 생성
@@ -110,15 +116,20 @@ public class NotificationService {
     }
 
 
+    /**
+    * @title 로그인 맴버 알림 전체 조회
+    **/
     @Transactional
     public NotificationsResponse findAllById(SecurityUserDto loginMember) {
 
         Member member = memberService.findByMemberNo(loginMember.getMemberNo());
 
+        // 회원 엔티티로 알림 조회 후 알림 response List로 변환
         List<NotificationResponse> responses = notificationRepository.findAllByMember(member).stream()
                 .map(NotificationResponse::from)
                 .collect(Collectors.toList());
 
+        // 안읽은 알림 개수 체크
         long unreadCount = responses.stream()
                 .filter(notification -> !notification.isRead())
                 .count();
