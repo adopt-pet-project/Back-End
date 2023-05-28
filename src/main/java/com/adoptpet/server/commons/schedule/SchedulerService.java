@@ -38,7 +38,7 @@ public class SchedulerService {
     private final ReportImageRepository reportImageRepository;
     private final FeedbackImageRepository feedbackImageRepository;
 
-//    @Scheduled(cron = "1 * * * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 12 * * * *", zone = "Asia/Seoul")
     public void deleteImage() {
         log.info("======== 이미지 삭제 작업 스케줄러 동작 ==========");
 

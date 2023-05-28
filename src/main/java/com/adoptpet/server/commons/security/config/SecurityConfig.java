@@ -19,7 +19,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @RequiredArgsConstructor
 @Profile("local") // Profile이 local인 경우에만 설정이 동작한다.
 public class SecurityConfig {
@@ -52,6 +52,7 @@ public class SecurityConfig {
                 .antMatchers("/community/**").hasAnyRole("MANAGER", "USER") // GET 요청을 제외한 나머지 /community/** 요청은 권한 필요
                 .antMatchers("/admin/**").hasRole("MANAGER") // 관리자 페이지는 관리자(MANAGER) 권한이 있어야 접근 가능
                 .antMatchers("/chat/**").permitAll()
+                .antMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated() // 그 외의 모든 요청은 인증이 필요하다.
                 .and()
                 .oauth2Login() // OAuth2 로그인 설정시작
