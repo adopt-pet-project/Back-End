@@ -23,6 +23,7 @@ public class ChatQueryService {
 
     private final JPAQueryFactory jpaQueryFactory;
 
+    // 채팅방 리스트 조회
     public List<ChatRoomResponseDto> getChattingList(Integer memberNo, Integer saleNo) {
         return jpaQueryFactory.select(Projections.constructor(ChatRoomResponseDto.class,
                 chat.chatNo,
