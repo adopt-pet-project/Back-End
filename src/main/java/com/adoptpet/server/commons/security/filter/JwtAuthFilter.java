@@ -29,6 +29,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final MemberRepository memberRepository;
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return request.getRequestURI().contains("token/refresh");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -37,11 +41,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // 토큰 검사 생략(모두 허용 URL의 경우 토큰 검사 통과)
         if (!StringUtils.hasText(atc)) {
-            doFilter(request, response, filterChain);
-            return;
-        }
-
-        if (request.getRequestURI().contains("token/refresh")) {
             doFilter(request, response, filterChain);
             return;
         }
