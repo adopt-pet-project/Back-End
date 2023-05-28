@@ -27,12 +27,13 @@ public class NotificationController {
 
 
     /**
-    * @title 로그인 한 유저 SSE 연결
-    **/
+     * @title 로그인 한 유저 SSE 연결
+     **/
     @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter connect(
+    public ResponseEntity<SseEmitter> connect(
             @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-        return notificationService.subscribe(SecurityUtils.getUser(), lastEventId);
+        SseEmitter sseEmitter = notificationService.subscribe(SecurityUtils.getUser(), lastEventId);
+        return ResponseEntity.ok(sseEmitter);
     }
 
     /**
