@@ -58,7 +58,7 @@ public class AuthController {
             resultToken.updateAccessToken(newAccessToken);
             tokenRepository.save(resultToken);
             // 새로운 액세스 토큰을 반환해준다.
-            return ResponseEntity.ok(TokenResponseStatus.addStatus(200, accessToken));
+            return ResponseEntity.ok(TokenResponseStatus.addStatus(200, newAccessToken));
         }
 
         return ResponseEntity.badRequest().body(TokenResponseStatus.addStatus(400, null));
