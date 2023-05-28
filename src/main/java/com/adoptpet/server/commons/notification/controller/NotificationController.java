@@ -18,26 +18,22 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-
-
-
-    @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<SseEmitter> test(
-//            @RequestHeader(name = "Authorization") String accessToken,
-            @RequestParam("num") String num) {
-        return ResponseEntity.ok().body(notificationService.test(num));
-    }
+//    @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+//    public ResponseEntity<SseEmitter> test(
+////            @RequestHeader(name = "Authorization") String accessToken,
+//            @RequestParam("num") String num) {
+//        return ResponseEntity.ok().body(notificationService.test(num));
+//    }
 
 
     /**
     * @title 로그인 한 유저 SSE 연결
     **/
-//    @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-//    public SseEmitter connect(
-//            @RequestHeader(name = "Authorization") String accessToken,
-//            @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-//        return notificationService.subscribe(accessToken, lastEventId);
-//    }
+    @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter connect(
+            @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
+        return notificationService.subscribe(SecurityUtils.getUser(), lastEventId);
+    }
 
     /**
      * @title 로그인 한 유저의 모든 알림 조회

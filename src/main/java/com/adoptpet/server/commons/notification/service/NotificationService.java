@@ -52,10 +52,7 @@ public class NotificationService {
 
 
     @Transactional
-    public SseEmitter subscribe(String accessToken, String lastEventId) {
-
-        Member loginMember = memberService.findByEmail(jwtUtil.getUid(accessToken))
-                .orElseThrow(ErrorCode::throwEmailNotFound);
+    public SseEmitter subscribe(SecurityUserDto loginMember, String lastEventId) {
 
         Integer memberNo = loginMember.getMemberNo();
         // Emitter 캐시에 저장하기 위한 key 생성
