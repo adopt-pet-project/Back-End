@@ -6,6 +6,7 @@ import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -52,7 +53,7 @@ public class Message implements Serializable {
                 .chatRoomNo(chatNo)
                 .content(contentType)
                 .content(content)
-                .sendDate(LocalDateTime.now())
+                .sendDate(Instant.ofEpochMilli(sendTime).atZone(ZoneId.of("Asia/Seoul")).toLocalDateTime())
                 .readCount(readCount)
                 .build();
     }
