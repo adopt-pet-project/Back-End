@@ -59,7 +59,6 @@ public class StompHandler implements ChannelInterceptor {
     private void connectToChatRoom(StompHeaderAccessor accessor, String email) {
         // 채팅방 번호를 가져온다.
         Integer chatRoomNo = getChatRoomNo(accessor);
-        System.out.println("chatRoomNo = " + chatRoomNo);
 
         // 채팅방 입장 처리 -> Redis에 입장 내역 저장
         chatRoomService.connectChatRoom(chatRoomNo, email);

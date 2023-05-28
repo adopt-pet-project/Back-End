@@ -64,8 +64,7 @@ public class JwtUtil {
 
 
     public String generateAccessToken(String email, String role) {
-//        long tokenPeriod = 1000L * 60L * 30L; // 30분
-        long tokenPeriod = 1000L * 3;
+        long tokenPeriod = 1000L * 60L * 30L; // 30분
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("role", role);
 
