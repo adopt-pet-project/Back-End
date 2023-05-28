@@ -9,8 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Transactional(readOnly = true)
+
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MyAdoptService {
 

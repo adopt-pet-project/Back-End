@@ -6,13 +6,11 @@ import static com.adoptpet.server.adopt.domain.QAdoptBookmark.*;
 import static com.adoptpet.server.adopt.domain.QChat.*;
 import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.AdoptStatus;
-import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
+import com.adoptpet.server.adopt.dto.response.*;
+
 import static com.adoptpet.server.user.domain.QMember.*;
 import static com.adoptpet.server.user.domain.QProfileImage.*;
 
-import com.adoptpet.server.adopt.dto.response.AdoptImageResponseDto;
-import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
-import com.adoptpet.server.adopt.dto.response.MyAdoptResponseDto;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
@@ -266,6 +264,22 @@ public class AdoptQueryService {
         return jpaQueryFactory.select(adoptBookmark.adopt.saleNo)
                 .from(adoptBookmark)
                 .where(adoptBookmark.member.memberNo.eq(userDto.getMemberNo()))
+                .fetch();
+    }
+
+    // 메인페이지 지도 렌더링을 위한 데이터 조회
+    public List<AdoptRenderResponseDto> getAllAdoptList() {
+        return jpaQueryFactory.select(Projections.constructor(AdoptRenderResponseDto.class,
+                        adopt.saleNo,
+                        adopt.name,
+                        adopt.age,
+                        adopt.kind,
+                        adopt.latitude,
+                        adopt.longitude,
+                        adopt.thumbnail
+                ))
+                .from(adopt)
+                .where(adopt.status.eq(AdoptStatus.ADOPTING))
                 .fetch();
     }
 

@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 @Getter
-@ToString
 public class ChatRoomResponseDto {
 
     private Integer chatNo;
