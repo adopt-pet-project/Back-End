@@ -35,6 +35,22 @@ public class NotificationService {
     private final JwtUtil jwtUtil;
 
     @Transactional
+    public SseEmitter test(String num){
+
+        String id = num + "_" + System.currentTimeMillis();
+        SseEmitter emitter = emitterRepository.save(id, new SseEmitter(DEFAULT_TIMEOUT));
+
+        emitter.onCompletion(() -> emitterRepository.deleteById(id));
+        emitter.onTimeout(() -> emitterRepository.deleteById(id));
+
+        sendToClient(emitter, id, "EventStream Created. [userId=" + num + "]");
+
+        return emitter;
+    }
+
+
+
+    @Transactional
     public SseEmitter subscribe(String accessToken, String lastEventId) {
 
         Member loginMember = memberService.findByEmail(jwtUtil.getUid(accessToken))
