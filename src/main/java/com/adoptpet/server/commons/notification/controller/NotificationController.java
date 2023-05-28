@@ -22,10 +22,10 @@ public class NotificationController {
 
 
     @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter test(
+    public ResponseEntity<SseEmitter> test(
 //            @RequestHeader(name = "Authorization") String accessToken,
             @RequestParam("num") String num) {
-        return notificationService.test(num);
+        return ResponseEntity.ok().body(notificationService.test(num));
     }
 
 
