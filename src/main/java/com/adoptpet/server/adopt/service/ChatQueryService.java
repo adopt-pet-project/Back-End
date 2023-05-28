@@ -2,8 +2,12 @@ package com.adoptpet.server.adopt.service;
 
 import static com.adoptpet.server.adopt.domain.QChat.*;
 import com.adoptpet.server.adopt.dto.response.ChatRoomResponseDto;
+import static com.adoptpet.server.user.domain.QMember.*;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +29,28 @@ public class ChatQueryService {
                 chat.createMember,
                 chat.joinMember,
                 chat.saleNo,
-                chat.regDate
+                chat.regDate,
+                Projections.constructor(ChatRoomResponseDto.Participant.class,
+                        ExpressionUtils.as(
+                                JPAExpressions.select(member.nickname)
+                                        .from(member)
+                                        .where(member.memberNo.eq(
+                                                new CaseBuilder()
+                                                        .when(chat.createMember.eq(memberNo)).then(chat.joinMember)
+                                                        .otherwise(chat.createMember)
+
+                                        ))
+                        , "nickname"),
+                        ExpressionUtils.as(
+                                JPAExpressions.select(member.profile)
+                                        .from(member)
+                                        .where(member.memberNo.eq(
+                                                new CaseBuilder()
+                                                        .when(chat.createMember.eq(memberNo)).then(chat.joinMember)
+                                                        .otherwise(chat.createMember)
+                                        )), "profile"
+                        )
+                )
                 ))
                 .from(chat)
                 .where(chat.createMember.eq(memberNo).or(chat.joinMember.eq(memberNo)), saleNoEq(saleNo))
@@ -35,4 +60,5 @@ public class ChatQueryService {
     private BooleanExpression saleNoEq(Integer saleNo) {
         return Objects.nonNull(saleNo) ? chat.saleNo.eq(saleNo) : null;
     }
+
 }
