@@ -45,6 +45,7 @@ public class ChatService {
     private final JwtUtil jwtUtil;
     private final ChatQueryService chatQueryService;
     private final MongoTemplate mongoTemplate;
+    private final ChatRoomService chatRoomService;
 
     @Transactional
     public Chat makeChatRoom(SecurityUserDto userDto, ChatRequestDto requestDto) {
@@ -79,7 +80,7 @@ public class ChatService {
     }
 
     public List<ChatResponseDto> getChattingList(Integer chatRoomNo, SecurityUserDto user) {
-        updateCountAllZero(chatRoomNo, user.getMemberNo());
+        updateCountAllZero(chatRoomNo, user.getEmail());
         List<Chatting> chattingList = mongoChatRepository.findByChatRoomNo(chatRoomNo);
 
         return chattingList.stream()
@@ -92,15 +93,30 @@ public class ChatService {
         // 메시지 전송 요청 헤더에 포함된 Access Token에서 email로 회원을 조회한다.
         Member findMember = memberRepository.findByEmail(jwtUtil.getUid(accessToken))
                         .orElseThrow(IllegalStateException::new);
+
+        // 채팅방에 모든 유저가 참여중인지 확인한다.
+        boolean isConnectedAll = chatRoomService.isAllConnected(message.getChatNo());
+        // 1:1 채팅이므로 2명 접속시 readCount 0, 한명 접속시 1
+        Integer readCount = isConnectedAll ? 0 : 1;
         // message 객체에 보낸시간, 보낸사람 memberNo, 닉네임을 셋팅해준다.
-        message.setSendTimeAndSender(LocalDateTime.now(), findMember.getMemberNo(), findMember.getNickname());
+        message.setSendTimeAndSender(LocalDateTime.now(), findMember.getMemberNo(), findMember.getNickname(), readCount);
         // Message 객체를 채팅 엔티티로 변환한다.
         Chatting chatting = message.convertEntity();
         // 채팅 내용을 저장한다.
         Chatting savedChat = mongoChatRepository.save(chatting);
         // 저장된 고유 ID를 반환한다.
         message.setId(savedChat.getId());
+        log.info("Message = {}", message);
         // 메시지를 전송한다.
+        sender.send(ConstantUtil.KAFKA_TOPIC, message);
+    }
+
+    public void updateMessage(String email) {
+        Message message = Message.builder()
+                .content("notice")
+                .content(email + " 님이 돌아오셨습니다.")
+                .build();
+
         sender.send(ConstantUtil.KAFKA_TOPIC, message);
     }
 
@@ -120,10 +136,13 @@ public class ChatService {
     }
 
     // 읽지 않은 메시지 채팅장 입장시 읽음 처리
-    public void updateCountAllZero(Integer chatNo, Integer senderNo) {
+    public void updateCountAllZero(Integer chatNo, String email) {
+        Member findMember = memberRepository.findByEmail(email)
+                .orElseThrow(IllegalStateException::new);
+
         Update update = new Update().set("readCount", 0);
         Query query = new Query(Criteria.where("chatRoomNo").is(chatNo)
-                .and("senderNo").ne(senderNo));
+                .and("senderNo").ne(findMember.getMemberNo()));
 
         mongoTemplate.updateMulti(query, update, Chatting.class);
     }

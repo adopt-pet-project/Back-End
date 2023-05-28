@@ -2,6 +2,7 @@ package com.adoptpet.server;
 
 import com.adoptpet.server.adopt.domain.mongo.Chatting;
 import com.adoptpet.server.adopt.mongo.MongoChatRepository;
+import com.adoptpet.server.adopt.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -19,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BackEndApplication implements CommandLineRunner {
     private final MongoChatRepository mongoChatRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
 
     static {
@@ -36,5 +38,6 @@ public class BackEndApplication implements CommandLineRunner {
         for (Chatting chatting : chattings) {
             System.out.println("chatting = " + chatting);
         }
+//        chatRoomRepository.deleteAll();
     }
 }

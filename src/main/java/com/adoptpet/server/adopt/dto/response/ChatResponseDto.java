@@ -11,7 +11,7 @@ public class ChatResponseDto {
     private Integer chatRoomNo;
     private Integer senderNo;
     private String senderName;
-    private String type;
+    private String contentType;
     private String content;
     private long sendDate;
     private long readCount;
@@ -22,7 +22,7 @@ public class ChatResponseDto {
         this.chatRoomNo = chatting.getChatRoomNo();
         this.senderNo = chatting.getSenderNo();
         this.senderName = chatting.getSenderName();
-        this.type = chatting.getType();
+        this.contentType = chatting.getContentType();
         this.content = chatting.getContent();
         this.sendDate = chatting.getSendDate().atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
         this.readCount = chatting.getReadCount();

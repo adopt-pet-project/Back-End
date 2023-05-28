@@ -19,7 +19,7 @@ public class Chatting {
     private Integer chatRoomNo;
     private Integer senderNo;
     private String senderName;
-    private String type;
+    private String contentType;
     private String content;
     private LocalDateTime sendDate;
     private long readCount;

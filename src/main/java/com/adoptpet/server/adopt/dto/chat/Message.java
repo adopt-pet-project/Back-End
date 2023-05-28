@@ -2,17 +2,18 @@ package com.adoptpet.server.adopt.dto.chat;
 
 
 import com.adoptpet.server.adopt.domain.mongo.Chatting;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Getter
-@NoArgsConstructor
 @ToString
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Message implements Serializable {
 
     private String id;
@@ -30,12 +31,14 @@ public class Message implements Serializable {
 
     private Integer senderNo;
 
-    private LocalDateTime sendTime;
+    private long sendTime;
+    private Integer readCount;
 
-    public void setSendTimeAndSender(LocalDateTime sendTime, Integer senderNo, String senderName) {
+    public void setSendTimeAndSender(LocalDateTime sendTime, Integer senderNo, String senderName, Integer readCount) {
         this.senderName = senderName;
-        this.sendTime = sendTime;
+        this.sendTime = sendTime.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
         this.senderNo = senderNo;
+        this.readCount = readCount;
     }
 
     public void setId(String id) {
@@ -49,8 +52,8 @@ public class Message implements Serializable {
                 .chatRoomNo(chatNo)
                 .content(contentType)
                 .content(content)
-                .sendDate(sendTime)
-                .readCount(1)
+                .sendDate(LocalDateTime.now())
+                .readCount(readCount)
                 .build();
     }
 }
