@@ -12,20 +12,18 @@ import com.adoptpet.server.adopt.mongo.MongoChatRepository;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.security.service.JwtUtil;
 import com.adoptpet.server.commons.util.ConstantUtil;
-import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -71,10 +69,26 @@ public class ChatService {
     public List<ChatRoomResponseDto> getChatList(SecurityUserDto userDto, Integer saleNo) {
         List<ChatRoomResponseDto> chatRoomList = chatQueryService.getChattingList(userDto.getMemberNo(), saleNo);
 
+        // 채팅방별로 읽지 않은 횟수를 셋팅
         for (ChatRoomResponseDto chat : chatRoomList) {
             long unReadCount = countUnReadMessages(chat.getChatNo(), userDto.getMemberNo());
             chat.setUnReadCount(unReadCount);
         }
+
+        // 채팅방별로 마지막 채팅내용과 시간을 셋팅
+        chatRoomList
+                .forEach(chatRoomDto -> {
+                    Page<Chatting> chatting =
+                            mongoChatRepository.findByChatRoomNoOrderBySendDateDesc(chatRoomDto.getChatNo(), PageRequest.of(0, 1));
+                    if (chatting.hasContent()) {
+                        Chatting chat = chatting.getContent().get(0);
+                        ChatRoomResponseDto.LatestMessage latestMessage = ChatRoomResponseDto.LatestMessage.builder()
+                                .context(chat.getContent())
+                                .sendAt(chat.getSendDate())
+                                .build();
+                        chatRoomDto.setLatestMessage(latestMessage);
+                    }
+                });
 
         return chatRoomList;
     }
