@@ -86,7 +86,7 @@ public class CommentService {
             // 알림 등록 매개 값 추가
             notiType = NotifiTypeEnum.REPLY;// 대댓글이 달렸을 경우
             owner = parent.getMember();
-            refId = parent.getCommentNo();
+            refId = articleNo;
         } else {
             notiType = NotifiTypeEnum.COMMENT;// 댓글이 달렷을 경우
             owner = memberService.findByEmail(community.getRegId())
