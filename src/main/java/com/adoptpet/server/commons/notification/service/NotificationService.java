@@ -114,7 +114,7 @@ public class NotificationService {
 
         } catch (IOException ex) {
             emitterRepository.deleteById(id);
-            log.error("--- SSE 연결 오류 ----", ex);
+            log.error("--- SSE 연결 오류 ----", ex.getMessage());
         }
     }
 
