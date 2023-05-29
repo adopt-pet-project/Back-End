@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -123,8 +124,10 @@ public class NotificationService {
         Member member = memberService.findByMemberNo(loginMember.getMemberNo());
 
         // 회원 엔티티로 알림 조회 후 알림 response List로 변환
+
         return notificationRepository.findAllByMember(member).stream()
                 .map(NotificationResponse::from)
+                .sorted(Comparator.comparing(NotificationResponse::getId).reversed())
                 .collect(Collectors.toList());
     }
 
