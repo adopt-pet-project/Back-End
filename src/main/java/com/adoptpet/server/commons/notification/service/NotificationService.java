@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import javax.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
@@ -139,7 +138,7 @@ public class NotificationService {
     }
 
     @Transactional
-    public void deleteNotification(List<Long> idList) {
+    public void deleteNotification(Long[] idList) {
         for(Long id : idList){
              Notification notification = getNotification(id);
              notificationRepository.delete(notification);
