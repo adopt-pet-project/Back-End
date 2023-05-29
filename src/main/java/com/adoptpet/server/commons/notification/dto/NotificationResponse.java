@@ -17,12 +17,12 @@ public class NotificationResponse {
     private Long id;
     private String type;
     private String content;
-    @JsonProperty("")
     private String url;
     private Integer[] publishedAt;
     private String name;
     @JsonProperty("checked")
     private boolean read;
+    @JsonProperty("del")
     private boolean del;
 
 
