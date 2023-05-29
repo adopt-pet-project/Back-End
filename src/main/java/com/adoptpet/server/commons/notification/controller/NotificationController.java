@@ -58,7 +58,7 @@ public class NotificationController {
     /**
     * @title 알림 삭제
     **/
-    @DeleteMapping
+    @PostMapping
     public ResponseEntity<StatusResponseDto> deleteNotification(
             @RequestBody DeleteNotificationsRequest request){
         notificationService.deleteNotification(request.getIdList());
