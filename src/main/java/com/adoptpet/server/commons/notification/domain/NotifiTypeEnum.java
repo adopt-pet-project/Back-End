@@ -9,12 +9,12 @@ import javax.persistence.Converter;
 public enum NotifiTypeEnum {
 
     NOTICE("notice/","announcement"),
-    ARTICLE_HOT("article/","documentHot"),
-    ARTICLE_WEEK("article/","documentWeek"),
+    ARTICLE_HOT("board/","documentHot"),
+    ARTICLE_WEEK("board/","documentWeek"),
     CHAT("chatRoom/","chat"),
     NOTE("note/","note"),
-    COMMENT("article/","comment"),
-    REPLY("article/","recomment");
+    COMMENT("board/","comment"),
+    REPLY("board/","recomment");
 
     private final String path;
     private final String alias;
