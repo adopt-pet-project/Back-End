@@ -3,6 +3,8 @@ package com.adoptpet.server.community.service;
 import com.adoptpet.server.commons.exception.CustomException;
 import com.adoptpet.server.commons.exception.ErrorCode;
 import com.adoptpet.server.commons.image.dto.ImageInfoDto;
+import com.adoptpet.server.commons.notification.domain.NotifiTypeEnum;
+import com.adoptpet.server.commons.notification.service.NotificationService;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.domain.*;
@@ -13,6 +15,7 @@ import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -39,6 +42,8 @@ public class CommunityService {
     private final ArticleBookmarkRepository articleBookmarkRepository;
     private final ArticleHeartRepository articleHeartRepository;
 
+    private final NotificationService notificationService;
+
     /**
     * 게시글 목록 조회
     **/
@@ -48,6 +53,71 @@ public class CommunityService {
         List<ArticleListDto> articleList = communityQDslRepository.selectArticleList(order,pageNum,option,keyword);
 
         return articleList;
+    }
+
+    //== HOT 게시글 선정 스케줋러 ==//
+    @Scheduled(fixedDelay = 1000 * 60 * 60 * 6) // 6시간마다 반복
+//    @Scheduled(fixedDelay = 1000 * 60 * 1)
+    public void selectionHotArticle(){
+        log.info("====== 인기글(HOT) 스케줄 실행 ======");
+        final LocalDateTime endAt = LocalDateTime.now();
+        final LocalDateTime startAt = endAt.minusDays(1);
+        //스케쥴 실행 일시의 -7일 부터 -1일까지 좋아요를 받은 게시글 조회
+        List<TrendingArticleDto> articleOfDay
+                = communityQDslRepository.findTrendingArticles(startAt, endAt);
+
+        for(TrendingArticleDto trendingArticle : articleOfDay){
+
+            final int articleNo = trendingArticle.getArticleNo();
+            // 게시글 조회
+            Community article = findByArticleNo(articleNo);
+
+            final boolean isNormal = article.getPopular().equals(PopularEnum.NORMAL);
+
+            // 게시글 인기 상태가 HOT 게시글이고 좋아요가 특정 개수 이상일떄
+            if( isNormal && trendingArticle.getLikeCnt() >= 3 ){
+                // 게시글 인기 상태 변경
+                article.updatePopularStatus(PopularEnum.HOT);
+                communityRepository.save(article);
+                // 게시글의 회원 엔티티 조회
+                Member member = memberService.findByEmail(article.getRegId()).orElseThrow(ErrorCode::throwEmailNotFound);
+                // 인기 게시글 선정 알림 전송
+                notificationService.send(member, NotifiTypeEnum.ARTICLE_HOT, articleNo, article.getContent());
+            }
+        }
+    }
+
+    //== WEEKLY 게시글 선정 스케줋러 ==//
+    @Scheduled(cron = "59 59 23 * * *") // 23시 59분 59초
+//    @Scheduled(fixedDelay = 1000 * 60 * 1)
+    public void selectionWeeklyArticle(){
+        log.info("====== 인기글(WEEKLY) 스케줄 실행 ======");
+        final LocalDateTime endAt = LocalDateTime.now();
+        final LocalDateTime startAt = endAt.minusDays(1);
+        //스케쥴 실행 일시의 -7일 부터 -1일까지 좋아요를 받은 게시글 조회
+        List<TrendingArticleDto> articleOfWeekly
+              = communityQDslRepository.findTrendingArticles(startAt, endAt);
+
+        for(TrendingArticleDto trendingArticle : articleOfWeekly){
+
+            final int articleNo = trendingArticle.getArticleNo();
+            // 게시글 조회
+            Community article = findByArticleNo(articleNo);
+
+            log.info("========= popular : {} ",article.getPopular());
+            final boolean isHot = article.getPopular().equals(PopularEnum.HOT);
+
+            // 게시글 인기 상태가 기본이고 좋아요가 특정 개수 이상일떄
+            if( isHot && trendingArticle.getLikeCnt() >= 5 ){
+                // 게시글 인기 상태 변경
+                article.updatePopularStatus(PopularEnum.WEEKLY);
+                communityRepository.save(article);
+                // 게시글의 회원 엔티티 조회
+                Member member = memberService.findByEmail(article.getRegId()).orElseThrow(ErrorCode::throwEmailNotFound);
+                // 인기 게시글 선정 알림 전송
+                notificationService.send(member, NotifiTypeEnum.ARTICLE_WEEK, articleNo, article.getContent());
+            }
+        }
     }
 
     /**
@@ -62,9 +132,9 @@ public class CommunityService {
         final Integer limit = 2;
 
         List<TrendingArticleDto> articleOfDay
-                = communityQDslRepository.findTrendingArticle(startAtOfDay, endAt, limit);
+                = communityQDslRepository.findTrendingArticles(startAtOfDay, endAt, limit);
         List<TrendingArticleDto> articleOfWeekly
-                = communityQDslRepository.findTrendingArticle(startAtOfWeekly, endAt, limit);
+                = communityQDslRepository.findTrendingArticles(startAtOfWeekly, endAt, limit);
 
         Map<String,ArticleListDto> result = new HashMap<>();
 

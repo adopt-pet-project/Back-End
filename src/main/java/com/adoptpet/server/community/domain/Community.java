@@ -91,6 +91,10 @@ public class Community extends BaseTimeEntity {
         }
     }
 
+    public void updatePopularStatus(PopularEnum popular){
+        this.popular = popular;
+    }
+
     public void deleteByLogicalDel(LogicalDelEnum logicalDel){
         this.logicalDel = logicalDel;
     }

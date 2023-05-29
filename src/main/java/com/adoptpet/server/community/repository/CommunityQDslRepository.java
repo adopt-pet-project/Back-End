@@ -3,10 +3,7 @@ package com.adoptpet.server.community.repository;
 import com.adoptpet.server.commons.image.dto.ImageInfoDto;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
-import com.adoptpet.server.community.dto.ArticleDetailInfoDto;
-import com.adoptpet.server.community.dto.ArticleListDto;
-import com.adoptpet.server.community.dto.QArticleDetailInfoDto;
-import com.adoptpet.server.community.dto.TrendingArticleDto;
+import com.adoptpet.server.community.dto.*;
 import com.querydsl.core.types.*;
 import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.JPAExpressions;
@@ -39,10 +36,26 @@ public class CommunityQDslRepository {
         this.query = new JPAQueryFactory(em);
     }
 
+    public List<TrendingArticleDto> findTrendingArticles(LocalDateTime startAt,
+                                                         LocalDateTime endAt)
+    {
+        log.info("start at : {}" , startAt);
+        log.info("end at : {} " , endAt);
+
+        return query.select(Projections.constructor(TrendingArticleDto.class,
+                    articleHeart.community.articleNo,
+                    articleHeart.community.articleNo.count().as("likeCnt")
+                ))
+                .from(articleHeart)
+                .where(articleHeart.regDate.between(startAt,endAt))
+                .groupBy(articleHeart.community.articleNo)
+                .fetch();
+    }
+
     //== 인기 게시글 조회  ==//
-    public List<TrendingArticleDto> findTrendingArticle(LocalDateTime startAt,
-                                                        LocalDateTime endAt,
-                                                        Integer limit)
+    public List<TrendingArticleDto> findTrendingArticles(LocalDateTime startAt,
+                                                         LocalDateTime endAt,
+                                                         Integer limit)
     {
         // order by에서 alias 인식할수 있도록 객체 생성
         NumberPath<Long> aliasLike = Expressions.numberPath(Long.class,"likes");
