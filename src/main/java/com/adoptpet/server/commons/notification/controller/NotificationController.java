@@ -2,6 +2,7 @@ package com.adoptpet.server.commons.notification.controller;
 
 import com.adoptpet.server.commons.notification.dto.NotificationsResponse;
 import com.adoptpet.server.commons.notification.service.NotificationService;
+import com.adoptpet.server.commons.support.StatusResponseDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,10 +26,14 @@ public class NotificationController {
      **/
     @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> connect(
+            @RequestHeader(name = "Authorization") final String token,
             @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId,
             HttpServletResponse response) {
-        SseEmitter sseEmitter = notificationService.subscribe(SecurityUtils.getUser(), lastEventId);
+
+        SseEmitter sseEmitter = notificationService.subscribe(token, lastEventId);
+
         response.setHeader("X-Accel-Buffering","no");
+
         return ResponseEntity.ok(sseEmitter);
     }
 
@@ -49,4 +54,9 @@ public class NotificationController {
         return ResponseEntity.noContent().build();
     }
 
+    @DeleteMapping("/clearAll")
+    public ResponseEntity<StatusResponseDto> clearAll(){
+        notificationService.clearAll();
+        return ResponseEntity.ok(StatusResponseDto.success());
+    }
 }

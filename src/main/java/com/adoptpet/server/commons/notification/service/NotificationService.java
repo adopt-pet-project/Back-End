@@ -1,5 +1,6 @@
 package com.adoptpet.server.commons.notification.service;
 
+import com.adoptpet.server.commons.exception.ErrorCode;
 import com.adoptpet.server.commons.notification.domain.Notification;
 import com.adoptpet.server.commons.notification.domain.NotifiTypeEnum;
 import com.adoptpet.server.commons.notification.dto.NotificationResponse;
@@ -35,7 +36,10 @@ public class NotificationService {
 
 
     @Transactional
-    public SseEmitter subscribe(SecurityUserDto loginMember, String lastEventId) {
+    public SseEmitter subscribe(String token, String lastEventId) {
+
+        Member loginMember = memberService.findByEmail(jwtUtil.getUid(token))
+                .orElseThrow(ErrorCode::throwEmailNotFound);
 
         Integer memberNo = loginMember.getMemberNo();
         // Emitter 캐시에 저장하기 위한 key 생성
@@ -43,7 +47,13 @@ public class NotificationService {
         // SseEmitter 캐시에 저장
         SseEmitter emitter = emitterRepository.save(id, new SseEmitter(DEFAULT_TIMEOUT));
 
+        Map<String, SseEmitter> allStartWithById = emitterRepository.findAllStartWithById(id);
+        Map<String, Object> allEventCacheStartWithId = emitterRepository.findAllEventCacheStartWithId(id);
+
         log.info("new emitter added: {}", emitter);
+        log.info("new emitter id: {}", id);
+        log.info("find emitter by id : {}", allStartWithById.toString());
+        log.info("find cache by id : {}", allEventCacheStartWithId.toString());
 
         // emitter의 완료 또는 타임아웃 Event가 발생할 경우, 해당 emitter를 삭제
         emitter.onCompletion(() -> emitterRepository.deleteById(id));
@@ -143,4 +153,7 @@ public class NotificationService {
         notification.read();
     }
 
+    public void clearAll() {
+        emitterRepository.clearAll();
+    }
 }
