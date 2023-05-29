@@ -1,10 +1,10 @@
 package com.adoptpet.server.commons.notification.service;
 
+import com.adoptpet.server.commons.exception.CustomException;
 import com.adoptpet.server.commons.exception.ErrorCode;
 import com.adoptpet.server.commons.notification.domain.Notification;
 import com.adoptpet.server.commons.notification.domain.NotifiTypeEnum;
 import com.adoptpet.server.commons.notification.dto.NotificationResponse;
-import com.adoptpet.server.commons.notification.dto.NotificationsResponse;
 import com.adoptpet.server.commons.notification.repository.EmitterRepository;
 import com.adoptpet.server.commons.notification.repository.NotificationRepository;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
@@ -28,32 +28,22 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NotificationService {
     private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
-    public static final String PREFIX_URL = "http://localhost/";
+    public static final String PREFIX_URL = "http://3.39.72.204/";
     private final EmitterRepository emitterRepository;
     private final MemberService memberService;
     private final NotificationRepository notificationRepository;
     private final JwtUtil jwtUtil;
 
-
     @Transactional
-    public SseEmitter subscribe(String token, String lastEventId) {
-
-        Member loginMember = memberService.findByEmail(jwtUtil.getUid(token))
-                .orElseThrow(ErrorCode::throwEmailNotFound);
+    public SseEmitter subscribe(SecurityUserDto loginMember, String lastEventId) {
 
         Integer memberNo = loginMember.getMemberNo();
-        // Emitter 캐시에 저장하기 위한 key 생성
+        // Emitter map에 저장하기 위한 key 생성
         String id = memberNo + "_" + System.currentTimeMillis();
-        // SseEmitter 캐시에 저장
+        // SseEmitter map에 저장
         SseEmitter emitter = emitterRepository.save(id, new SseEmitter(DEFAULT_TIMEOUT));
 
-        Map<String, SseEmitter> allStartWithById = emitterRepository.findAllStartWithById(id);
-        Map<String, Object> allEventCacheStartWithId = emitterRepository.findAllEventCacheStartWithId(id);
-
         log.info("new emitter added: {}", emitter);
-        log.info("new emitter id: {}", id);
-        log.info("find emitter by id : {}", allStartWithById.toString());
-        log.info("find cache by id : {}", allEventCacheStartWithId.toString());
 
         // emitter의 완료 또는 타임아웃 Event가 발생할 경우, 해당 emitter를 삭제
         emitter.onCompletion(() -> emitterRepository.deleteById(id));
@@ -125,35 +115,37 @@ public class NotificationService {
 
 
     /**
-    * @title 로그인 맴버 알림 전체 조회
-    **/
+     * @title 로그인 맴버 알림 전체 조회
+     **/
     @Transactional
-    public NotificationsResponse findAllById(SecurityUserDto loginMember) {
+    public List<NotificationResponse> findAllById(SecurityUserDto loginMember) {
 
         Member member = memberService.findByMemberNo(loginMember.getMemberNo());
 
         // 회원 엔티티로 알림 조회 후 알림 response List로 변환
-        List<NotificationResponse> responses = notificationRepository.findAllByMember(member).stream()
+        return notificationRepository.findAllByMember(member).stream()
                 .map(NotificationResponse::from)
                 .collect(Collectors.toList());
-
-        // 안읽은 알림 개수 체크
-        long unreadCount = responses.stream()
-                .filter(notification -> !notification.isRead())
-                .count();
-
-        return NotificationsResponse.of(responses, unreadCount);
     }
 
 
     @Transactional
     public void readNotification(Long id) {
-        Notification notification = notificationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 알림입니다."));
+        Notification notification = getNotification(id);
         notification.read();
     }
 
-    public void clearAll() {
-        emitterRepository.clearAll();
+    @Transactional
+    public void deleteNotification(List<Long> idList) {
+        for(Long id : idList){
+             Notification notification = getNotification(id);
+             notificationRepository.delete(notification);
+        }
+    }
+
+    private Notification getNotification(Long id) {
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(ErrorCode::throwNotificationNotFound);
+        return notification;
     }
 }
