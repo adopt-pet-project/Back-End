@@ -3,6 +3,7 @@ package com.adoptpet.server.commons.notification.dto;
 import com.adoptpet.server.commons.notification.domain.NotifiTypeEnum;
 import com.adoptpet.server.commons.notification.domain.Notification;
 import com.adoptpet.server.commons.util.LocalDateTimeToArray;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,20 +17,25 @@ public class NotificationResponse {
     private Long id;
     private String type;
     private String content;
+    @JsonProperty("")
     private String url;
     private Integer[] publishedAt;
-    private boolean read;
     private String name;
+    @JsonProperty("checked")
+    private boolean read;
+    private boolean del;
+
 
     @Builder
-    public NotificationResponse(Long id, NotifiTypeEnum type , String content, String url, LocalDateTime publishedAt, boolean read, String name) {
+    public NotificationResponse(Long id, NotifiTypeEnum type , String content, String url, LocalDateTime publishedAt, boolean read,boolean del, String name) {
         this.id = id;
         this.type = type.getAlias();
         this.content = content;
         this.url = url;
         this.publishedAt = LocalDateTimeToArray.convert(publishedAt);
-        this.read = read;
         this.name = name;
+        this.read = read;
+        this.del = del;
     }
 
     public static NotificationResponse from(Notification notification) {
@@ -40,6 +46,7 @@ public class NotificationResponse {
                 .url(notification.getUrl())
                 .publishedAt(notification.getRegDate())
                 .read(notification.isRead())
+                .del(notification.isDel())
                 .name(notification.getMember().getNickname())
                 .build();
     }

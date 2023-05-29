@@ -1,6 +1,7 @@
 package com.adoptpet.server.commons.notification.controller;
 
-import com.adoptpet.server.commons.notification.dto.NotificationsResponse;
+import com.adoptpet.server.commons.notification.dto.DeleteNotificationsRequest;
+import com.adoptpet.server.commons.notification.dto.NotificationResponse;
 import com.adoptpet.server.commons.notification.service.NotificationService;
 import com.adoptpet.server.commons.support.StatusResponseDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @RestController
 @RequestMapping("/notification")
@@ -26,11 +28,10 @@ public class NotificationController {
      **/
     @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> connect(
-            @RequestHeader(name = "Authorization") final String token,
             @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId,
             HttpServletResponse response) {
 
-        SseEmitter sseEmitter = notificationService.subscribe(token, lastEventId);
+        SseEmitter sseEmitter = notificationService.subscribe(SecurityUtils.getUser(), lastEventId);
 
         response.setHeader("X-Accel-Buffering","no");
 
@@ -41,22 +42,22 @@ public class NotificationController {
      * @title 로그인 한 유저의 모든 알림 조회
      */
     @GetMapping("/all")
-    public ResponseEntity<NotificationsResponse> notifications() {
-        return ResponseEntity.ok().body(notificationService.findAllById(SecurityUtils.getUser()));
+    public ResponseEntity<List<NotificationResponse>> notifications() {
+        return ResponseEntity.ok(notificationService.findAllById(SecurityUtils.getUser()));
     }
 
     /**
      * @title 알림 읽음 상태 변경
      */
-    @PatchMapping("/read")
+    @PatchMapping("/checked")
     public ResponseEntity<Void> readNotification(@PathVariable Long id) {
         notificationService.readNotification(id);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/clearAll")
-    public ResponseEntity<StatusResponseDto> clearAll(){
-        notificationService.clearAll();
+    @DeleteMapping("")
+    public ResponseEntity<StatusResponseDto> deleteNotification(@RequestBody DeleteNotificationsRequest request){
+        notificationService.deleteNotification(request.getIdList());
         return ResponseEntity.ok(StatusResponseDto.success());
     }
 }
