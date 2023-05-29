@@ -49,14 +49,18 @@ public class NotificationController {
     /**
      * @title 알림 읽음 상태 변경
      */
-    @PatchMapping("/checked")
-    public ResponseEntity<Void> readNotification(@PathVariable Long id) {
+    @PatchMapping("/checked/{id}")
+    public ResponseEntity<StatusResponseDto> readNotification(@PathVariable("id") Long id) {
         notificationService.readNotification(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(StatusResponseDto.success());
     }
 
-    @DeleteMapping("")
-    public ResponseEntity<StatusResponseDto> deleteNotification(@RequestBody DeleteNotificationsRequest request){
+    /**
+    * @title 알림 삭제
+    **/
+    @DeleteMapping
+    public ResponseEntity<StatusResponseDto> deleteNotification(
+            @RequestBody DeleteNotificationsRequest request){
         notificationService.deleteNotification(request.getIdList());
         return ResponseEntity.ok(StatusResponseDto.success());
     }
