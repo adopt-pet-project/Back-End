@@ -33,11 +33,12 @@ public class BackEndApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        List<Chatting> chattings = mongoChatRepository.findByChatRoomNo(1);
-
-        for (Chatting chatting : chattings) {
-            System.out.println("chatting = " + chatting);
-        }
+//        List<Chatting> chattings = mongoChatRepository.findByChatRoomNo(1);
+//
+//        for (Chatting chatting : chattings) {
+//            System.out.println("chatting = " + chatting);
+//        }
+        mongoChatRepository.deleteAll();
 //        chatRoomRepository.deleteAll();
     }
 }

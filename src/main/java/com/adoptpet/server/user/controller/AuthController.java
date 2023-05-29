@@ -30,14 +30,14 @@ public class AuthController {
     @PostMapping("token/logout")
     public ResponseEntity<StatusResponseDto> logout(@RequestHeader("Authorization") final String accessToken) {
 
-        String id = String.valueOf(SecurityUtils.getUser().getMemberNo());
+//        String id = String.valueOf(SecurityUtils.getUser().getMemberNo());
 
         // 엑세스 토큰으로 현재 Redis 정보 삭제
         tokenService.removeRefreshToken(accessToken);
         // 회원과 연결된 SseEmitter 객체를 제거
-        emitterRepository.deleteAllStartWithId(id);
-        // 알림 Event를 캐시에서 제거
-        emitterRepository.deleteAllEventCacheStartWithId(id);
+//        emitterRepository.deleteAllStartWithId(id);
+//        // 알림 Event를 캐시에서 제거
+//        emitterRepository.deleteAllEventCacheStartWithId(id);
 
         return ResponseEntity.ok(StatusResponseDto.addStatus(200));
     }
