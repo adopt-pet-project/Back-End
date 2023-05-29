@@ -110,7 +110,6 @@ public class NotificationService {
                     .id(id)
                     .name("sse")
                     .data(data));
-            log.info("::::::::::: SSE :::::::::::::: {} ", data);
 
         } catch (IOException ex) {
             emitterRepository.deleteById(id);
