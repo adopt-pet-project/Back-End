@@ -32,4 +32,5 @@ public enum LogicalDelEnum {
         return Optional.ofNullable(CODE_MAP.get(value))
                 .orElseThrow(ErrorCode::throwTypeNotFound);
     }
+
 }
