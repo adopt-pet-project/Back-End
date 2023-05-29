@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 @RequestMapping("/notification")
 @Slf4j
@@ -31,8 +33,10 @@ public class NotificationController {
      **/
     @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> connect(
-            @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
+            @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId,
+            HttpServletResponse response) {
         SseEmitter sseEmitter = notificationService.subscribe(SecurityUtils.getUser(), lastEventId);
+        response.setHeader("X-Accel-Buffering","no");
         return ResponseEntity.ok(sseEmitter);
     }
 

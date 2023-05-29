@@ -1,7 +1,5 @@
 package com.adoptpet.server.commons.notification.service;
 
-import com.adoptpet.server.commons.exception.CustomException;
-import com.adoptpet.server.commons.exception.ErrorCode;
 import com.adoptpet.server.commons.notification.domain.Notification;
 import com.adoptpet.server.commons.notification.domain.NotifiTypeEnum;
 import com.adoptpet.server.commons.notification.dto.NotificationResponse;
@@ -117,7 +115,6 @@ public class NotificationService {
         } catch (IOException ex) {
             emitterRepository.deleteById(id);
             log.error("--- SSE 연결 오류 ----", ex);
-            throw new CustomException(ErrorCode.TEST);
         }
     }
 
