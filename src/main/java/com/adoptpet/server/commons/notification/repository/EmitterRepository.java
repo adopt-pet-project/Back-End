@@ -75,6 +75,9 @@ public class EmitterRepository {
         );
     }
 
+    public void clearAll(){
+        emitters.clear();
+    }
 
 }
 
