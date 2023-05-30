@@ -6,8 +6,8 @@ import com.adoptpet.server.adopt.domain.mongo.Chatting;
 import com.adoptpet.server.adopt.dto.chat.Message;
 import com.adoptpet.server.adopt.dto.request.ChatRequestDto;
 import com.adoptpet.server.adopt.dto.response.ChatResponseDto;
+import com.adoptpet.server.adopt.dto.response.ChattingHistoryResponseDto;
 import com.adoptpet.server.adopt.dto.response.ChatRoomResponseDto;
-import com.adoptpet.server.adopt.dto.response.ChattingDto;
 import com.adoptpet.server.adopt.repository.ChatRepository;
 import com.adoptpet.server.adopt.mongo.MongoChatRepository;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
@@ -25,6 +25,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -67,42 +68,42 @@ public class ChatService {
 
     }
 
-    public ChatRoomResponseDto getChatList(SecurityUserDto userDto, Integer saleNo) {
-        List<ChattingDto> chatRoomList = chatQueryService.getChattingList(userDto.getMemberNo(), saleNo);
+    public List<ChatRoomResponseDto> getChatList(SecurityUserDto userDto, Integer saleNo) {
+        List<ChatRoomResponseDto> chatRoomList = chatQueryService.getChattingList(userDto.getMemberNo(), saleNo);
 
+            chatRoomList
+                    .forEach(chatRoomDto -> {
+                        // 채팅방별로 읽지 않은 메시지 개수를 셋팅
+                        long unReadCount = countUnReadMessages(chatRoomDto.getChatNo(), userDto.getMemberNo());
+                        chatRoomDto.setUnReadCount(unReadCount);
 
-        chatRoomList
-                .forEach(chatRoomDto -> {
-                    // 채팅방별로 읽지 않은 메시지 개수를 셋팅
-                    long unReadCount = countUnReadMessages(chatRoomDto.getChatNo(), userDto.getMemberNo());
-                    chatRoomDto.setUnReadCount(unReadCount);
+                        // 채팅방별로 마지막 채팅내용과 시간을 셋팅
+                        Page<Chatting> chatting =
+                                mongoChatRepository.findByChatRoomNoOrderBySendDateDesc(chatRoomDto.getChatNo(), PageRequest.of(0, 1));
+                        if (chatting.hasContent()) {
+                            Chatting chat = chatting.getContent().get(0);
+                            ChatRoomResponseDto.LatestMessage latestMessage = ChatRoomResponseDto.LatestMessage.builder()
+                                    .context(chat.getContent())
+                                    .sendAt(chat.getSendDate())
+                                    .build();
+                            chatRoomDto.setLatestMessage(latestMessage);
+                        }
+                    });
 
-                    // 채팅방별로 마지막 채팅내용과 시간을 셋팅
-                    Page<Chatting> chatting =
-                            mongoChatRepository.findByChatRoomNoOrderBySendDateDesc(chatRoomDto.getChatNo(), PageRequest.of(0, 1));
-                    if (chatting.hasContent()) {
-                        Chatting chat = chatting.getContent().get(0);
-                        ChattingDto.LatestMessage latestMessage = ChattingDto.LatestMessage.builder()
-                                .context(chat.getContent())
-                                .sendAt(chat.getSendDate())
-                                .build();
-                        chatRoomDto.setLatestMessage(latestMessage);
-                    }
-                });
-
-        return ChatRoomResponseDto.builder()
-                .chatList(chatRoomList)
-                .email(userDto.getEmail())
-                .build();
+        return chatRoomList;
     }
 
-    public List<ChatResponseDto> getChattingList(Integer chatRoomNo, SecurityUserDto user) {
+    public ChattingHistoryResponseDto getChattingList(Integer chatRoomNo, SecurityUserDto user) {
         updateCountAllZero(chatRoomNo, user.getEmail());
-        List<Chatting> chattingList = mongoChatRepository.findByChatRoomNo(chatRoomNo);
-
-        return chattingList.stream()
+        List<ChatResponseDto> chattingList = mongoChatRepository.findByChatRoomNo(chatRoomNo)
+                .stream()
                 .map(chat -> new ChatResponseDto(chat, user.getMemberNo()))
                 .collect(Collectors.toList());
+
+        return ChattingHistoryResponseDto.builder()
+                .chatList(chattingList)
+                .email(user.getEmail())
+                .build();
     }
 
     @Transactional

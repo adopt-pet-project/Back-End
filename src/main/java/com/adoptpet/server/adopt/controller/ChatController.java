@@ -3,7 +3,7 @@ package com.adoptpet.server.adopt.controller;
 import com.adoptpet.server.adopt.dto.chat.Message;
 import com.adoptpet.server.adopt.dto.request.ChatDisconnectDto;
 import com.adoptpet.server.adopt.dto.request.ChatRequestDto;
-import com.adoptpet.server.adopt.dto.response.ChatResponseDto;
+import com.adoptpet.server.adopt.dto.response.ChattingHistoryResponseDto;
 import com.adoptpet.server.adopt.dto.response.ChatRoomResponseDto;
 import com.adoptpet.server.adopt.service.ChatRoomService;
 import com.adoptpet.server.adopt.service.ChatService;
@@ -43,15 +43,15 @@ public class ChatController {
 
     // 채팅내역 조회
     @GetMapping("/chatroom/{roomNo}")
-    public ResponseEntity<List<ChatResponseDto>> chattingList(@PathVariable("roomNo") Integer roomNo) {
-        List<ChatResponseDto> chattingList = chatService.getChattingList(roomNo, SecurityUtils.getUser());
+    public ResponseEntity<ChattingHistoryResponseDto> chattingList(@PathVariable("roomNo") Integer roomNo) {
+        ChattingHistoryResponseDto chattingList = chatService.getChattingList(roomNo, SecurityUtils.getUser());
         return ResponseEntity.ok(chattingList);
     }
 
     // 채팅방 리스트 조회
     @GetMapping("/chatroom")
-    public ResponseEntity<ChatRoomResponseDto> chatRoomList(@RequestParam(value = "saleNo", required = false) final Integer saleNo) {
-        ChatRoomResponseDto chatList = chatService.getChatList(SecurityUtils.getUser(), saleNo);
+    public ResponseEntity<List<ChatRoomResponseDto>> chatRoomList(@RequestParam(value = "saleNo", required = false) final Integer saleNo) {
+        List<ChatRoomResponseDto> chatList = chatService.getChatList(SecurityUtils.getUser(), saleNo);
         return ResponseEntity.ok(chatList);
     }
 
@@ -70,7 +70,7 @@ public class ChatController {
     }
 
     // 채팅방 접속 끊기
-    @DeleteMapping("/chatroom")
+    @DeleteMapping  ("/chatroom")
     public ResponseEntity<StatusResponseDto> disconnectChat(@Valid @RequestBody final ChatDisconnectDto disconnectDto,
                                                             BindingResult bindingResult) {
 
