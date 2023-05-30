@@ -34,6 +34,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final JwtUtil jwtUtil;
 
+    //== SSE 연결 ==//
     @Transactional
     public SseEmitter subscribe(SecurityUserDto loginMember, String lastEventId) {
 
@@ -67,6 +68,8 @@ public class NotificationService {
         return emitter;
     }
 
+
+    //== 알림 전송 ==//
     @Transactional
     public void send(Member member, NotifiTypeEnum type, Integer refNo , String content) {
         // 알림 생성
@@ -88,25 +91,25 @@ public class NotificationService {
     }
 
 
-    //== 클라이언트에 SSE 응답 ==//
+    //== 클라이언트에 SSE + 알림 데이터 전송 ==//
     private void sendToClient(SseEmitter emitter, String id, Object data) {
         try {
             emitter.send(SseEmitter.event()
                     .id(id)
                     .name("sse")
                     .data(data));
-
         } catch (IOException ex) {
             emitterRepository.deleteById(id);
             log.error("--- SSE 연결 오류 ----", ex.getMessage());
         }
     }
 
+    //== 알림 생성 ==//
     private Notification createNotification(Member member, NotifiTypeEnum type,Integer refNo, String content) {
         return Notification.builder()
                 .member(member)
                 .type(type)
-                .Url(PREFIX_URL+type.getPath() + refNo)
+                .Url(PREFIX_URL + type.getPath() + refNo)
                 .content(content)
                 .isRead(false)
                 .isDel(false)
@@ -114,9 +117,7 @@ public class NotificationService {
     }
 
 
-    /**
-     * @title 로그인 맴버 알림 전체 조회
-     **/
+    //== 로그인 맴버 알림 전체 조회 ==//
     @Transactional
     public List<NotificationResponse> findAllById(SecurityUserDto loginMember) {
 
@@ -131,12 +132,15 @@ public class NotificationService {
     }
 
 
+    //== 알림 읽음 처리 ==//
     @Transactional
     public void readNotification(Long id) {
         Notification notification = getNotification(id);
         notification.read();
     }
 
+
+    //== 알림 삭제 ==//
     @Transactional
     public void deleteNotification(Long[] idList) {
         for(Long id : idList){
@@ -145,6 +149,8 @@ public class NotificationService {
         }
     }
 
+
+    //== 개별 알림 조회 ==//
     private Notification getNotification(Long id) {
         Notification notification = notificationRepository.findById(id)
                 .orElseThrow(ErrorCode::throwNotificationNotFound);
