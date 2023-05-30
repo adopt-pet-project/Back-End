@@ -77,7 +77,7 @@ public class CommunityQDslRepository {
                         community.title,
                         member.nickname,
                         member.memberNo,
-                        profileImage.imageUrl.as("profile"),
+                        member.profile,
                         community.viewCount.as("view"),
                         articleHeart.heartNo.countDistinct().intValue().as("like"),
                         comment.commentNo.countDistinct().intValue().as("comment"),
@@ -85,13 +85,12 @@ public class CommunityQDslRepository {
                         community.content
                 ))
                 .from(community)
-                .leftJoin(profileImage).on(community.regId.eq(profileImage.regId))
                 .leftJoin(member).on(community.regId.eq(member.email))
                 .leftJoin(articleHeart).on(community.articleNo.eq(articleHeart.community.articleNo))
                 .leftJoin(comment).on(community.articleNo.eq(comment.community.articleNo))
                 .where(community.articleNo.eq(articleNo))
                 .groupBy(community.articleNo,community.regId,community.title,member.nickname,
-                        member.memberNo,community.regDate,profileImage.imageUrl,community.content)
+                        member.memberNo,member.profile,community.regDate,community.content)
                 .fetchFirst();
     }
 
