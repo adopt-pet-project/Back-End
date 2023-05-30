@@ -159,12 +159,20 @@ public class CommunityService {
 
 
     /**
-     * 게시글 목록 조회
+     * @title 게시글 목록 조회 - 검색용
      **/
     @Transactional(readOnly = true)
     public List<ArticleListDto> readArticleList(String order, Integer pageNum, Integer option, String keyword){
-        List<ArticleListDto> articleList = communityQDslRepository.selectArticleList(order,pageNum,option,keyword);
-        return articleList;
+        return communityQDslRepository.findArticleList(order,pageNum,option,keyword);
+    }
+
+
+    /**
+     * @title 게시글 목록 조회 - 회원용
+     **/
+    @Transactional(readOnly = true)
+    public List<ArticleListDto> readArticleList(String memberEmail){
+        return communityQDslRepository.findArticleList(memberEmail);
     }
 
 
