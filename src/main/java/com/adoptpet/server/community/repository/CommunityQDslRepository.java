@@ -86,8 +86,8 @@ public class CommunityQDslRepository {
     }
 
 
-    //== 게시글 목록 조회 ==//
-    public List<ArticleListDto> selectArticleList(String order,Integer pageNum,Integer option,String keyword) {
+    //== 게시글 목록 조회 - 검색용 ==//
+    public List<ArticleListDto> findArticleList(String order, Integer pageNum, Integer option, String keyword) {
 
         // row 시작 위치 (mysql에서는 limit)
         final Integer offset = pageNum == null? 0 : (pageNum * 10) - 10; // 1 -> 0, 2 -> 10 3 -> 20
@@ -128,6 +128,16 @@ public class CommunityQDslRepository {
         return findArticleListQuery()
                 .where(community.articleNo.eq(articleNo))
                 .fetchOne();
+    }
+
+
+
+    //== 게시글 목록 - 회원용 ==//
+    public List<ArticleListDto> findArticleList(String email){
+        return findArticleListQuery()
+                .where(community.regId.eq(email))
+                .orderBy(community.articleNo.desc())
+                .fetch();
     }
 
 

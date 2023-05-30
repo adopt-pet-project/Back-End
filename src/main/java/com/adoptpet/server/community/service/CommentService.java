@@ -145,9 +145,18 @@ public class CommentService {
                 }
             }
         }
-
         return commentDtoList;
     }
+
+    /**
+    * @title 댓글 목록 조회
+     * @param memberNo : 회원 고유키
+    **/
+    @Transactional(readOnly = true)
+    public List<Comment> readCommentList(Integer memberNo){
+        return commentRepository.findByMemberNo(memberNo);
+    }
+
 
     /**
      * @title 댓글 수정
@@ -244,8 +253,7 @@ public class CommentService {
         return resultComment.getHeartCnt();
     }
 
-
-    //== converter ==//
+    //== converter (entity to dto) ==//
     private static CommentListDto convertToDto(Comment comment, CommentTypeEnum type, String accessToken) {
 
         boolean mine = false;
