@@ -11,7 +11,6 @@ import com.adoptpet.server.community.dto.request.*;
 import com.adoptpet.server.community.dto.response.ArticleInfoResponse;
 import com.adoptpet.server.community.dto.response.ArticleListResponse;
 import com.adoptpet.server.community.dto.response.CommentListResponse;
-import com.adoptpet.server.community.dto.response.HeartCountResponse;
 import com.adoptpet.server.community.service.CommentService;
 import com.adoptpet.server.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
@@ -168,7 +167,7 @@ public class CommunityController {
             // 인기글 조회
             Map<String, ArticleListDto>  trendingArticleMap = communityService.getTrendingArticleDayAndWeekly();
             // 응답 형태로 변환
-            responseBuilder.hot(trendingArticleMap.get("day"))
+            responseBuilder.hot(trendingArticleMap.get("hot"))
                     .weekly(trendingArticleMap.get("weekly"));
         }
 
