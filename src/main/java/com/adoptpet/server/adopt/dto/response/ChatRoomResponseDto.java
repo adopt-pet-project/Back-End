@@ -1,64 +1,16 @@
 package com.adoptpet.server.adopt.dto.response;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.ToString;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.util.List;
 
+
+@AllArgsConstructor
+@Builder
 @Getter
 public class ChatRoomResponseDto {
-
-    private Integer chatNo;
-
-    private Integer createMember;
-
-    private Integer joinMember;
-
-    private Integer saleNo;
-
-    private long regDate;
-    private Participant participant;
-    private LatestMessage latestMessage;
-
-    private Long unReadCount;
-
-    public void setUnReadCount(Long unReadCount) {
-        this.unReadCount = unReadCount;
-    }
-
-    public ChatRoomResponseDto(Integer chatNo, Integer createMember, Integer joinMember, Integer saleNo, LocalDateTime regDate, Participant participant) {
-        this.chatNo = chatNo;
-        this.createMember = createMember;
-        this.joinMember = joinMember;
-        this.saleNo = saleNo;
-        this.regDate = regDate.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
-        this.participant = participant;
-    }
-
-    public void setLatestMessage(LatestMessage latestMessage) {
-        this.latestMessage = latestMessage;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class Participant {
-        private String username;
-        private String profile;
-    }
-
-    @Getter
-    public static class LatestMessage {
-        private String context;
-        private long sendAt;
-
-        @Builder
-        public LatestMessage(String context, LocalDateTime sendAt) {
-            this.context = context;
-            this.sendAt = sendAt.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
-        }
-    }
+    private String email;
+    private List<ChattingDto> chatList;
 }
