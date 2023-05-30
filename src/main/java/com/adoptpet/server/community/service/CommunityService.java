@@ -228,29 +228,22 @@ public class CommunityService {
     public ArticleDetailInfoDto readArticle(Integer articleNo, String accessToken, HttpServletRequest request, HttpServletResponse response){
         // 게시글 고유키로 게시글 검증
         findByArticleNo(articleNo);
-
         // 게시글 정보 조회
         ArticleDetailInfoDto articleDetail = communityQDslRepository.findArticleDetail(articleNo);
-
         // 조회 유저 검증 기본 값 지정
         articleDetail.addIsMine(false);
-
         // 엑세스 토큰 있을 시 조회한 유저가 게시글의 주인인지 확인
         if (StringUtils.hasText(accessToken)) {
             // 현재 게시글을 보려는 회원이 이 게시글을 작성한 작성자와 같은지 확인한다.
             boolean isMine = communityQDslRepository.isMine(SecurityUtils.getUser().getEmail(), articleNo);
             articleDetail.addIsMine(isMine);
         }
-
         // 이미지 URL 조회 -> 없을 시 null 반환
         List<ImageInfoDto> images = communityQDslRepository.findImageUrlByArticleNo(articleNo);
-
         // 이미지 URL 리스트 추가
         articleDetail.addImages(images);
-
         // 게시글 조회수 증가
         increaseCount(articleNo, request, response);
-
         // 조회된 게시글 정보 반환
         return articleDetail;
     }
