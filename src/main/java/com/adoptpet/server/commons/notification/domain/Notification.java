@@ -36,8 +36,13 @@ public class Notification extends BaseTimeEntity {
     private boolean isRead;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_no")
-    private Member member;
+    @JoinColumn(name = "sender_no")
+    private Member sender;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_no")
+    private Member receiver;
+
 
     public void read() {
         this.isRead = true;
