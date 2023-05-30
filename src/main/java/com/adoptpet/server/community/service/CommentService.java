@@ -67,18 +67,18 @@ public class CommentService {
     @Transactional
     public void insertComment(String content, Integer parentNo, Integer articleNo) {
 
-        Integer LoginMemberNo = SecurityUtils.getUser().getMemberNo();
-        Member writerMember = memberService.findByMemberNo(LoginMemberNo);
+        final int loginMemberNo = SecurityUtils.getUser().getMemberNo();
+        Member writer = memberService.findByMemberNo(loginMemberNo);
         Community community = findArticleByNo(articleNo);
 
-        log.info("writerMember : {}", writerMember.getMemberNo());
+        log.info("writerMember : {}", writer.getMemberNo());
 
         NotifiTypeEnum notiType = null;
-        Member ownerMember = null;
+        Member receiver = null;
         Integer refId = null;
 
         // 댓글 생성
-        Comment comment = Comment.createComment(content, writerMember ,community);
+        Comment comment = Comment.createComment(content, writer ,community);
         // 댓글-대댓글 구분
         if (Objects.nonNull(parentNo)) {
             // 요청에 포함된 부모 댓글 조회
@@ -88,22 +88,20 @@ public class CommentService {
 
             // 알림 데이터 입력
             notiType = NotifiTypeEnum.REPLY;// 대댓글이 달렸을 경우
-            ownerMember = parent.getMember();
+            receiver = comment.getParent().getMember();
             refId = articleNo;
         } else {
             notiType = NotifiTypeEnum.COMMENT;// 댓글이 달렷을 경우
-            ownerMember = memberService.findByEmail(community.getRegId())
+            receiver = memberService.findByEmail(community.getRegId())
                     .orElseThrow(ErrorCode::throwEmailNotFound);
-
-            log.info("ownerMember : {}", ownerMember.getMemberNo());
-
             refId = articleNo;
         }
         Comment save = commentRepository.save(comment);
-        // 글의 소유자가 멤버와 일치하지 않을 경우
-        if(!ownerMember.getMemberNo().equals(LoginMemberNo)){
+
+        // 글 작성자와 알림 받는 사람이 일치하지 않을 때 알림 전송
+        if(!receiver.getMemberNo().equals(writer.getMemberNo())){
             // 알림 등록(알림받을 대상자, 알림 타입, 발생지 소유자 고유키, 알림 내용)
-            notificationService.send(ownerMember, notiType, refId, save.getContent());
+            notificationService.send(writer, receiver, notiType, refId, save.getContent());
         }
     }
 
