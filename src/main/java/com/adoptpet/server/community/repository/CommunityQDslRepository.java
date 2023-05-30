@@ -35,6 +35,8 @@ public class CommunityQDslRepository {
         this.query = new JPAQueryFactory(em);
     }
 
+
+    //== 인기 게시글 조회  ==//
     public List<TrendingArticleDto> findTrendingArticles(LocalDateTime startAt,
                                                          LocalDateTime endAt)
     {
@@ -48,25 +50,6 @@ public class CommunityQDslRepository {
                 .fetch();
     }
 
-    //== 인기 게시글 조회  ==//
-    public List<TrendingArticleDto> findTrendingArticles(LocalDateTime startAt,
-                                                         LocalDateTime endAt,
-                                                         Integer limit)
-    {
-        // order by에서 alias 인식할수 있도록 객체 생성
-        NumberPath<Long> aliasLike = Expressions.numberPath(Long.class,"likes");
-
-        return query.select(Projections.constructor(TrendingArticleDto.class,
-                articleHeart.community.articleNo,
-                articleHeart.community.count().as("likes")
-                ))
-                .from(articleHeart)
-                .where(articleHeart.regDate.between(startAt,endAt))
-                .groupBy(articleHeart.community.articleNo)
-                .orderBy(aliasLike.desc())
-                .limit(limit)
-                .fetch();
-    }
 
     //== 게시글 상세내용 조회 ==//
     public ArticleDetailInfoDto findArticleDetail(Integer articleNo){
@@ -92,6 +75,7 @@ public class CommunityQDslRepository {
                         member.memberNo,member.profile,community.regDate,community.content)
                 .fetchFirst();
     }
+
 
     //== 게시글의 소유자인지 이메일로 검증 ==//
     public boolean isMine(String email, Integer articleNo) {
