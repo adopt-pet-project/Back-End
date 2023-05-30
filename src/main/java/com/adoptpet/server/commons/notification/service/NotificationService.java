@@ -107,7 +107,7 @@ public class NotificationService {
     //== 알림 생성 ==//
     private Notification createNotification(Member member, NotifiTypeEnum type,Integer refNo, String content) {
         return Notification.builder()
-                .member(member)
+                .receiver(member)
                 .type(type)
                 .Url(PREFIX_URL + type.getPath() + refNo)
                 .content(content)
@@ -116,20 +116,20 @@ public class NotificationService {
                 .build();
     }
 
-
-    //== 로그인 맴버 알림 전체 조회 ==//
-    @Transactional
-    public List<NotificationResponse> findAllById(SecurityUserDto loginMember) {
-
-        Member member = memberService.findByMemberNo(loginMember.getMemberNo());
-
-        // 회원 엔티티로 알림 조회 후 알림 response List로 변환
-
-        return notificationRepository.findAllByMember(member).stream()
-                .map(NotificationResponse::from)
-                .sorted(Comparator.comparing(NotificationResponse::getId).reversed())
-                .collect(Collectors.toList());
-    }
+//
+//    //== 로그인 맴버 알림 전체 조회 ==//
+//    @Transactional
+//    public List<NotificationResponse> findAllById(SecurityUserDto loginMember) {
+//
+//        Member member = memberService.findByMemberNo(loginMember.getMemberNo());
+//
+//        // 회원 엔티티로 알림 조회 후 알림 response List로 변환
+//
+//        return notificationRepository.findAllByMember(member).stream()
+//                .map(NotificationResponse::from)
+//                .sorted(Comparator.comparing(NotificationResponse::getId).reversed())
+//                .collect(Collectors.toList());
+//    }
 
 
     //== 알림 읽음 처리 ==//
