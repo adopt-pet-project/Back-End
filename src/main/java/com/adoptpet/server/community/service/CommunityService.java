@@ -56,7 +56,7 @@ public class CommunityService {
     }
 
     //== HOT 게시글 선정 스케줋러 ==//
-    @Scheduled(fixedDelay = 1000 * 60 * 60 * 6) // 6시간마다 반복
+    //@Scheduled(fixedDelay = 1000 * 60 * 60 * 6) // 6시간마다 반복
 //    @Scheduled(fixedDelay = 1000 * 60 * 1)
     public void selectionHotArticle(){
         log.info("====== 인기글(HOT) 스케줄 실행 ======");
@@ -88,7 +88,7 @@ public class CommunityService {
     }
 
     //== WEEKLY 게시글 선정 스케줋러 ==//
-    @Scheduled(cron = "59 59 23 * * *") // 23시 59분 59초
+    //@Scheduled(cron = "59 59 23 * * *") // 23시 59분 59초
 //    @Scheduled(fixedDelay = 1000 * 60 * 1)
     public void selectionWeeklyArticle(){
         log.info("====== 인기글(WEEKLY) 스케줄 실행 ======");
