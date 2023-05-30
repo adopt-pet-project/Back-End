@@ -11,7 +11,7 @@ public enum NotifiTypeEnum {
     NOTICE("notice/","announcement"),
     ARTICLE_HOT("board/","documentHot"),
     ARTICLE_WEEK("board/","documentWeek"),
-    CHAT("chatRoom/","chat"),
+    CHAT("chat/","chat"),
     NOTE("note/","note"),
     COMMENT("board/","comment"),
     REPLY("board/","recomment");
