@@ -43,6 +43,7 @@ public class CommunityService {
     private final ArticleHeartRepository articleHeartRepository;
 
     private final NotificationService notificationService;
+    private final PopularArticleRepository popularArticleRepository;
 
     /**
     * 게시글 목록 조회
@@ -56,68 +57,75 @@ public class CommunityService {
     }
 
     //== HOT 게시글 선정 스케줋러 ==//
-    //@Scheduled(fixedDelay = 1000 * 60 * 60 * 6) // 6시간마다 반복
-//    @Scheduled(fixedDelay = 1000 * 60 * 1)
+    @Scheduled(cron = "0 0 0/6 * * *",// 6시간 마다 실행
+            zone = "Asia/Seoul")
+//    @Scheduled(fixedDelay = 1000 * 60)
+    @Transactional
     public void selectionHotArticle(){
         log.info("====== 인기글(HOT) 스케줄 실행 ======");
         final LocalDateTime endAt = LocalDateTime.now();
         final LocalDateTime startAt = endAt.minusDays(1);
-        //스케쥴 실행 일시의 -7일 부터 -1일까지 좋아요를 받은 게시글 조회
+
+        //스케쥴 실행 일시부터 -1일까지 좋아요를 받은 게시글 조회
         List<TrendingArticleDto> articleOfDay
                 = communityQDslRepository.findTrendingArticles(startAt, endAt);
 
         for(TrendingArticleDto trendingArticle : articleOfDay){
-
             final int articleNo = trendingArticle.getArticleNo();
             // 게시글 조회
             Community article = findByArticleNo(articleNo);
-
-            final boolean isNormal = article.getPopular().equals(PopularEnum.NORMAL);
-
-            // 게시글 인기 상태가 HOT 게시글이고 좋아요가 특정 개수 이상일떄
-            if( isNormal && trendingArticle.getLikeCnt() >= 3 ){
-                // 게시글 인기 상태 변경
-                article.updatePopularStatus(PopularEnum.HOT);
-                communityRepository.save(article);
-                // 게시글의 회원 엔티티 조회
-                Member member = memberService.findByEmail(article.getRegId()).orElseThrow(ErrorCode::throwEmailNotFound);
-                // 인기 게시글 선정 알림 전송
-                notificationService.send(member, NotifiTypeEnum.ARTICLE_HOT, articleNo, article.getContent());
+            // 인기 게시글 선정 내역이 없을 경우
+            if(Objects.isNull(article.getPopularArticle())){
+                // 좋아요가 특정 개수 이상일떄
+                if(trendingArticle.getLikeCnt() >= 3){
+                    // 인기 게시글 생성 후 저장
+                    PopularArticle hotArticle = PopularArticle.createHotArticle(article);
+                    popularArticleRepository.save(hotArticle);
+                    // 게시글 소유자 조회
+                    Member member = getMember(article);
+                    // 인기 게시글 선정 알림 전송
+                    notificationService.send(member, NotifiTypeEnum.ARTICLE_HOT, articleNo, article.getContent());
+                }
             }
         }
     }
 
     //== WEEKLY 게시글 선정 스케줋러 ==//
-    //@Scheduled(cron = "59 59 23 * * *") // 23시 59분 59초
-//    @Scheduled(fixedDelay = 1000 * 60 * 1)
+    @Scheduled(cron = "59 59 23 * * *", // 매일 23시 59분 59초에 실행
+            zone = "Asia/Seoul")
+    //    @Scheduled(fixedDelay = 1000 * 60)
+    @Transactional
     public void selectionWeeklyArticle(){
         log.info("====== 인기글(WEEKLY) 스케줄 실행 ======");
         final LocalDateTime endAt = LocalDateTime.now();
-        final LocalDateTime startAt = endAt.minusDays(1);
-        //스케쥴 실행 일시의 -7일 부터 -1일까지 좋아요를 받은 게시글 조회
+        final LocalDateTime startAt = endAt.minusDays(7);
+        //스케쥴 실행 일시부터 -7일까지 좋아요를 받은 게시글 조회
         List<TrendingArticleDto> articleOfWeekly
               = communityQDslRepository.findTrendingArticles(startAt, endAt);
 
         for(TrendingArticleDto trendingArticle : articleOfWeekly){
-
             final int articleNo = trendingArticle.getArticleNo();
-            // 게시글 조회
             Community article = findByArticleNo(articleNo);
-
-            log.info("========= popular : {} ",article.getPopular());
-            final boolean isHot = article.getPopular().equals(PopularEnum.HOT);
-
-            // 게시글 인기 상태가 기본이고 좋아요가 특정 개수 이상일떄
-            if( isHot && trendingArticle.getLikeCnt() >= 5 ){
-                // 게시글 인기 상태 변경
-                article.updatePopularStatus(PopularEnum.WEEKLY);
-                communityRepository.save(article);
-                // 게시글의 회원 엔티티 조회
-                Member member = memberService.findByEmail(article.getRegId()).orElseThrow(ErrorCode::throwEmailNotFound);
-                // 인기 게시글 선정 알림 전송
-                notificationService.send(member, NotifiTypeEnum.ARTICLE_WEEK, articleNo, article.getContent());
+            PopularArticle popularArticle = article.getPopularArticle();
+            // 인기 게시글 선정 내역이 있을 경우
+            if(Objects.nonNull(popularArticle)){
+                // 인기 게시글 선정된 내역이 HOT이고, 좋아요가 특정 개수 이상일떄
+                boolean isHot = popularArticle.getStatus().equals(PopularEnum.HOT);
+                if(isHot && trendingArticle.getLikeCnt() >= 5 ) {
+                    // 인기 상태 변경 후 저장
+                    popularArticle.updateStatusToWeekly();
+                    popularArticleRepository.save(popularArticle);
+                    // 게시글 소유자 조회
+                    Member member = getMember(article);
+                    // 인기 게시글 선정 알림 전송
+                    notificationService.send(member, NotifiTypeEnum.ARTICLE_WEEK, articleNo, article.getContent());
+                }
             }
         }
+    }
+
+    private Member getMember(Community article) {
+        return memberService.findByEmail(article.getRegId()).orElseThrow(ErrorCode::throwEmailNotFound);
     }
 
     /**
@@ -451,4 +459,6 @@ public class CommunityService {
         // 업데이트된 좋아요 개수 반환
         return resultArticle.getHeartCnt();
     }
+
+
 }
