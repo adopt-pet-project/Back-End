@@ -23,7 +23,6 @@ import static com.adoptpet.server.community.domain.QArticleHeart.articleHeart;
 import static com.adoptpet.server.community.domain.QCommunity.community;
 import static com.adoptpet.server.community.domain.QCommunityImage.communityImage;
 import static com.adoptpet.server.user.domain.QMember.member;
-import static com.adoptpet.server.user.domain.QProfileImage.profileImage;
 import static com.adoptpet.server.community.domain.QComment.comment;
 
 @Slf4j
@@ -132,45 +131,23 @@ public class CommunityQDslRepository {
             }
         }
 
-        JPQLQuery<Integer> likeCntByCommunity = JPAExpressions.select(articleHeart.count().intValue())
-                .from(articleHeart)
-                .where(articleHeart.community.eq(community));
-
-        JPQLQuery<Integer> commentCntByCommunity = JPAExpressions.select(comment.count().intValue())
-                .from(comment)
-                .where(comment.community.eq(community));
-
-        return query.select(Projections.fields(ArticleListDto.class,
-                        community.articleNo,
-                        community.title,
-                        community.content,
-                        member.nickname,
-                        community.viewCount,
-                        Expressions.as(likeCntByCommunity,"likeCnt"),
-                        Expressions.as(commentCntByCommunity,"commentCnt"),
-                        community.regDate,
-                        community.thumbnail
-                ))
-                .from(community)
-                .leftJoin(member).on(community.regId.eq(member.email))
+        return findArticleListQuery()
                 .where(searchCondition,community.logicalDel.eq(LogicalDelEnum.NORMAL))
-                .groupBy(community.articleNo,community.title,community.content,
-                        member.nickname,community.viewCount,community.regDate,
-                        community.thumbnail)
-                .orderBy(order.equals("like") ? likeAlias.desc() : community.articleNo.desc() )
+                .orderBy(order.equals("like") ? likeAlias.desc() : community.articleNo.desc())
                 .offset(offset).limit(limit)
                 .fetch();
     }
 
-    //== 게시글 목록에 추가를 위한 단일 게시글 데이터 조회 ==//
-    public ArticleListDto  findArticleOneForList(Integer articleNo){
 
+    //== 게시글 목록용 인기 게시글 데이터 조회 ==//
+    public ArticleListDto findArticleOneForList(Integer articleNo){
         return findArticleListQuery()
                 .where(community.articleNo.eq(articleNo))
                 .fetchOne();
     }
 
 
+    //== 게시글 목록 공통 쿼리 ==//
     private JPQLQuery<ArticleListDto> findArticleListQuery(){
         JPQLQuery<Integer> likeCntByCommunity = JPAExpressions.select(articleHeart.count().intValue())
                 .from(articleHeart)

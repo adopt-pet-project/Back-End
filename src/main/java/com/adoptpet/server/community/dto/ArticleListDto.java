@@ -25,7 +25,7 @@ public class ArticleListDto {
     @JsonProperty("comment")
     private Integer commentCnt; // Comment
     @JsonProperty("like")
-    private Integer likeCnt; //
+    private Integer likeCnt; // articleHeart
     @JsonProperty("publishedAt")
     private LocalDateTime regDate; //community
     @JsonProperty
