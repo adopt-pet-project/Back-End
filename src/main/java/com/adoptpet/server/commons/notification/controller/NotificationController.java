@@ -41,10 +41,10 @@ public class NotificationController {
     /**
      * @title 로그인 한 유저의 모든 알림 조회
      */
-//    @GetMapping("/all")
-//    public ResponseEntity<List<NotificationResponse>> notifications() {
-//        return ResponseEntity.ok(notificationService.findAllById(SecurityUtils.getUser()));
-//    }
+    @GetMapping("/all")
+    public ResponseEntity<List<NotificationResponse>> notifications() {
+        return ResponseEntity.ok(notificationService.findAllById(SecurityUtils.getUser()));
+    }
 
     /**
      * @title 알림 읽음 상태 변경

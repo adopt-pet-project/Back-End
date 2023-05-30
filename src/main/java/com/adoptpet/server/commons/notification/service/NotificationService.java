@@ -1,6 +1,5 @@
 package com.adoptpet.server.commons.notification.service;
 
-import com.adoptpet.server.commons.exception.CustomException;
 import com.adoptpet.server.commons.exception.ErrorCode;
 import com.adoptpet.server.commons.notification.domain.Notification;
 import com.adoptpet.server.commons.notification.domain.NotifiTypeEnum;
@@ -8,7 +7,6 @@ import com.adoptpet.server.commons.notification.dto.NotificationResponse;
 import com.adoptpet.server.commons.notification.repository.EmitterRepository;
 import com.adoptpet.server.commons.notification.repository.NotificationRepository;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
-import com.adoptpet.server.commons.security.service.JwtUtil;
 import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +30,6 @@ public class NotificationService {
     private final EmitterRepository emitterRepository;
     private final MemberService memberService;
     private final NotificationRepository notificationRepository;
-    private final JwtUtil jwtUtil;
 
     //== SSE 연결 ==//
     @Transactional
@@ -71,11 +68,12 @@ public class NotificationService {
 
     //== 알림 전송 ==//
     @Transactional
-    public void send(Member member, NotifiTypeEnum type, Integer refNo , String content) {
+    public void send(Member sender, Member receiver, NotifiTypeEnum type, Integer refNo , String content) {
         // 알림 생성
-        Notification notification = createNotification(member, type,refNo, content);
+        Notification notification = createNotification(sender, receiver, type, refNo, content);
+
         // SseEmitter 캐시 조회를 위해 key의 prefix 생성
-        String id = String.valueOf(member.getMemberNo());
+        String id = String.valueOf(notification.getReceiver());
         // 알림 저장
         notificationRepository.save(notification);
         // 로그인 한 유저의 SseEmitter 모두 가져오기
@@ -89,7 +87,6 @@ public class NotificationService {
                 }
         );
     }
-
 
     //== 클라이언트에 SSE + 알림 데이터 전송 ==//
     private void sendToClient(SseEmitter emitter, String id, Object data) {
@@ -105,9 +102,10 @@ public class NotificationService {
     }
 
     //== 알림 생성 ==//
-    private Notification createNotification(Member member, NotifiTypeEnum type,Integer refNo, String content) {
+    private Notification createNotification(Member sender, Member receiver, NotifiTypeEnum type, Integer refNo, String content) {
         return Notification.builder()
-                .receiver(member)
+                .sender(sender)
+                .receiver(receiver)
                 .type(type)
                 .Url(PREFIX_URL + type.getPath() + refNo)
                 .content(content)
@@ -116,20 +114,19 @@ public class NotificationService {
                 .build();
     }
 
-//
-//    //== 로그인 맴버 알림 전체 조회 ==//
-//    @Transactional
-//    public List<NotificationResponse> findAllById(SecurityUserDto loginMember) {
-//
-//        Member member = memberService.findByMemberNo(loginMember.getMemberNo());
-//
-//        // 회원 엔티티로 알림 조회 후 알림 response List로 변환
-//
-//        return notificationRepository.findAllByMember(member).stream()
-//                .map(NotificationResponse::from)
-//                .sorted(Comparator.comparing(NotificationResponse::getId).reversed())
-//                .collect(Collectors.toList());
-//    }
+
+    //== 로그인 맴버 알림 전체 조회 ==//
+    @Transactional
+    public List<NotificationResponse> findAllById(SecurityUserDto loginMember) {
+
+        Member member = memberService.findByMemberNo(loginMember.getMemberNo());
+
+        // 회원 엔티티로 알림 조회 후 알림 response List로 변환
+        return notificationRepository.findAllByReceiver(member).stream()
+                .map(NotificationResponse::from)
+                .sorted(Comparator.comparing(NotificationResponse::getId).reversed())
+                .collect(Collectors.toList());
+    }
 
 
     //== 알림 읽음 처리 ==//

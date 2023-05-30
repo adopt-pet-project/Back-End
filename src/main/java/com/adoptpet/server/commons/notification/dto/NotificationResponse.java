@@ -47,7 +47,7 @@ public class NotificationResponse {
                 .publishedAt(notification.getRegDate())
                 .read(notification.isRead())
                 .del(notification.isDel())
-                .name(notification.getReceiver().getNickname())
+                .name(notification.getSender().getNickname())
                 .build();
     }
 }
