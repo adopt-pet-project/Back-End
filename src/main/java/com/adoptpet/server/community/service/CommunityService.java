@@ -41,26 +41,13 @@ public class CommunityService {
     private final MemberService memberService;
     private final ArticleBookmarkRepository articleBookmarkRepository;
     private final ArticleHeartRepository articleHeartRepository;
-
-    private final NotificationService notificationService;
     private final PopularArticleRepository popularArticleRepository;
+    private final NotificationService notificationService;
 
-    /**
-    * 게시글 목록 조회
-    **/
-    @Transactional
-    public List<ArticleListDto> readArticleList(String order, Integer pageNum, Integer option, String keyword){
 
-        List<ArticleListDto> articleList = communityQDslRepository.selectArticleList(order,pageNum,option,keyword);
-
-        return articleList;
-    }
-
-    //== HOT 게시글 선정 스케줋러 ==//
-    @Scheduled(cron = "0 0 0/6 * * *",// 6시간 마다 실행
+    //== HOT 게시글 선정 스케줄러 ==//
+    @Scheduled(cron = "0 0 0/1 * * *",// 1시간 마다 실행
             zone = "Asia/Seoul")
-//    @Scheduled(fixedDelay = 1000 * 60)
-    @Transactional
     public void selectionHotArticle(){
         log.info("====== 인기글(HOT) 스케줄 실행 ======");
         final LocalDateTime endAt = LocalDateTime.now();
@@ -82,7 +69,7 @@ public class CommunityService {
                     PopularArticle hotArticle = PopularArticle.createHotArticle(article);
                     popularArticleRepository.save(hotArticle);
                     // 게시글 소유자 조회
-                    Member member = getMember(article);
+                    Member member = getMember(article.getRegId());
                     // 인기 게시글 선정 알림 전송
                     notificationService.send(member, NotifiTypeEnum.ARTICLE_HOT, articleNo, article.getContent());
                 }
@@ -90,11 +77,9 @@ public class CommunityService {
         }
     }
 
-    //== WEEKLY 게시글 선정 스케줋러 ==//
+    //== WEEKLY 게시글 선정 스케줄러 ==//
     @Scheduled(cron = "59 59 23 * * *", // 매일 23시 59분 59초에 실행
             zone = "Asia/Seoul")
-    //    @Scheduled(fixedDelay = 1000 * 60)
-    @Transactional
     public void selectionWeeklyArticle(){
         log.info("====== 인기글(WEEKLY) 스케줄 실행 ======");
         final LocalDateTime endAt = LocalDateTime.now();
@@ -116,7 +101,7 @@ public class CommunityService {
                     popularArticle.updateStatusToWeekly();
                     popularArticleRepository.save(popularArticle);
                     // 게시글 소유자 조회
-                    Member member = getMember(article);
+                    Member member = getMember(article.getRegId());
                     // 인기 게시글 선정 알림 전송
                     notificationService.send(member, NotifiTypeEnum.ARTICLE_WEEK, articleNo, article.getContent());
                 }
@@ -124,57 +109,63 @@ public class CommunityService {
         }
     }
 
-    private Member getMember(Community article) {
-        return memberService.findByEmail(article.getRegId()).orElseThrow(ErrorCode::throwEmailNotFound);
+    // 이메일로 회원 조회
+    private Member getMember(String memberEmail) {
+        return memberService.findByEmail(memberEmail).orElseThrow(ErrorCode::throwEmailNotFound);
     }
 
     /**
     * 게시글 목록의 인기글(HOT,WEEKLY) 조회
     **/
-    @Transactional
+    @Transactional(readOnly = true)
     public Map<String,ArticleListDto> getTrendingArticleDayAndWeekly(){
 
         final LocalDateTime endAt = LocalDateTime.now();
         final LocalDateTime startAtOfDay = endAt.minusDays(1);
         final LocalDateTime startAtOfWeekly = endAt.minusWeeks(1);
-        final Integer limit = 2;
 
-        List<TrendingArticleDto> articleOfDay
-                = communityQDslRepository.findTrendingArticles(startAtOfDay, endAt, limit);
-        List<TrendingArticleDto> articleOfWeekly
-                = communityQDslRepository.findTrendingArticles(startAtOfWeekly, endAt, limit);
+        // HOT 인기 게시글 선정 내역 조회
+        List<PopularArticle> hotArticle =
+                popularArticleRepository.findArticleByPeriod(startAtOfDay, endAt, PopularEnum.HOT);
+        // WEEKLY 인기 게시글 선정 내역 조회
+        List<PopularArticle> weeklyArticle
+                = popularArticleRepository.findArticleByPeriod(startAtOfWeekly, endAt, PopularEnum.WEEKLY);
+        // 무작위 정렬
+        Collections.shuffle(hotArticle);
+        Collections.shuffle(weeklyArticle);
 
         Map<String,ArticleListDto> result = new HashMap<>();
 
-        TrendingArticleDto trendingWeekly;
-        TrendingArticleDto trendingDay;
-
-        ArticleListDto articleDataOfDay = null;
+        ArticleListDto articleDataOfHot = null;
         ArticleListDto articleDataOfWeekly = null;
 
-        if(!articleOfWeekly.isEmpty()){
-            trendingWeekly = articleOfWeekly.get(0);
+        // HOT 게시글 선정내역으로 게시글 데이터 조회
+        if(!hotArticle.isEmpty()){
+            final Integer articleNoOfHot = hotArticle.get(0).getCommunity().getArticleNo();
+            articleDataOfHot = communityQDslRepository.findArticleOneForList(articleNoOfHot);
+        }
 
-            if(!articleOfDay.isEmpty()){
-                trendingDay = articleOfDay.get(0);
-
-                if(trendingDay.getLikeCnt() >= trendingWeekly.getLikeCnt()){
-                    trendingWeekly = articleOfWeekly.get(1);
-                }
-
-                articleDataOfDay = communityQDslRepository.findArticleOneForList(trendingDay.getArticleNo());
-            }
-
-            articleDataOfWeekly = communityQDslRepository.findArticleOneForList(trendingWeekly.getArticleNo());
+        // WEEKLY 게시글 선정내역으로 게시글 데이터 조회
+        if(!weeklyArticle.isEmpty()){
+            final Integer articleNoOfWeekly = weeklyArticle.get(0).getCommunity().getArticleNo();
+            articleDataOfWeekly = communityQDslRepository.findArticleOneForList(articleNoOfWeekly);
         }
 
         result.put("weekly",articleDataOfWeekly);
-        result.put("day",articleDataOfDay);
+        result.put("hot",articleDataOfHot);
 
         return result;
     }
 
 
+    /**
+     * 게시글 목록 조회
+     **/
+    @Transactional(readOnly = true)
+    public List<ArticleListDto> readArticleList(String order, Integer pageNum, Integer option, String keyword){
+        List<ArticleListDto> articleList = communityQDslRepository.selectArticleList(order,pageNum,option,keyword);
+        return articleList;
+    }
 
 
     /**
