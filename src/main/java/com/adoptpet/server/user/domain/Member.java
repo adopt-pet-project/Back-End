@@ -62,8 +62,11 @@ public class Member {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Comment> commentList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
-    private List<Notification> notificationList = new ArrayList<>();
+    @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
+    private List<Notification> receiverList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY)
+    private List<Notification> senderList = new ArrayList<>();
 
     public void addProfileImage(String imgUrl) {
         this.profile = imgUrl;
