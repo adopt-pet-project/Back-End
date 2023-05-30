@@ -158,7 +158,7 @@ public class CommunityQDslRepository {
                 .groupBy(community.articleNo,community.title,community.content,
                         member.nickname,community.viewCount,community.regDate,
                         community.thumbnail)
-                .orderBy(order.equals("like") ? likeAlias.desc() : community.modDate.desc() )
+                .orderBy(order.equals("like") ? likeAlias.desc() : community.articleNo.desc() )
                 .offset(offset).limit(limit)
                 .fetch();
     }
