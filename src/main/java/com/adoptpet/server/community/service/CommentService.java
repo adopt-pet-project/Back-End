@@ -67,37 +67,43 @@ public class CommentService {
     @Transactional
     public void insertComment(String content, Integer parentNo, Integer articleNo) {
 
-        Integer writeMember = SecurityUtils.getUser().getMemberNo();
-        Member member = memberService.findByMemberNo(SecurityUtils.getUser().getMemberNo());
+        Integer LoginMemberNo = SecurityUtils.getUser().getMemberNo();
+        Member writerMember = memberService.findByMemberNo(LoginMemberNo);
         Community community = findArticleByNo(articleNo);
 
+        log.info("writerMember : {}", writerMember.getMemberNo());
+
         NotifiTypeEnum notiType = null;
-        Member owner = null;
+        Member ownerMember = null;
         Integer refId = null;
 
         // 댓글 생성
-        Comment comment = Comment.createComment(content, member ,community);
+        Comment comment = Comment.createComment(content, writerMember ,community);
         // 댓글-대댓글 구분
         if (Objects.nonNull(parentNo)) {
             // 요청에 포함된 부모 댓글 조회
             Comment parent = findCommentByNo(parentNo);
             // 대댓글 엔티티에 부모 댓글 엔티티 추가
             comment.addParent(parent);
-            // 알림 등록 매개 값 추가
+
+            // 알림 데이터 입력
             notiType = NotifiTypeEnum.REPLY;// 대댓글이 달렸을 경우
-            owner = parent.getMember();
+            ownerMember = parent.getMember();
             refId = articleNo;
         } else {
             notiType = NotifiTypeEnum.COMMENT;// 댓글이 달렷을 경우
-            owner = memberService.findByEmail(community.getRegId())
+            ownerMember = memberService.findByEmail(community.getRegId())
                     .orElseThrow(ErrorCode::throwEmailNotFound);
+
+            log.info("ownerMember : {}", ownerMember.getMemberNo());
+
             refId = articleNo;
         }
         Comment save = commentRepository.save(comment);
         // 글의 소유자가 멤버와 일치하지 않을 경우
-        if(!owner.getMemberNo().equals(writeMember)){
+        if(!ownerMember.getMemberNo().equals(LoginMemberNo)){
             // 알림 등록(알림받을 대상자, 알림 타입, 발생지 소유자 고유키, 알림 내용)
-            notificationService.send(owner, notiType, refId, save.getContent());
+            notificationService.send(ownerMember, notiType, refId, save.getContent());
         }
     }
 
