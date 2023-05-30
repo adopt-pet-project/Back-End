@@ -1,9 +1,11 @@
 package com.adoptpet.server.adopt.controller;
 
 import com.adoptpet.server.adopt.dto.chat.Message;
+import com.adoptpet.server.adopt.dto.request.ChatDisconnectDto;
 import com.adoptpet.server.adopt.dto.request.ChatRequestDto;
 import com.adoptpet.server.adopt.dto.response.ChatResponseDto;
 import com.adoptpet.server.adopt.dto.response.ChatRoomResponseDto;
+import com.adoptpet.server.adopt.service.ChatRoomService;
 import com.adoptpet.server.adopt.service.ChatService;
 import com.adoptpet.server.commons.support.StatusResponseDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
@@ -24,6 +26,7 @@ import java.util.List;
 public class ChatController {
 
     private final ChatService chatService;
+    private final ChatRoomService chatRoomService;
 
     @PostMapping("/chatroom")
     public ResponseEntity<StatusResponseDto> createChatRoom(@RequestBody @Valid final ChatRequestDto requestDto, BindingResult bindingResult) {
@@ -47,8 +50,8 @@ public class ChatController {
 
     // 채팅방 리스트 조회
     @GetMapping("/chatroom")
-    public ResponseEntity<List<ChatRoomResponseDto>> chatRoomList(@RequestParam(value = "saleNo", required = false) final Integer saleNo) {
-        List<ChatRoomResponseDto> chatList = chatService.getChatList(SecurityUtils.getUser(), saleNo);
+    public ResponseEntity<ChatRoomResponseDto> chatRoomList(@RequestParam(value = "saleNo", required = false) final Integer saleNo) {
+        ChatRoomResponseDto chatList = chatService.getChatList(SecurityUtils.getUser(), saleNo);
         return ResponseEntity.ok(chatList);
     }
 
@@ -64,5 +67,18 @@ public class ChatController {
     public ResponseEntity<Message> readChat(@Valid @RequestBody Message message, @RequestHeader("Authorization") final String accessToken) {
         Message recievedMessage = chatService.updateCountToZero(message, accessToken);
         return ResponseEntity.ok(recievedMessage);
+    }
+
+    // 채팅방 접속 끊기
+    @DeleteMapping("/chatroom")
+    public ResponseEntity<StatusResponseDto> disconnectChat(@Valid @RequestBody final ChatDisconnectDto disconnectDto,
+                                                            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(StatusResponseDto.addStatus(400));
+        }
+
+        chatRoomService.disconnectChatRoom(disconnectDto.getChatRoomNo(), disconnectDto.getEmail());
+        return ResponseEntity.ok(StatusResponseDto.success());
     }
 }
