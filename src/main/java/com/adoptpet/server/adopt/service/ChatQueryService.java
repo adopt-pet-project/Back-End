@@ -1,7 +1,7 @@
 package com.adoptpet.server.adopt.service;
 
 import static com.adoptpet.server.adopt.domain.QChat.*;
-import com.adoptpet.server.adopt.dto.response.ChatRoomResponseDto;
+import com.adoptpet.server.adopt.dto.response.ChattingDto;
 import static com.adoptpet.server.user.domain.QMember.*;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
@@ -24,14 +24,14 @@ public class ChatQueryService {
     private final JPAQueryFactory jpaQueryFactory;
 
     // 채팅방 리스트 조회
-    public List<ChatRoomResponseDto> getChattingList(Integer memberNo, Integer saleNo) {
-        return jpaQueryFactory.select(Projections.constructor(ChatRoomResponseDto.class,
+    public List<ChattingDto> getChattingList(Integer memberNo, Integer saleNo) {
+        return jpaQueryFactory.select(Projections.constructor(ChattingDto.class,
                 chat.chatNo,
                 chat.createMember,
                 chat.joinMember,
                 chat.saleNo,
                 chat.regDate,
-                Projections.constructor(ChatRoomResponseDto.Participant.class,
+                Projections.constructor(ChattingDto.Participant.class,
                         ExpressionUtils.as(
                                 JPAExpressions.select(member.nickname)
                                         .from(member)
@@ -49,9 +49,7 @@ public class ChatQueryService {
                                                 new CaseBuilder()
                                                         .when(chat.createMember.eq(memberNo)).then(chat.joinMember)
                                                         .otherwise(chat.createMember)
-                                        )), "profile"
-                        )
-                )
+                                        )), "profile"))
                 ))
                 .from(chat)
                 .where(chat.createMember.eq(memberNo).or(chat.joinMember.eq(memberNo)), saleNoEq(saleNo))

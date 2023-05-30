@@ -40,12 +40,7 @@ public class StompHandler implements ChannelInterceptor {
             case CONNECT:
                 connectToChatRoom(accessor, email);
                 break;
-            case DISCONNECT:
-                disconnectToChatRoom(accessor, email);
-                break;
             case SUBSCRIBE:
-                verifyAccessToken(getAccessToken(accessor));
-                break;
             case SEND:
                 verifyAccessToken(getAccessToken(accessor));
                 break;
@@ -79,13 +74,6 @@ public class StompHandler implements ChannelInterceptor {
         }
 
         return jwtUtil.getUid(accessToken);
-    }
-
-    private  void disconnectToChatRoom(StompHeaderAccessor accessor, String email) {
-        // 채팅방 번호를 가져온다.
-        Integer chatRoomNo = getChatRoomNo(accessor);
-        // 채팅방 퇴장 처리 -> Redis에 입장 내역 삭제
-        chatRoomService.disconnectChatRoom(chatRoomNo, email);
     }
 
     private Integer getChatRoomNo(StompHeaderAccessor accessor) {

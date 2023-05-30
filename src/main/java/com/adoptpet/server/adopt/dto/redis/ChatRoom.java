@@ -1,9 +1,6 @@
 package com.adoptpet.server.adopt.dto.redis;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
@@ -12,6 +9,7 @@ import javax.persistence.Id;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @RedisHash(value = "chatRoom")
 public class ChatRoom {
 
@@ -21,6 +19,7 @@ public class ChatRoom {
     @Indexed
     private Integer chatroomNo;
 
+    @Indexed
     private String email;
 
     @Builder
