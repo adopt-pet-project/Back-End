@@ -52,8 +52,6 @@ public class Community extends BaseTimeEntity {
     @Column(name = "thumbnail")
     private String thumbnail;
 
-    @Column(name = "popular_status")
-    private PopularEnum popular;
 
     @OneToMany(mappedBy = "community")
     private List<Comment> comments = new ArrayList<>();
@@ -64,8 +62,11 @@ public class Community extends BaseTimeEntity {
     @OneToMany(mappedBy = "community")
     private List<ArticleBookmark> articleBookmarks = new ArrayList<>();
 
+    @OneToOne(mappedBy = "community")
+    private PopularArticle popularArticle;
+
     @Builder
-    public Community(Integer categoryNo, String title, String content, Integer viewCount, String regId, String modId, LogicalDelEnum logicalDel, BlindEnum blindYn, String thumbnail,PopularEnum popular) {
+    public Community(Integer categoryNo, String title, String content, Integer viewCount, String regId, String modId, LogicalDelEnum logicalDel, BlindEnum blindYn, String thumbnail) {
         this.categoryNo = categoryNo;
         this.title = title;
         this.content = content;
@@ -75,7 +76,6 @@ public class Community extends BaseTimeEntity {
         this.logicalDel = logicalDel;
         this.blindYn = blindYn;
         this.thumbnail = thumbnail;
-        this.popular = popular;
     }
 
     public void updateArticleByMod(ArticleDto articleDto, String modId) {
@@ -91,9 +91,6 @@ public class Community extends BaseTimeEntity {
         }
     }
 
-    public void updatePopularStatus(PopularEnum popular){
-        this.popular = popular;
-    }
 
     public void deleteByLogicalDel(LogicalDelEnum logicalDel){
         this.logicalDel = logicalDel;

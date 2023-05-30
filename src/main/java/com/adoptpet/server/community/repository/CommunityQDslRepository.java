@@ -39,9 +39,6 @@ public class CommunityQDslRepository {
     public List<TrendingArticleDto> findTrendingArticles(LocalDateTime startAt,
                                                          LocalDateTime endAt)
     {
-        log.info("start at : {}" , startAt);
-        log.info("end at : {} " , endAt);
-
         return query.select(Projections.constructor(TrendingArticleDto.class,
                     articleHeart.community.articleNo,
                     articleHeart.community.articleNo.count().as("likeCnt")
