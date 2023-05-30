@@ -70,7 +70,7 @@ public class ChatController {
     }
 
     // 채팅방 접속 끊기
-    @DeleteMapping  ("/chatroom")
+    @DeleteMapping("/chatroom")
     public ResponseEntity<StatusResponseDto> disconnectChat(@Valid @RequestBody final ChatDisconnectDto disconnectDto,
                                                             BindingResult bindingResult) {
 
