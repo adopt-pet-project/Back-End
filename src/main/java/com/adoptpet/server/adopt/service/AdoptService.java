@@ -136,8 +136,6 @@ public class AdoptService {
         AdoptDetailResponseDto responseDto = queryService.selectAdoptAndMember(saleNo);
         // 현재 분양 게시글과 관련이 있는 이미지 url을 조회해온다.
         List<AdoptImageResponseDto> images = queryService.selectAdoptImages(saleNo);
-        log.info("imgaes = {}", images);
-        log.info("responseDto = {}", responseDto);
         // 현재 분양 게시글을 보는 회원이 권한이 있는지 여부는 기본 false
         responseDto.addIsMine(false);
 
