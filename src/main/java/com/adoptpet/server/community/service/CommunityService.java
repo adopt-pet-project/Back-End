@@ -45,8 +45,8 @@ public class CommunityService {
     private final NotificationService notificationService;
 
 
-    //== HOT 게시글 선정 스케줋러 ==//
-    @Scheduled(cron = "0 0 0/6 * * *",// 6시간 마다 실행
+    //== HOT 게시글 선정 스케줄러 ==//
+    @Scheduled(cron = "0 0 0/1 * * *",// 1시간 마다 실행
             zone = "Asia/Seoul")
     public void selectionHotArticle(){
         log.info("====== 인기글(HOT) 스케줄 실행 ======");
@@ -77,7 +77,7 @@ public class CommunityService {
         }
     }
 
-    //== WEEKLY 게시글 선정 스케줋러 ==//
+    //== WEEKLY 게시글 선정 스케줄러 ==//
     @Scheduled(cron = "59 59 23 * * *", // 매일 23시 59분 59초에 실행
             zone = "Asia/Seoul")
     public void selectionWeeklyArticle(){
