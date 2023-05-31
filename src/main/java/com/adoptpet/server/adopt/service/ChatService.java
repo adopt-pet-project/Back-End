@@ -109,17 +109,11 @@ public class ChatService {
                 .build();
     }
 
-    @Transactional
+
     public void sendMessage(Message message, String accessToken) {
         // 메시지 전송 요청 헤더에 포함된 Access Token에서 email로 회원을 조회한다.
         Member findMember = memberRepository.findByEmail(jwtUtil.getUid(accessToken))
                         .orElseThrow(IllegalStateException::new);
-        // 알람 전송을 위해 메시지를 받는 사람을 조회한다.
-        Member receiveMember = chatQueryService.getReceiverNumber(message.getChatNo(), message.getSenderNo());
-        String content = findMember.getNickname() + "님 으로부터 채팅이 도착했습니다.";
-
-        // 알림을 전송한다.
-        notificationService.send(findMember, receiveMember, NotifiTypeEnum.CHAT, message.getChatNo(), content);
 
         // 채팅방에 모든 유저가 참여중인지 확인한다.
         boolean isConnectedAll = chatRoomService.isAllConnected(message.getChatNo());
@@ -127,19 +121,34 @@ public class ChatService {
         Integer readCount = isConnectedAll ? 0 : 1;
         // message 객체에 보낸시간, 보낸사람 memberNo, 닉네임을 셋팅해준다.
         message.setSendTimeAndSender(LocalDateTime.now(), findMember.getMemberNo(), findMember.getNickname(), readCount);
+        // 메시지를 전송한다.
+        sender.send(ConstantUtil.KAFKA_TOPIC, message);
+    }
+
+    public void sendNotificationAndSaveMessage(Message message) {
+        // 메시지 저장과 알람 발송을 위해 메시지를 보낸 회원을 조회
+        Member findMember = memberRepository.findById(message.getSenderNo())
+                .orElseThrow(IllegalStateException::new);
+
+        // 알람 전송을 위해 메시지를 받는 사람을 조회한다.
+        Member receiveMember = chatQueryService.getReceiverNumber(message.getChatNo(), message.getSenderNo());
+        String content =
+                message.getContentType().equals("image") ? "image" : message.getContent();
+
         // Message 객체를 채팅 엔티티로 변환한다.
         Chatting chatting = message.convertEntity();
         // 채팅 내용을 저장한다.
         Chatting savedChat = mongoChatRepository.save(chatting);
         // 저장된 고유 ID를 반환한다.
         message.setId(savedChat.getId());
-        // 메시지를 전송한다.
-        sender.send(ConstantUtil.KAFKA_TOPIC, message);
+
+        // 알림을 전송한다.
+        notificationService.send(findMember, receiveMember, NotifiTypeEnum.CHAT, message.getChatNo(), content);
     }
 
     public void updateMessage(String email) {
         Message message = Message.builder()
-                .content("notice")
+                .contentType("notice")
                 .content(email + " 님이 돌아오셨습니다.")
                 .build();
 
