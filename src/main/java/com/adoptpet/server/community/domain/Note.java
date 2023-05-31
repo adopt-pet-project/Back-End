@@ -29,19 +29,15 @@ public class Note {
     @Column(name = "reg_date")
     private LocalDateTime regDate;
 
-    @Column(name = "update_date")
-    private LocalDateTime updateDate;
 
     @OneToMany(mappedBy = "note", cascade = CascadeType.PERSIST)
     private List<NoteHistory> noteHistoryList = new ArrayList<>();
 
     @Builder
-    public Note(Integer noteNo, Integer createMember, Integer joinMember, LocalDateTime regDate, LocalDateTime updateDate) {
-        this.noteNo = noteNo;
+    public Note(Integer createMember, Integer joinMember, LocalDateTime regDate) {
         this.createMember = createMember;
         this.joinMember = joinMember;
         this.regDate = regDate;
-        this.updateDate = updateDate;
     }
 
 
@@ -59,7 +55,6 @@ public class Note {
                 .createMember(createMember)
                 .joinMember(joinMember)
                 .regDate(LocalDateTime.now())
-                .updateDate(LocalDateTime.now())
                 .build();
 
         note.addNoteHistory(noteHistory);
