@@ -15,4 +15,6 @@ public interface CommunityRepository extends JpaRepository<Community,Integer> {
     @Query("update Community c set c.viewCount = c.viewCount + 1 where c.articleNo = :articleNo")
     @Modifying(clearAutomatically = true)
     void increaseCount(@Param("articleNo") Integer articleNo);
+
+
 }

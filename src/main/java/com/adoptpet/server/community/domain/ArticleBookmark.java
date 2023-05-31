@@ -33,7 +33,7 @@ public class ArticleBookmark {
     @JoinColumn(name = "article_no")
     private Community community;
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "member_no")
     private Member member;
 
