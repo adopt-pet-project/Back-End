@@ -86,6 +86,7 @@ public class ChatController {
     // 메시지 전송 후 callback
     @PostMapping("/chatroom/notification")
     public ResponseEntity<Message> sendNotification(@Valid @RequestBody Message message) {
+        log.info("message = {}", message);
         Message savedMessage = chatService.sendNotificationAndSaveMessage(message);
         return ResponseEntity.ok(savedMessage);
     }
