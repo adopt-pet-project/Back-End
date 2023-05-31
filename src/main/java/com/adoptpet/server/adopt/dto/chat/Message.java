@@ -34,6 +34,7 @@ public class Message implements Serializable {
 
     private long sendTime;
     private Integer readCount;
+    private boolean save;
 
     public void setSendTimeAndSender(LocalDateTime sendTime, Integer senderNo, String senderName, Integer readCount) {
         this.senderName = senderName;
