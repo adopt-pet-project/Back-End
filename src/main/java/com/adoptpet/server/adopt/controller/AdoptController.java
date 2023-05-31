@@ -44,7 +44,6 @@ public class AdoptController {
         // 새로운 분양글을 저장한다.
         adoptService.insertAdopt(adoptDto, user);
 
-
         return ResponseEntity.ok(StatusResponseDto.addStatus(200));
 
     }
