@@ -24,7 +24,7 @@ public class ArticleHeart {
     @Column(name = "reg_id")
     private String regId;
 
-    @ManyToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "member_no")
     private Member member;
 
