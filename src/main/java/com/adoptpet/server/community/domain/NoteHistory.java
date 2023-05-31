@@ -1,9 +1,11 @@
 package com.adoptpet.server.community.domain;
 
+import com.adoptpet.server.commons.support.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.checkerframework.checker.units.qual.C;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -12,7 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "NOTE_HISTORY")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class NoteHistory {
+public class NoteHistory extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,11 +30,8 @@ public class NoteHistory {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "reg_date")
-    private LocalDateTime regDate;
-
-    @Column(name = "mod_date")
-    private LocalDateTime modDate;
+    @Column(name = "read_status")
+    private boolean isRead;
 
     @Column(name = "receiver_del")
     private LogicalDelEnum receiverDel;
@@ -40,24 +39,18 @@ public class NoteHistory {
     @Column(name = "sender_del")
     private LogicalDelEnum senderDel;
 
-    @Column(name = "read_status")
-    private boolean isRead;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "note_no")
     private Note note;
 
-
     @Builder
-    public NoteHistory(Integer receiverNo, Integer senderNo, String content, LocalDateTime regDate, LocalDateTime modDate, LogicalDelEnum receiverDel, LogicalDelEnum senderDel, boolean isRead) {
-        this.receiverNo = receiverNo;
+    public NoteHistory(Integer senderNo, Integer receiverNo, String content, boolean isRead, LogicalDelEnum receiverDel, LogicalDelEnum senderDel) {
         this.senderNo = senderNo;
+        this.receiverNo = receiverNo;
         this.content = content;
-        this.regDate = regDate;
-        this.modDate = modDate;
+        this.isRead = isRead;
         this.receiverDel = receiverDel;
         this.senderDel = senderDel;
-        this.isRead = isRead;
     }
 
 
@@ -66,13 +59,12 @@ public class NoteHistory {
                 .senderNo(senderNo)
                 .receiverNo(receiverNo)
                 .content(content)
-                .regDate(LocalDateTime.now())
-                .modDate(LocalDateTime.now())
+                .isRead(false)
                 .receiverDel(LogicalDelEnum.NORMAL)
                 .senderDel(LogicalDelEnum.NORMAL)
-                .isRead(false)
                 .build();
     }
+
 
     public void addNote(Note note) {
         this.note = note;
