@@ -16,6 +16,9 @@ public class MessageSender {
     // 메시지를 지정한 Kafka 토픽으로 전송
     public void send(String topic, Message data) {
         // KafkaTemplate을 사용하여 메시지를 지정된 토픽으로 전송
+
+        log.info("메시지 전송 중... = {}", data);
+
         kafkaTemplate.send(topic, data);
     }
 }
