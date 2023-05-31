@@ -131,6 +131,7 @@ public class ChatService {
         Member findMember = memberRepository.findById(message.getSenderNo())
                 .orElseThrow(IllegalStateException::new);
 
+        // 상대방이 읽지 않은 경우에만 알림 전송
         if (message.getReadCount().equals(1)) {
             // 알람 전송을 위해 메시지를 받는 사람을 조회한다.
             Member receiveMember = chatQueryService.getReceiverNumber(message.getChatNo(), message.getSenderNo());
@@ -141,7 +142,8 @@ public class ChatService {
             notificationService.send(findMember, receiveMember, NotifiTypeEnum.CHAT, message.getChatNo(), content);
         }
 
-        if (message.isSave()) {
+        // 보낸 사람일 경우에만 메시지를 저장 -> 중복 저장 방지
+        if (message.getSenderEmail().equals(findMember.getEmail())) {
             // Message 객체를 채팅 엔티티로 변환한다.
             Chatting chatting = message.convertEntity();
             // 채팅 내용을 저장한다.
