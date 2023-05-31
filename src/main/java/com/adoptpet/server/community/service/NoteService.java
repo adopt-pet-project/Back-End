@@ -1,6 +1,7 @@
 package com.adoptpet.server.community.service;
 
 import com.adoptpet.server.commons.exception.ErrorCode;
+import com.adoptpet.server.commons.notification.domain.NotifiTypeEnum;
 import com.adoptpet.server.commons.notification.service.NotificationService;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.community.domain.Note;
@@ -27,16 +28,21 @@ public class NoteService {
     @Transactional
     public void sendNote(SecurityUserDto loginMember, Integer receiverNo, String content){
 
+        final Integer senderNo = loginMember.getMemberNo();
+
         // 받는 사람 조회
         Member receiver = memberService.findByMemberNo(receiverNo);
         // 쪽지 발신 내역 생성
         NoteHistory noteHistory
-                = NoteHistory.createNoteHistory(loginMember.getMemberNo(), receiver.getMemberNo(), content);
+                = NoteHistory.createNoteHistory(senderNo, receiver.getMemberNo(), content);
         // 쪽지방 생성
         Note note = Note.createNote(loginMember.getMemberNo(), receiver.getMemberNo(), noteHistory);
         // 저장
-        noteRepository.save(note);
+        Note savedNote = noteRepository.save(note);
+        // 알림 전송을 위해 보내는 사람 조회
+        Member sender = memberService.findByMemberNo(senderNo);
         // 알림 전송
+        notificationService.send(sender, receiver, NotifiTypeEnum.NOTE, savedNote.getNoteNo(), content);
     }
 
     @Transactional(readOnly = true)
