@@ -125,6 +125,7 @@ public class ChatService {
         sender.send(ConstantUtil.KAFKA_TOPIC, message);
     }
 
+    @Transactional
     public Message sendNotificationAndSaveMessage(Message message) {
         // 메시지 저장과 알람 발송을 위해 메시지를 보낸 회원을 조회
         Member findMember = memberRepository.findById(message.getSenderNo())
