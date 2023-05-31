@@ -69,9 +69,13 @@ public class CommunityService {
                     PopularArticle hotArticle = PopularArticle.createHotArticle(article);
                     popularArticleRepository.save(hotArticle);
                     // 게시글 소유자 조회
-                    Member member = getMember(article.getRegId());
+                    Member receiver = getMember(article.getRegId());
+
                     // 인기 게시글 선정 알림 전송
-                    notificationService.send(member, NotifiTypeEnum.ARTICLE_HOT, articleNo, article.getContent());
+                    notificationService.send(
+                            getManager(), receiver, NotifiTypeEnum.ARTICLE_HOT,
+                            articleNo, article.getContent()
+                    );
                 }
             }
         }
@@ -101,9 +105,12 @@ public class CommunityService {
                     popularArticle.updateStatusToWeekly();
                     popularArticleRepository.save(popularArticle);
                     // 게시글 소유자 조회
-                    Member member = getMember(article.getRegId());
+                    Member receiver = getMember(article.getRegId());
                     // 인기 게시글 선정 알림 전송
-                    notificationService.send(member, NotifiTypeEnum.ARTICLE_WEEK, articleNo, article.getContent());
+                    notificationService.send(
+                            getManager(), receiver, NotifiTypeEnum.ARTICLE_WEEK,
+                            articleNo, article.getContent()
+                    );
                 }
             }
         }
@@ -112,6 +119,10 @@ public class CommunityService {
     // 이메일로 회원 조회
     private Member getMember(String memberEmail) {
         return memberService.findByEmail(memberEmail).orElseThrow(ErrorCode::throwEmailNotFound);
+    }
+
+    private Member getManager(){
+        return memberService.findByMemberNo(0);
     }
 
     /**
@@ -159,12 +170,20 @@ public class CommunityService {
 
 
     /**
-     * 게시글 목록 조회
+     * @title 게시글 목록 조회 - 검색용
      **/
     @Transactional(readOnly = true)
     public List<ArticleListDto> readArticleList(String order, Integer pageNum, Integer option, String keyword){
-        List<ArticleListDto> articleList = communityQDslRepository.selectArticleList(order,pageNum,option,keyword);
-        return articleList;
+        return communityQDslRepository.findArticleList(order,pageNum,option,keyword);
+    }
+
+
+    /**
+     * @title 게시글 목록 조회 - 회원용
+     **/
+    @Transactional(readOnly = true)
+    public List<ArticleListDto> readArticleList(String memberEmail){
+        return communityQDslRepository.findArticleList(memberEmail);
     }
 
 

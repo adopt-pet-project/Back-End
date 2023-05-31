@@ -6,9 +6,12 @@ import com.adoptpet.server.adopt.domain.mongo.Chatting;
 import com.adoptpet.server.adopt.dto.chat.Message;
 import com.adoptpet.server.adopt.dto.request.ChatRequestDto;
 import com.adoptpet.server.adopt.dto.response.ChatResponseDto;
+import com.adoptpet.server.adopt.dto.response.ChattingHistoryResponseDto;
 import com.adoptpet.server.adopt.dto.response.ChatRoomResponseDto;
 import com.adoptpet.server.adopt.repository.ChatRepository;
 import com.adoptpet.server.adopt.mongo.MongoChatRepository;
+import com.adoptpet.server.commons.notification.domain.NotifiTypeEnum;
+import com.adoptpet.server.commons.notification.service.NotificationService;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.security.service.JwtUtil;
 import com.adoptpet.server.commons.util.ConstantUtil;
@@ -24,6 +27,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -44,6 +48,7 @@ public class ChatService {
     private final ChatQueryService chatQueryService;
     private final MongoTemplate mongoTemplate;
     private final ChatRoomService chatRoomService;
+    private final NotificationService notificationService;
 
     @Transactional
     public Chat makeChatRoom(SecurityUserDto userDto, ChatRequestDto requestDto) {
@@ -69,37 +74,39 @@ public class ChatService {
     public List<ChatRoomResponseDto> getChatList(SecurityUserDto userDto, Integer saleNo) {
         List<ChatRoomResponseDto> chatRoomList = chatQueryService.getChattingList(userDto.getMemberNo(), saleNo);
 
-        // 채팅방별로 읽지 않은 횟수를 셋팅
-        for (ChatRoomResponseDto chat : chatRoomList) {
-            long unReadCount = countUnReadMessages(chat.getChatNo(), userDto.getMemberNo());
-            chat.setUnReadCount(unReadCount);
-        }
+            chatRoomList
+                    .forEach(chatRoomDto -> {
+                        // 채팅방별로 읽지 않은 메시지 개수를 셋팅
+                        long unReadCount = countUnReadMessages(chatRoomDto.getChatNo(), userDto.getMemberNo());
+                        chatRoomDto.setUnReadCount(unReadCount);
 
-        // 채팅방별로 마지막 채팅내용과 시간을 셋팅
-        chatRoomList
-                .forEach(chatRoomDto -> {
-                    Page<Chatting> chatting =
-                            mongoChatRepository.findByChatRoomNoOrderBySendDateDesc(chatRoomDto.getChatNo(), PageRequest.of(0, 1));
-                    if (chatting.hasContent()) {
-                        Chatting chat = chatting.getContent().get(0);
-                        ChatRoomResponseDto.LatestMessage latestMessage = ChatRoomResponseDto.LatestMessage.builder()
-                                .context(chat.getContent())
-                                .sendAt(chat.getSendDate())
-                                .build();
-                        chatRoomDto.setLatestMessage(latestMessage);
-                    }
-                });
+                        // 채팅방별로 마지막 채팅내용과 시간을 셋팅
+                        Page<Chatting> chatting =
+                                mongoChatRepository.findByChatRoomNoOrderBySendDateDesc(chatRoomDto.getChatNo(), PageRequest.of(0, 1));
+                        if (chatting.hasContent()) {
+                            Chatting chat = chatting.getContent().get(0);
+                            ChatRoomResponseDto.LatestMessage latestMessage = ChatRoomResponseDto.LatestMessage.builder()
+                                    .context(chat.getContent())
+                                    .sendAt(chat.getSendDate())
+                                    .build();
+                            chatRoomDto.setLatestMessage(latestMessage);
+                        }
+                    });
 
         return chatRoomList;
     }
 
-    public List<ChatResponseDto> getChattingList(Integer chatRoomNo, SecurityUserDto user) {
+    public ChattingHistoryResponseDto getChattingList(Integer chatRoomNo, SecurityUserDto user) {
         updateCountAllZero(chatRoomNo, user.getEmail());
-        List<Chatting> chattingList = mongoChatRepository.findByChatRoomNo(chatRoomNo);
-
-        return chattingList.stream()
+        List<ChatResponseDto> chattingList = mongoChatRepository.findByChatRoomNo(chatRoomNo)
+                .stream()
                 .map(chat -> new ChatResponseDto(chat, user.getMemberNo()))
                 .collect(Collectors.toList());
+
+        return ChattingHistoryResponseDto.builder()
+                .chatList(chattingList)
+                .email(user.getEmail())
+                .build();
     }
 
     @Transactional
@@ -107,6 +114,12 @@ public class ChatService {
         // 메시지 전송 요청 헤더에 포함된 Access Token에서 email로 회원을 조회한다.
         Member findMember = memberRepository.findByEmail(jwtUtil.getUid(accessToken))
                         .orElseThrow(IllegalStateException::new);
+        // 알람 전송을 위해 메시지를 받는 사람을 조회한다.
+        Member receiveMember = chatQueryService.getReceiverNumber(message.getChatNo(), message.getSenderNo());
+        String content = findMember.getNickname() + "님 으로부터 채팅이 도착했습니다.";
+
+        // 알림을 전송한다.
+        notificationService.send(findMember, receiveMember, NotifiTypeEnum.CHAT, message.getChatNo(), content);
 
         // 채팅방에 모든 유저가 참여중인지 확인한다.
         boolean isConnectedAll = chatRoomService.isAllConnected(message.getChatNo());
@@ -120,7 +133,6 @@ public class ChatService {
         Chatting savedChat = mongoChatRepository.save(chatting);
         // 저장된 고유 ID를 반환한다.
         message.setId(savedChat.getId());
-        log.info("Message = {}", message);
         // 메시지를 전송한다.
         sender.send(ConstantUtil.KAFKA_TOPIC, message);
     }
