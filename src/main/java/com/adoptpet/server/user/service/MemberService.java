@@ -3,6 +3,7 @@ package com.adoptpet.server.user.service;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.util.ConstantUtil;
 import com.adoptpet.server.commons.util.SecurityUtils;
+import com.adoptpet.server.community.repository.CommentRepository;
 import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.domain.ProfileImage;
 import com.adoptpet.server.user.dto.request.RegisterDto;
@@ -24,6 +25,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final ProfileImageRepository profileImageRepository;
     private final MemberQueryService queryService;
+    private final CommentRepository commentRepository;
 
 
     public Optional<Member> findByEmail(String email) {
@@ -65,7 +67,7 @@ public class MemberService {
     public void removeMember(SecurityUserDto user) {
         Member findMember = memberRepository.findById(user.getMemberNo())
                 .orElseThrow(IllegalStateException::new);
-
+        commentRepository.deleteComment(findMember.getMemberNo());
         memberRepository.delete(findMember);
     }
 

@@ -22,7 +22,9 @@ import java.util.Optional;
 @EnableScheduling // SpringScheduling 사용 설정
 @RequiredArgsConstructor
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-public class BackEndApplication {
+public class BackEndApplication implements CommandLineRunner{
+
+    private final MongoChatRepository mongoChatRepository;
 
     static {
         System.setProperty("com.amazonaws.sdk.disableEc2Metadata", "true");
@@ -32,4 +34,10 @@ public class BackEndApplication {
         SpringApplication.run(BackEndApplication.class, args);
     }
 
+    @Override
+    public void run(String... args) throws Exception {
+        List<Chatting> chat = mongoChatRepository.findAll();
+
+        chat.forEach(System.out::println);
+    }
 }
