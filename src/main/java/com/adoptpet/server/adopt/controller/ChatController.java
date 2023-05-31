@@ -81,4 +81,12 @@ public class ChatController {
         chatRoomService.disconnectChatRoom(disconnectDto.getChatRoomNo(), disconnectDto.getEmail());
         return ResponseEntity.ok(StatusResponseDto.success());
     }
+
+
+    // 메시지 전송 후 callback
+    @PostMapping("/chatroom/notification")
+    public ResponseEntity<Message> sendNotification(@Valid @RequestBody final Message message) {
+        Message savedMessage = chatService.sendNotificationAndSaveMessage(message);
+        return ResponseEntity.ok(savedMessage);
+    }
 }
