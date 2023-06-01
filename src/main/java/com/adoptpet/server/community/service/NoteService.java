@@ -4,6 +4,7 @@ import com.adoptpet.server.commons.exception.ErrorCode;
 import com.adoptpet.server.commons.notification.domain.NotifiTypeEnum;
 import com.adoptpet.server.commons.notification.service.NotificationService;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
+import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.domain.Note;
 import com.adoptpet.server.community.domain.NoteHistory;
 import com.adoptpet.server.community.dto.NoteDto;
@@ -117,17 +118,24 @@ public class NoteService {
         List<NoteHistory> noteHistoryList = noteHistoryRepository.findAllByNoteNo(noteNo);
 
         boolean isMine;
-
-        // 요청한 회원이 보낸 쪽지는 true, 받은 쪽지는 false
+        LogicalDelEnum logicalDel;
         for(NoteHistory noteHistory : noteHistoryList){
 
-            isMine = memberNo.equals(noteHistory.getSenderNo());
+            // 요청한 회원이 보낸 쪽지는 true, 받은 쪽지는 false
+            if(memberNo.equals(noteHistory.getSenderNo())){
+                isMine = true;
+                logicalDel = noteHistory.getSenderDel();
+            } else {
+                isMine = false;
+                logicalDel = noteHistory.getReceiverDel();
+            }
 
             NoteHistoryDto noteHistoryDto = NoteHistoryDto.builder()
                     .historyNo(noteHistory.getHistoryNo())
                     .mine(isMine)
                     .content(noteHistory.getContent())
                     .regDate(noteHistory.getRegDate())
+                    .logicalDel(logicalDel)
                     .build();
 
             noteHistoryDtoList.add(noteHistoryDto);
@@ -137,6 +145,7 @@ public class NoteService {
 
     @Transactional
     public void updateNoteHistory(SecurityUserDto loginMember,Integer noteNo){
+
         // 쪽지 조회
         Note note = findNoteById(noteNo);
 
@@ -145,8 +154,16 @@ public class NoteService {
     }
 
     @Transactional
-    public void deleteNoteHistory(Integer noteHistoryNo){
+    public void deleteNoteHistory(SecurityUserDto loginMember,Integer historyNo){
+        final Integer memberNo = loginMember.getMemberNo();
 
+        // 쪽지 내역 조회
+        NoteHistory noteHistory = noteHistoryRepository.findById(historyNo)
+                .orElseThrow(ErrorCode::throwNoteHistoryNotFound);
+
+        // 논리 삭제
+        noteHistory.softDeleteNoteHistory(memberNo,LogicalDelEnum.DELETE);
+        noteHistoryRepository.save(noteHistory);
     }
 
 

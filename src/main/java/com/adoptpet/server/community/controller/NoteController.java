@@ -30,10 +30,6 @@ public class NoteController {
         return ResponseEntity.ok(StatusResponseDto.success());
     }
 
-    private static ResponseEntity<StatusResponseDto> success(Object responseData) {
-        return ResponseEntity.ok(StatusResponseDto.success(responseData));
-    }
-
     @PostMapping("/send")
     public ResponseEntity<StatusResponseDto> sendNote(@Valid @RequestBody SendNoteRequest request){
         noteService.sendNote(SecurityUtils.getUser(), request.getReceiverNo(), request.getContent());
@@ -59,4 +55,9 @@ public class NoteController {
     }
 
 
+    @DeleteMapping("/history/{historyNo}")
+    public ResponseEntity<StatusResponseDto> deleteHistory(@PathVariable("historyNo") Integer historyNo){
+        noteService.deleteNoteHistory(SecurityUtils.getUser(),historyNo);
+        return success();
+    }
 }

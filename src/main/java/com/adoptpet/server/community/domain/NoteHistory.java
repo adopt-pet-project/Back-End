@@ -69,4 +69,13 @@ public class NoteHistory extends BaseTimeEntity {
     public void addNote(Note note) {
         this.note = note;
     }
+
+    //== 삭제 로직 ==//
+    public void softDeleteNoteHistory(Integer memberNo,LogicalDelEnum logicalDel){
+        if(memberNo.equals(this.senderNo)){
+            this.senderDel = logicalDel;
+        } else {
+            this.receiverDel = logicalDel;
+        }
+    }
 }
