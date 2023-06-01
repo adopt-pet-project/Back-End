@@ -2,8 +2,10 @@ package com.adoptpet.server.user.controller;
 
 import com.adoptpet.server.commons.support.StatusResponseDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
+import com.adoptpet.server.user.dto.request.MemberModifyRequest;
 import com.adoptpet.server.user.dto.request.RegisterDto;
 import com.adoptpet.server.user.dto.response.MemberResponseDto;
+import com.adoptpet.server.user.dto.response.NicknameDuplicatedResponse;
 import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,18 @@ public class MemberController {
         log.info("response Dto = {}", responseDto);
 
         return ResponseEntity.ok(responseDto);
+    }
+
+    @PatchMapping("/member")
+    public ResponseEntity<StatusResponseDto> modifyMember(@Valid @RequestBody MemberModifyRequest memberModifyRequest, BindingResult bindingResult) {
+        memberService.modifyMember(memberModifyRequest, SecurityUtils.getUser());
+        return ResponseEntity.ok(StatusResponseDto.success());
+    }
+
+    @GetMapping("/member/validate")
+    public ResponseEntity<NicknameDuplicatedResponse> validateNickname(@RequestParam("nickname") String nickname) {
+        boolean isDuplicated = memberService.isDuplicated(nickname);
+        return ResponseEntity.ok(NicknameDuplicatedResponse.create(isDuplicated));
     }
 
     @DeleteMapping("/member")

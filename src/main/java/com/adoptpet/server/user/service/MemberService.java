@@ -7,6 +7,7 @@ import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.repository.CommentRepository;
 import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.domain.ProfileImage;
+import com.adoptpet.server.user.dto.request.MemberModifyRequest;
 import com.adoptpet.server.user.dto.request.RegisterDto;
 import com.adoptpet.server.user.dto.response.MemberResponseDto;
 import com.adoptpet.server.user.repository.MemberRepository;
@@ -14,6 +15,7 @@ import com.adoptpet.server.user.repository.ProfileImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -71,6 +73,46 @@ public class MemberService {
         commentRepository.deleteComment(findMember.getMemberNo());
         memberRepository.delete(findMember);
     }
+
+    // 회원정보 수정 메서드
+    @Transactional
+    public void modifyMember(MemberModifyRequest modifyRequest, SecurityUserDto user) {
+        // 토큰의 정보로 회원을 조회
+        Member findMember = memberRepository.findById(user.getMemberNo())
+                .orElseThrow(IllegalStateException::new);
+
+        // 닉네임 수정의 경우 동작
+        if (StringUtils.hasText(modifyRequest.getName())) {
+            // 현재 존재하는 닉네임인지 확인
+            boolean isDuplicated = isDuplicated(modifyRequest.getName());
+
+            // 닉네임 중복의 경우 500번 예외
+            if (isDuplicated) {
+                throw new IllegalStateException("중복된 닉네임 입니다.");
+            }
+
+            // 닉네임도 다시 셋팅
+            findMember.changeNickname(modifyRequest.getName());
+        }
+
+        // Image도 함께 수정하는 경우 실행
+        if (Objects.nonNull(modifyRequest.getImage())) {
+            // 현재 프로필 이미지 삭제 -> 새로운 프로필 이미지로 업데이트 -> 회원 테이블에 이미지 URL 추가
+            profileImageRepository.removeProfileImage(user.getMemberNo());
+            profileImageRepository.updateProfileImage(user.getMemberNo(), modifyRequest.getImage().getImageKey());
+            findMember.addProfileImage(modifyRequest.getImage().getImageUrl());
+        }
+
+        memberRepository.save(findMember);
+    }
+
+    // 닉네임 중복 확인 메서드
+    public boolean isDuplicated(String nickname) {
+        Optional<Member> findMember = memberRepository.findByNickname(nickname);
+        return findMember.isPresent();
+    }
+
+
 
     public MemberResponseDto findMemberInfo(Integer memberNo) {
         MemberResponseDto memberResponseDto = memberNo == 0 ? queryService.getUserInfo(SecurityUtils.getUser().getMemberNo()) :
