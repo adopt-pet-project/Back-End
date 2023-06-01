@@ -1,13 +1,13 @@
 package com.adoptpet.server.community.dto;
 
+import com.adoptpet.server.commons.util.LocalDateTimeUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Builder
-@AllArgsConstructor
+@Getter
 public class NoteDto {
     @JsonProperty("id")
     private Integer noteNo; // note
@@ -18,7 +18,17 @@ public class NoteDto {
     @JsonProperty("mine")
     private boolean mine;
     @JsonProperty("publishedAt")
-    private LocalDateTime regDate; // noteHistory
+    private String regDate; // noteHistory
     @JsonProperty("checked")
     private boolean readStatus; // note
+
+    @Builder
+    public NoteDto(Integer noteNo, String nickName, String content, boolean mine, LocalDateTime regDate, boolean readStatus) {
+        this.noteNo = noteNo;
+        this.nickName = nickName;
+        this.content = content;
+        this.mine = mine;
+        this.regDate = LocalDateTimeUtils.toString(regDate);
+        this.readStatus = readStatus;
+    }
 }
