@@ -171,7 +171,7 @@ public class NoteService {
     }
 
     @Transactional
-    public void deleteNoteHistory(SecurityUserDto loginMember,Integer historyNo){
+    public void deleteHistory(SecurityUserDto loginMember, Integer historyNo){
         final Integer memberNo = loginMember.getMemberNo();
 
         // 쪽지 내역 조회

@@ -57,7 +57,7 @@ public class NoteController {
 
     @DeleteMapping("/history/{historyNo}")
     public ResponseEntity<StatusResponseDto> deleteHistory(@PathVariable("historyNo") Integer historyNo){
-        noteService.deleteNoteHistory(SecurityUtils.getUser(),historyNo);
+        noteService.deleteHistory(SecurityUtils.getUser(),historyNo);
         return success();
     }
 }

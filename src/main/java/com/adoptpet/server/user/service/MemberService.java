@@ -1,12 +1,11 @@
 package com.adoptpet.server.user.service;
 
-import com.adoptpet.server.commons.exception.ErrorCode;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.util.ConstantUtil;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.repository.CommentRepository;
+import com.adoptpet.server.community.repository.NoteHistoryRepository;
 import com.adoptpet.server.user.domain.Member;
-import com.adoptpet.server.user.domain.ProfileImage;
 import com.adoptpet.server.user.dto.request.MemberModifyRequest;
 import com.adoptpet.server.user.dto.request.RegisterDto;
 import com.adoptpet.server.user.dto.response.MemberResponseDto;
@@ -29,6 +28,7 @@ public class MemberService {
     private final ProfileImageRepository profileImageRepository;
     private final MemberQueryService queryService;
     private final CommentRepository commentRepository;
+    private final NoteHistoryRepository noteHistoryRepository;
 
 
     public Optional<Member> findByEmail(String email) {
@@ -72,6 +72,8 @@ public class MemberService {
                 .orElseThrow(IllegalStateException::new);
         commentRepository.deleteComment(findMember.getMemberNo());
         memberRepository.delete(findMember);
+        noteHistoryRepository.deleteHistoryByReceiverNo(findMember.getMemberNo());
+        noteHistoryRepository.deleteHistoryBySenderNo(findMember.getMemberNo());
     }
 
     // 회원정보 수정 메서드
