@@ -37,7 +37,7 @@ public class MemberService {
 
     public Member findByMemberNo(Integer memberNo) {
         return memberRepository.findById(memberNo)
-                .orElseThrow(ErrorCode::throwMemberNotFound);
+                .orElseThrow(IllegalStateException::new);
     }
 
     @Transactional
