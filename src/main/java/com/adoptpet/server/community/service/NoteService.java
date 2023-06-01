@@ -89,9 +89,8 @@ public class NoteService {
                 opponent = memberService.findByMemberNo(note.getCreateMember());
             }
             // 요청한 회원의 입장에서 받은 쪽지인지 보낸 쪽지인지 확인
-            if(memberNo.equals(history.getSenderNo())){
-                isMine = true;
-            }
+            isMine = memberNo.equals(history.getSenderNo());
+
             // 상대방 닉네임 추가
             nickName = opponent.getNickname();
 
