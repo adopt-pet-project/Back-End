@@ -4,6 +4,7 @@ package com.adoptpet.server.community.controller;
 import com.adoptpet.server.commons.support.StatusResponseDto;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.dto.NoteDto;
+import com.adoptpet.server.community.dto.NoteHistoryDto;
 import com.adoptpet.server.community.dto.request.SendNoteRequest;
 import com.adoptpet.server.community.service.NoteService;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +36,7 @@ public class NoteController {
 
     @PostMapping("/send")
     public ResponseEntity<StatusResponseDto> sendNote(@Valid @RequestBody SendNoteRequest request){
-
         noteService.sendNote(SecurityUtils.getUser(), request.getReceiverNo(), request.getContent());
-
         return success();
     }
 
@@ -48,16 +47,14 @@ public class NoteController {
     }
 
 
-//    @GetMapping("/history/{noteNo}")
-//    public ResponseEntity<List<NoteHistoryListResponse>> readNoteHistoryList(){
-//        return success();
-//    }
+    @GetMapping("/history/{noteNo}")
+    public ResponseEntity<List<NoteHistoryDto>> readNoteHistoryList(@PathVariable("noteNo") Integer noteNo){
+        return ResponseEntity.ok(noteService.readNoteHistoryList(SecurityUtils.getUser(),noteNo));
+    }
 
     @PatchMapping("/checked/{noteNo}")
     public ResponseEntity<StatusResponseDto> updateNote(@PathVariable("noteNo") Integer noteNo) {
-
-        noteService.updateNoteHistory(noteNo);
-
+        noteService.updateNoteHistory(SecurityUtils.getUser(),noteNo);
         return success();
     }
 

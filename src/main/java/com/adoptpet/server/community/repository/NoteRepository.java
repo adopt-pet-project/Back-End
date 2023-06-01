@@ -11,4 +11,11 @@ public interface NoteRepository extends JpaRepository<Note, Integer> {
 
     @Query("SELECT n FROM Note n WHERE n.createMember = :memberNo OR n.joinMember = :memberNo")
     List<Note> findAllByMemberNo(@Param("memberNo") Integer memberNo);
+
+
+    @Query("SELECT n FROM Note n " +
+            "WHERE (n.createMember = :senderNo AND n.joinMember = :receiverNo)" +
+            "OR (n.createMember = :receiverNo AND n.joinMember = :senderNo)")
+    List<Note> findBySenderAndReceiver(@Param("senderNo") Integer senderNo,
+                                       @Param("receiverNo") Integer receiverNo);
 }
