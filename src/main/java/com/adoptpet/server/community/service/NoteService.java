@@ -82,10 +82,10 @@ public class NoteService {
             // 쪽지방 고유키로 쪽지 조회
             NoteHistory history = noteHistoryRepository.findTop1ByNoteOrderByRegDateDesc(note);
             // 조회를 요청한 회원의 상대방 조회
-            if(!memberNo.equals(note.getCreateMember())){
-                opponent = memberService.findByMemberNo(memberNo);
-            } else {
+            if(memberNo.equals(note.getCreateMember())){
                 opponent = memberService.findByMemberNo(note.getJoinMember());
+            } else {
+                opponent = memberService.findByMemberNo(note.getCreateMember());
             }
             // 요청한 회원의 입장에서 받은 쪽지인지 보낸 쪽지인지 확인
             if(memberNo.equals(history.getSenderNo())){
