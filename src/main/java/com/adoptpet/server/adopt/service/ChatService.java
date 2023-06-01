@@ -125,25 +125,32 @@ public class ChatService {
         sender.send(ConstantUtil.KAFKA_TOPIC, message);
     }
 
+    @Transactional
     public Message sendNotificationAndSaveMessage(Message message) {
         // 메시지 저장과 알람 발송을 위해 메시지를 보낸 회원을 조회
         Member findMember = memberRepository.findById(message.getSenderNo())
                 .orElseThrow(IllegalStateException::new);
 
-        // 알람 전송을 위해 메시지를 받는 사람을 조회한다.
-        Member receiveMember = chatQueryService.getReceiverNumber(message.getChatNo(), message.getSenderNo());
-        String content =
-                message.getContentType().equals("image") ? "image" : message.getContent();
+        // 상대방이 읽지 않은 경우에만 알림 전송
+        if (message.getReadCount().equals(1)) {
+            // 알람 전송을 위해 메시지를 받는 사람을 조회한다.
+            Member receiveMember = chatQueryService.getReceiverNumber(message.getChatNo(), message.getSenderNo());
+            String content =
+                    message.getContentType().equals("image") ? "image" : message.getContent();
 
-        // Message 객체를 채팅 엔티티로 변환한다.
-        Chatting chatting = message.convertEntity();
-        // 채팅 내용을 저장한다.
-        Chatting savedChat = mongoChatRepository.save(chatting);
-        // 저장된 고유 ID를 반환한다.
-        message.setId(savedChat.getId());
+            // 알림을 전송한다.
+            notificationService.send(findMember, receiveMember, NotifiTypeEnum.CHAT, message.getChatNo(), content);
+        }
 
-        // 알림을 전송한다.
-        notificationService.send(findMember, receiveMember, NotifiTypeEnum.CHAT, message.getChatNo(), content);
+        // 보낸 사람일 경우에만 메시지를 저장 -> 중복 저장 방지
+        if (message.getSenderEmail().equals(findMember.getEmail())) {
+            // Message 객체를 채팅 엔티티로 변환한다.
+            Chatting chatting = message.convertEntity();
+            // 채팅 내용을 저장한다.
+            Chatting savedChat = mongoChatRepository.save(chatting);
+            // 저장된 고유 ID를 반환한다.
+            message.setId(savedChat.getId());
+        }
 
         return message;
     }
