@@ -73,26 +73,41 @@ public class NoteService {
         // 쪽지방 조회
         List<Note> noteList = noteRepository.findAllByMemberNo(loginMember.getMemberNo());
 
-        boolean isMine = false;
+        boolean isMine;
+        LogicalDelEnum logicalDel;
         String nickName;
-        Member opponent;
-
+        Integer opponentNo;
         List<NoteDto> noteDtoList = new ArrayList<>();
 
         for(Note note : noteList){
             // 쪽지방 고유키로 쪽지 조회
-            NoteHistory history = noteHistoryRepository.findTop1ByNoteOrderByRegDateDesc(note);
+            NoteHistory history = noteHistoryRepository
+                    .findTop1ByNoteOrderByRegDateDesc(note);
+
             // 조회를 요청한 회원의 상대방 조회
             if(memberNo.equals(note.getCreateMember())){
-                opponent = memberService.findByMemberNo(note.getJoinMember());
+                opponentNo = note.getJoinMember();
             } else {
-                opponent = memberService.findByMemberNo(note.getCreateMember());
+                opponentNo = note.getCreateMember();
             }
-            // 요청한 회원의 입장에서 받은 쪽지인지 보낸 쪽지인지 확인
-            isMine = memberNo.equals(history.getSenderNo());
 
             // 상대방 닉네임 추가
-            nickName = opponent.getNickname();
+            try{
+                Member opponent = memberService.findByMemberNo(opponentNo);
+                nickName = opponent.getNickname();
+            } catch (IllegalStateException ex ){
+                nickName = "탈퇴한 회원";
+            }
+
+            // 요청한 회원이 보낸 쪽지는 true, 받은 쪽지는 false
+            isMine = memberNo.equals(history.getSenderNo());
+
+            // 삭제 상태 추가
+            if(isMine){
+                logicalDel = history.getSenderDel();
+            } else {
+                logicalDel = history.getReceiverDel();
+            }
 
             NoteDto noteDto = NoteDto.builder()
                     .noteNo(note.getNoteNo())
@@ -101,6 +116,7 @@ public class NoteService {
                     .mine(isMine)
                     .regDate(history.getRegDate())
                     .readStatus(history.isRead())
+                    .logicalDel(logicalDel)
                     .build();
 
             noteDtoList.add(noteDto);
@@ -114,26 +130,28 @@ public class NoteService {
         final Integer memberNo = loginMember.getMemberNo();
         List<NoteHistoryDto> noteHistoryDtoList = new ArrayList<>();
 
-        List<NoteHistory> noteHistoryList = noteHistoryRepository.findAllByNoteNo(noteNo);
+        List<NoteHistory> historyList = noteHistoryRepository.findAllByNoteNo(noteNo);
 
         boolean isMine;
         LogicalDelEnum logicalDel;
-        for(NoteHistory noteHistory : noteHistoryList){
+
+        for(NoteHistory history : historyList){
 
             // 요청한 회원이 보낸 쪽지는 true, 받은 쪽지는 false
-            if(memberNo.equals(noteHistory.getSenderNo())){
-                isMine = true;
-                logicalDel = noteHistory.getSenderDel();
+            isMine = memberNo.equals(history.getSenderNo());
+
+            // 삭제 상태 추가
+            if(memberNo.equals(history.getSenderNo())){
+                logicalDel = history.getSenderDel();
             } else {
-                isMine = false;
-                logicalDel = noteHistory.getReceiverDel();
+                logicalDel = history.getReceiverDel();
             }
 
             NoteHistoryDto noteHistoryDto = NoteHistoryDto.builder()
-                    .historyNo(noteHistory.getHistoryNo())
+                    .historyNo(history.getHistoryNo())
                     .mine(isMine)
-                    .content(noteHistory.getContent())
-                    .regDate(noteHistory.getRegDate())
+                    .content(history.getContent())
+                    .regDate(history.getRegDate())
                     .logicalDel(logicalDel)
                     .build();
 
