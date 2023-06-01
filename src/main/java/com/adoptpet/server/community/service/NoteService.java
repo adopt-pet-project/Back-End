@@ -116,13 +116,12 @@ public class NoteService {
 
         List<NoteHistory> noteHistoryList = noteHistoryRepository.findAllByNoteNo(noteNo);
 
-        boolean isMine = false;
+        boolean isMine;
 
         // 요청한 회원이 보낸 쪽지는 true, 받은 쪽지는 false
         for(NoteHistory noteHistory : noteHistoryList){
-            if(memberNo.equals(noteHistory.getReceiverNo())){
-                isMine = true;
-            }
+
+            isMine = memberNo.equals(noteHistory.getSenderNo());
 
             NoteHistoryDto noteHistoryDto = NoteHistoryDto.builder()
                     .historyNo(noteHistory.getHistoryNo())
