@@ -1,5 +1,6 @@
 package com.adoptpet.server.user.service;
 
+import com.adoptpet.server.commons.exception.ErrorCode;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.util.ConstantUtil;
 import com.adoptpet.server.commons.util.SecurityUtils;
@@ -34,7 +35,7 @@ public class MemberService {
 
     public Member findByMemberNo(Integer memberNo) {
         return memberRepository.findById(memberNo)
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(ErrorCode::throwMemberNotFound);
     }
 
     @Transactional

@@ -20,7 +20,7 @@ public enum ErrorCode {
     VALID_USER_ID(FORBIDDEN, "해당 정보에 접근 권한이 존재하지 않습니다."),
 
     /* 404 NOT_FOUND : Resource 를 찾을 수 없음 */
-    USER_NOT_FOUND(NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다."),
+    MEMBER_NOT_FOUND(NOT_FOUND, "해당 회원 정보를 찾을 수 없습니다."),
     EMAIL_NOT_FOUND(NOT_FOUND, "해당 이메일을 찾을 수 없습니다."),
     IMAGE_NOT_FOUND(NOT_FOUND,"해당 이미지를 찾을 수 없습니다."),
     TYPE_NOT_FOUND(NOT_FOUND,"해당 타입을 찾을 수 없습니다."),
@@ -28,7 +28,7 @@ public enum ErrorCode {
     CATEGORY_NOT_FOUND(NOT_FOUND,"해당 카테고리를 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(NOT_FOUND,"해당 댓글을 찾을 수 없습니다."),
     NOTIFICATION_NOT_FOUND(NOT_FOUND, "해당 알림을 찾을 수 없습니다." ),
-    NOTE_NOT_FOUND(NOT_FOUND,"해당 쪽지방]을 찾을 수 없습니다."),
+    NOTE_NOT_FOUND(NOT_FOUND,"해당 쪽지방을 찾을 수 없습니다."),
 
     /* 409 CONFLICT : Resource 의 현재 상태와 충돌. 보통 중복된 데이터 존재 */
     /* DUPLICATE : (다른 무엇과) 똑같은 */
@@ -82,5 +82,9 @@ public enum ErrorCode {
 
     public static CustomException throwNoteNotFound() {
         throw new CustomException(NOTE_NOT_FOUND);
+    }
+
+    public static CustomException throwMemberNotFound() {
+        throw new CustomException(MEMBER_NOT_FOUND);
     }
 }
