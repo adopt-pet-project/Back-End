@@ -71,4 +71,8 @@ public class Member {
     public void addProfileImage(String imgUrl) {
         this.profile = imgUrl;
     }
+
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }

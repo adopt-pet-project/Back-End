@@ -16,4 +16,8 @@ public interface ProfileImageRepository extends JpaRepository<ProfileImage,Integ
 
     @Query("select p from ProfileImage p where p.memberNo = null")
     List<ProfileImage> findAllProfileImageNull();
+
+    @Modifying(clearAutomatically = true)
+    @Query("delete ProfileImage p where p.memberNo = :memberNo")
+    void removeProfileImage(@Param("memberNo") Integer memberNo);
 }
