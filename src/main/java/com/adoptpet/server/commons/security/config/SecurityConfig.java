@@ -52,6 +52,7 @@ public class SecurityConfig {
                 .antMatchers("/community/**").hasAnyRole("MANAGER", "USER") // GET 요청을 제외한 나머지 /community/** 요청은 권한 필요
                 .antMatchers("/admin/**").hasRole("MANAGER") // 관리자 페이지는 관리자(MANAGER) 권한이 있어야 접근 가능
                 .antMatchers(HttpMethod.DELETE, "chatroom/**").permitAll()
+                .antMatchers("/member/validate").permitAll()
                 .antMatchers("/chatroom/notification").permitAll()
                 .antMatchers("/chat/**").permitAll()
                 .antMatchers("/actuator/**").permitAll()
