@@ -2,7 +2,7 @@ package com.adoptpet.server.commons.notification.dto;
 
 import com.adoptpet.server.commons.notification.domain.NotifiTypeEnum;
 import com.adoptpet.server.commons.notification.domain.Notification;
-import com.adoptpet.server.commons.util.LocalDateTimeToArray;
+import com.adoptpet.server.commons.util.LocalDateTimeUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,7 +32,7 @@ public class NotificationResponse {
         this.type = type.getAlias();
         this.content = content;
         this.url = url;
-        this.publishedAt = LocalDateTimeToArray.convert(publishedAt);
+        this.publishedAt = LocalDateTimeUtils.toArray(publishedAt);
         this.name = name;
         this.read = read;
         this.del = del;
