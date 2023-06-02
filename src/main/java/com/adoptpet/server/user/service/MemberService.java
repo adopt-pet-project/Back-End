@@ -1,5 +1,6 @@
 package com.adoptpet.server.user.service;
 
+import com.adoptpet.server.commons.notification.repository.NotificationRepository;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.util.ConstantUtil;
 import com.adoptpet.server.commons.util.SecurityUtils;
@@ -29,6 +30,7 @@ public class MemberService {
     private final MemberQueryService queryService;
     private final CommentRepository commentRepository;
     private final NoteHistoryRepository noteHistoryRepository;
+    private final NotificationRepository notificationRepository;
 
 
     public Optional<Member> findByEmail(String email) {
@@ -74,6 +76,7 @@ public class MemberService {
         memberRepository.delete(findMember);
         noteHistoryRepository.deleteHistoryByReceiverNo(findMember.getMemberNo());
         noteHistoryRepository.deleteHistoryBySenderNo(findMember.getMemberNo());
+        notificationRepository.deleteAllByMemberNo(findMember.getMemberNo());
     }
 
     // 회원정보 수정 메서드
