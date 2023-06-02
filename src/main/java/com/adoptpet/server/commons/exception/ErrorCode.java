@@ -85,10 +85,6 @@ public enum ErrorCode {
         throw new CustomException(NOTE_NOT_FOUND);
     }
 
-    public static CustomException throwMemberNotFound() {
-        throw new CustomException(MEMBER_NOT_FOUND);
-    }
-
     public static CustomException throwNoteHistoryNotFound() {
         throw new CustomException(NOTE_HISTORY_NOT_FOUND);
     }
