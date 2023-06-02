@@ -116,10 +116,17 @@ public class NotificationService {
 
 
     //== 로그인 맴버 알림 전체 조회 ==//
-    @Transactional
+    @Transactional(readOnly = true)
     public List<NotificationResponse> findAllById(SecurityUserDto loginMember) {
 
         Member member = memberService.findByMemberNo(loginMember.getMemberNo());
+
+        List<Notification> noti = notificationRepository.findChatOrNoteByReceiver(member);
+
+        for(Notification n :noti){
+            log.info(n.getContent()+"  "+ n.getUrl() +"  "+ n.getType());
+        }
+
 
         // 회원 엔티티로 알림 조회 후 알림 response List로 변환
         return notificationRepository.findAllByReceiver(member).stream()
@@ -127,6 +134,7 @@ public class NotificationService {
                 .sorted(Comparator.comparing(NotificationResponse::getId).reversed())
                 .collect(Collectors.toList());
     }
+
 
 
     //== 알림 읽음 처리 ==//
@@ -152,5 +160,10 @@ public class NotificationService {
         Notification notification = notificationRepository.findById(id)
                 .orElseThrow(ErrorCode::throwNotificationNotFound);
         return notification;
+    }
+
+    @Transactional
+    public void deleteTest(Integer memberNo){
+        notificationRepository.deleteAllByMemberNo(memberNo);
     }
 }
