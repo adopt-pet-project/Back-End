@@ -81,7 +81,7 @@ public class MemberService {
                 .orElseThrow(IllegalStateException::new);
 
         // 닉네임 수정의 경우 동작
-        if (StringUtils.hasText(modifyRequest.getName())) {
+        if (StringUtils.hasText(modifyRequest.getName()) && !modifyRequest.getName().equals(findMember.getNickname())) {
             // 현재 존재하는 닉네임인지 확인
             boolean isDuplicated = isDuplicated(modifyRequest.getName());
 
