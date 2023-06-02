@@ -6,19 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 
 public interface NoteHistoryRepository extends JpaRepository<NoteHistory, Integer> {
 
     NoteHistory findTop1ByNoteOrderByRegDateDesc(Note note);
-
-    @Query("SELECT nh FROM NoteHistory nh WHERE nh.note.noteNo = :noteNo")
-    List<NoteHistory> findAllByNoteNo(@Param("noteNo") Integer noteNo);
 
     @Modifying(clearAutomatically = true)
     @Query(value = "UPDATE NOTE_HISTORY nh SET nh.read_status = 1 " +
