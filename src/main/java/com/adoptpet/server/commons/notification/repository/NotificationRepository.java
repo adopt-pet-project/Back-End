@@ -10,7 +10,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    List<Notification> findAllByReceiver(Member receiver);
 
     @Query(value = "SELECT * FROM NOTIFICATION n " +
             "WHERE (n.url, n.reg_date) " +
