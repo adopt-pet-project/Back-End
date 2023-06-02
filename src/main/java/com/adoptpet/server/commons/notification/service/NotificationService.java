@@ -116,17 +116,25 @@ public class NotificationService {
 
 
     //== 로그인 맴버 알림 전체 조회 ==//
-    @Transactional
+    @Transactional(readOnly = true)
     public List<NotificationResponse> findAllById(SecurityUserDto loginMember) {
 
         Member member = memberService.findByMemberNo(loginMember.getMemberNo());
+        // 채팅과 쪽지의 마지막 알림 조회
+        List<Notification> chatOrNote
+                = notificationRepository.findChatOrNoteByReceiver(member.getMemberNo());
+        // 채팅과 쪽지 이외의 알림 전체 조회
+        List<Notification> other
+                = notificationRepository.findOtherByReceiver(member.getMemberNo());
+        // 위에서 조회한 두 알림 리스트 합침
+        chatOrNote.addAll(other);
 
-        // 회원 엔티티로 알림 조회 후 알림 response List로 변환
-        return notificationRepository.findAllByReceiver(member).stream()
+        return chatOrNote.stream()
                 .map(NotificationResponse::from)
                 .sorted(Comparator.comparing(NotificationResponse::getId).reversed())
                 .collect(Collectors.toList());
     }
+
 
 
     //== 알림 읽음 처리 ==//
@@ -149,8 +157,7 @@ public class NotificationService {
 
     //== 개별 알림 조회 ==//
     private Notification getNotification(Long id) {
-        Notification notification = notificationRepository.findById(id)
+        return notificationRepository.findById(id)
                 .orElseThrow(ErrorCode::throwNotificationNotFound);
-        return notification;
     }
 }
