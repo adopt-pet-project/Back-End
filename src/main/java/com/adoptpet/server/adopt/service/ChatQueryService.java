@@ -3,6 +3,7 @@ package com.adoptpet.server.adopt.service;
 import static com.adoptpet.server.adopt.domain.QChat.*;
 
 import com.adoptpet.server.adopt.domain.Chat;
+import static com.adoptpet.server.adopt.domain.QAdopt.*;
 import com.adoptpet.server.adopt.dto.response.ChatRoomResponseDto;
 import static com.adoptpet.server.user.domain.QMember.*;
 
@@ -36,6 +37,7 @@ public class ChatQueryService {
                 chat.createMember,
                 chat.joinMember,
                 chat.saleNo,
+                adopt.title,
                 chat.regDate,
                 Projections.constructor(ChatRoomResponseDto.Participant.class,
                         ExpressionUtils.as(
@@ -58,6 +60,7 @@ public class ChatQueryService {
                                         )), "profile"))
                 ))
                 .from(chat)
+                .join(adopt).on(adopt.saleNo.eq(chat.saleNo))
                 .where(chat.createMember.eq(memberNo).or(chat.joinMember.eq(memberNo)), saleNoEq(saleNo))
                 .fetch();
     }
