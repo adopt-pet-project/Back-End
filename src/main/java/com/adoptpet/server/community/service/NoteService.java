@@ -121,7 +121,7 @@ public class NoteService {
     @Transactional(readOnly = true)
     public List<NoteHistoryDto> readNoteHistoryList(SecurityUserDto loginMember, Integer noteNo){
         final Integer memberNo = loginMember.getMemberNo();
-        List<NoteHistoryDto> noteHistoryDtoList = new ArrayList<>();
+        List<NoteHistoryDto> historyDtoList = new ArrayList<>();
 
         // 채팅 내역 조회 대한 권한 검증
         Note note = findNoteById(noteNo);
@@ -154,9 +154,10 @@ public class NoteService {
                     .logicalDel(logicalDel)
                     .build();
 
-            noteHistoryDtoList.add(noteHistoryDto);
+            historyDtoList.add(noteHistoryDto);
         }
-        return noteHistoryDtoList;
+
+        return historyDtoList;
     }
 
     @Transactional
