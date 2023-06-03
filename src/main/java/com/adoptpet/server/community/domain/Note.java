@@ -31,6 +31,7 @@ public class Note {
 
 
     @OneToMany(mappedBy = "note", cascade = CascadeType.PERSIST)
+    @OrderBy("historyNo desc ")
     private List<NoteHistory> noteHistoryList = new ArrayList<>();
 
     @Builder
