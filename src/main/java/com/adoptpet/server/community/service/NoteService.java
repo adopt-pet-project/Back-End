@@ -104,6 +104,7 @@ public class NoteService {
 
             NoteDto noteDto = NoteDto.builder()
                     .noteNo(note.getNoteNo())
+                    .opponentNo(opponentNo)
                     .nickName(nickName)
                     .content(history.getContent())
                     .mine(isMine)
