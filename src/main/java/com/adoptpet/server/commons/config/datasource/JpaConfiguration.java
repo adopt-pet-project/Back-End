@@ -3,7 +3,6 @@ package com.adoptpet.server.commons.config.datasource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -17,9 +16,8 @@ import javax.sql.DataSource;
 @Configuration
 @EnableJpaRepositories(basePackages = {"com.adoptpet.server.adopt.repository",
         "com.adoptpet.server.community.repository", "com.adoptpet.server.user.repository",
-        "com.adoptpet.server.commons.notification.repository",})
+        "com.adoptpet.server.commons.notification.repository"})
 @EnableTransactionManagement // 트랜잭션 관리 기능을 활성화하는 애너테이션
-@Profile("local")
 public class JpaConfiguration {
 
 

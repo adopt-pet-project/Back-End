@@ -18,6 +18,7 @@ public class ChatRoomResponseDto {
     private Integer joinMember;
 
     private Integer saleNo;
+    private String saleTitle;
 
     private long regDate;
     private Participant participant;
@@ -29,13 +30,15 @@ public class ChatRoomResponseDto {
         this.unReadCount = unReadCount;
     }
 
-    public ChatRoomResponseDto(Integer chatNo, Integer createMember, Integer joinMember, Integer saleNo, LocalDateTime regDate, Participant participant) {
+    public ChatRoomResponseDto(Integer chatNo, Integer createMember, Integer joinMember, Integer saleNo, String saleTitle,
+                               LocalDateTime regDate, Participant participant) {
         this.chatNo = chatNo;
         this.createMember = createMember;
         this.joinMember = joinMember;
         this.saleNo = saleNo;
         this.regDate = regDate.atZone(ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
         this.participant = participant;
+        this.saleTitle = saleTitle;
     }
 
     public void setLatestMessage(LatestMessage latestMessage) {
