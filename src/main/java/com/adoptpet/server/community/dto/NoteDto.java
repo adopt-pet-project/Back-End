@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 public class NoteDto {
     @JsonProperty("id")
     private Integer noteNo; // note
+    @JsonProperty("targetId")
+    private Integer opponentNo;
     @JsonProperty("name")
     private String nickName; // member
     @JsonProperty("contents")
@@ -26,7 +28,8 @@ public class NoteDto {
     private LogicalDelEnum logicalDel;
 
     @Builder
-    public NoteDto(Integer noteNo, String nickName, String content, boolean mine, LocalDateTime regDate, boolean readStatus,LogicalDelEnum logicalDel) {
+    public NoteDto(Integer noteNo,Integer opponentNo ,String nickName, String content, boolean mine, LocalDateTime regDate, boolean readStatus,LogicalDelEnum logicalDel) {
+        this.opponentNo = opponentNo;
         this.noteNo = noteNo;
         this.nickName = nickName;
         this.content = content;
