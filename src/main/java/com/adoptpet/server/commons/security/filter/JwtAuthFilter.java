@@ -5,6 +5,7 @@ import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.security.service.JwtUtil;
 import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.repository.MemberRepository;
+import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,7 +28,7 @@ import java.util.List;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -54,7 +55,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (jwtUtil.verifyToken(atc)) {
 
             // AccessToken 내부의 payload에 있는 email로 user를 조회한다. 없다면 예외를 발생시킨다 -> 정상 케이스가 아님
-            Member findMember = memberRepository.findByEmail(jwtUtil.getUid(atc))
+            Member findMember = memberService.findByEmail(jwtUtil.getUid(atc))
                     .orElseThrow(IllegalStateException::new);
 
             // SecurityContext에 등록할 User 객체를 만들어준다.
