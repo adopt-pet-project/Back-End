@@ -6,6 +6,7 @@ import com.adoptpet.server.commons.image.dto.ImageInfoDto;
 import com.adoptpet.server.commons.notification.domain.NotifiTypeEnum;
 import com.adoptpet.server.commons.notification.service.NotificationService;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
+import com.adoptpet.server.commons.util.CookieUtil;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.domain.*;
 import com.adoptpet.server.community.dto.*;
@@ -15,6 +16,7 @@ import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseCookie;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -375,47 +377,34 @@ public class CommunityService {
     @Transactional
     public void increaseCount(Integer articleNo, HttpServletRequest request, HttpServletResponse response) {
         Cookie oldCookie = null;
-        // 현재 브라우저의 쿠키를 전부 가져온다.
-        Cookie[] cookies = request.getCookies();
+        final String name = "community_view";
+        final String value = "["+articleNo+"]";
+        final Integer maxAge = 60 * 60 * 24;
 
-        // 쿠키가 있을 경우 실행
-        if (Objects.nonNull(cookies)) {
-            // 반복문을 돌면서 communityView라는 이름을 가진 쿠키가 있을 경우 oldCookie에 값을 담아준다.
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("communityView")) {
-                    oldCookie = cookie;
-                }
-            }
+        Optional<Cookie> cookie = CookieUtil.getCookie(request, name);
+        // 쿠기가 있을 경우 oldCookie로 만든다.
+        if(cookie.isPresent()){
+            oldCookie = cookie.get();
         }
 
-        // communityView 쿠키가 null이 아닐경우 실행한다.
+        // name에 해당하는 쿠키가 null이 아닐경우 실행한다.
         if (Objects.nonNull(oldCookie)) {
-            // 현재 게시글 번호를 값으로 포함한 쿠키가 없을 경우 실행한다.
-            if (!oldCookie.getValue().contains("[" + articleNo + "]")) {
+            // 현재 게시글 번호를 값으로 포함한 쿠키가 oldCookie에 없을 경우 실행한다.
+            if (!oldCookie.getValue().contains(value)) {
+                log.info("==== old cookie value : {}", oldCookie.getValue());
+                log.info("==== articleNo : {}", articleNo);
+
                 // 조회수를 1 증가시킨다.
                 communityRepository.increaseCount(articleNo);
-                // 현재 쿠키의 값에 조회한 게시글 번호를 이어서 저장해준다.
-                oldCookie.setValue(oldCookie.getValue() + "_[" + articleNo + "]");
-                // 이 쿠키는 모든 요청에 같이 전달되도록 설정
-                oldCookie.setPath("/");
-                // 쿠키의 유효기간을 하루로 설정
-                oldCookie.setMaxAge(60 * 60 * 24);
-                // 응답 객체(response)에 쿠키를 셋팅해준다.
-                response.addCookie(oldCookie);
+                // 쿠키의 값을 수정하면서 반환한다.
+                CookieUtil.addCookie(response,name,oldCookie.getValue() + "_" + value, maxAge);
             }
         } else {
             // oldCookie의 값이 없다면 현재 조회한 게시글이 하나도 없는 상태이므로 조회 수 카운트를 올려준다.
             communityRepository.increaseCount(articleNo);
             // 쿠키를 새로 생성하면서 현재 게시글의 번호를 값으로 넣어준다.
-            Cookie newCookie = new Cookie("communityView", "[" + articleNo + "]");
-            // 이 쿠키는 모든 요청에 같이 전달되도록 설정
-            newCookie.setPath("/");
-            // 쿠키의 유효기간을 하루로 설정
-            newCookie.setMaxAge(60 * 60 * 24);
-            // 응답 객체(response)에 쿠키를 셋팅해준다.
-            response.addCookie(newCookie);
+            CookieUtil.addCookie(response,name,value,maxAge);
         }
-
     }
 
     @Transactional
