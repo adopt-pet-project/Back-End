@@ -28,9 +28,8 @@ public class CookieUtil {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .domain("ez-tour.org")
                 .path("/")
-                .sameSite("Lax")
+                .sameSite("")
                 .httpOnly(true)
-                .secure(true)
                 .maxAge(maxAge)
                 .build();
 
