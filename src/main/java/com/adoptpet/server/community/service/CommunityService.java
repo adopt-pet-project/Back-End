@@ -399,6 +399,7 @@ public class CommunityService {
                 CookieUtil.addCookie(response,name,oldCookie.getValue() + "_" + value, maxAge);
             }
         } else {
+            log.info("######## Cookie가 null임");
             // oldCookie의 값이 없다면 현재 조회한 게시글이 하나도 없는 상태이므로 조회 수 카운트를 올려준다.
             communityRepository.increaseCount(articleNo);
             // 쿠키를 새로 생성하면서 현재 게시글의 번호를 값으로 넣어준다.
