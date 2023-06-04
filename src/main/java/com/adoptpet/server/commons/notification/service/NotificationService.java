@@ -73,7 +73,7 @@ public class NotificationService {
         Notification notification = createNotification(sender, receiver, type, refNo, content);
 
         // SseEmitter 캐시 조회를 위해 key의 prefix 생성
-        String id = String.valueOf(notification.getReceiver());
+        String id = String.valueOf(notification.getReceiver().getMemberNo());
         // 알림 저장
         notificationRepository.save(notification);
         // 로그인 한 유저의 SseEmitter 모두 가져오기
