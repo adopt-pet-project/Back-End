@@ -6,7 +6,6 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Slf4j
-@Profile("local")
 public class RoutingDataSource  extends AbstractRoutingDataSource {
 
 

@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface NoteRepository extends JpaRepository<Note, Integer> {
 
-    @Query("SELECT n FROM Note n WHERE n.createMember = :memberNo OR n.joinMember = :memberNo")
+    @Query("SELECT n FROM Note n WHERE n.createMember = :memberNo OR n.joinMember = :memberNo ORDER BY n.regDate desc")
     List<Note> findAllByMemberNo(@Param("memberNo") Integer memberNo);
 
 
