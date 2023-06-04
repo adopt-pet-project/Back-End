@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NotificationService {
     private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
-    public static final String PREFIX_URL = "http://3.39.72.204/";
+    public static final String PREFIX_URL = "https://pet-hub.site";
     private final EmitterRepository emitterRepository;
     private final MemberService memberService;
     private final NotificationRepository notificationRepository;
