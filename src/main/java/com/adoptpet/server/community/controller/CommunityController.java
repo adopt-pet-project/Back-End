@@ -161,7 +161,6 @@ public class CommunityController {
 
         ArticleListResponse.ArticleListResponseBuilder responseBuilder = ArticleListResponse.builder();
 
-
         // 첫페이지를 조회할 경우 인기 게시글 조회
         if(Objects.isNull(pageNum) || pageNum == 1){
             // 인기글 조회
