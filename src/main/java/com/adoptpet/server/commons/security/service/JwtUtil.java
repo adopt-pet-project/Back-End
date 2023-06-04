@@ -2,6 +2,7 @@ package com.adoptpet.server.commons.security.service;
 
 import com.adoptpet.server.commons.properties.JwtProperties;
 import com.adoptpet.server.commons.security.dto.GeneratedToken;
+import com.adoptpet.server.user.service.AccessTokenService;
 import com.adoptpet.server.user.service.RefreshTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -20,7 +21,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtUtil {
     private final JwtProperties jwtProperties;
-    private final RefreshTokenService tokenService;
+    private final AccessTokenService tokenService;
     private String secretKey;
 
     @PostConstruct
