@@ -33,7 +33,7 @@ public class NotificationController {
 
         SseEmitter sseEmitter = notificationService.subscribe(SecurityUtils.getUser(), lastEventId);
 
-        response.setHeader("X-Accel-Buffering","no");
+        response.addHeader("X-Accel-Buffering","no");
 
         return ResponseEntity.ok(sseEmitter);
     }
