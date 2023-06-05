@@ -61,8 +61,10 @@ public class NoteService {
         }
         // 알림 전송을 위해 보내는 사람 조회
         Member sender = memberService.findByMemberNo(senderNo);
+        // 알림 URL 생성
+        final String resource = refNo+"/"+sender.getNickname()+"/"+sender.getMemberNo();
         // 알림 전송
-        notificationService.send(sender, receiver, NotifiTypeEnum.NOTE, refNo, content);
+        notificationService.send(sender, receiver, NotifiTypeEnum.NOTE, resource, content);
     }
 
 

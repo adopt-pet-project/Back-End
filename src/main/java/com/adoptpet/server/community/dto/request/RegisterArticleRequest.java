@@ -6,10 +6,7 @@ import com.adoptpet.server.community.dto.ArticleImageDto;
 import com.adoptpet.server.community.dto.ArticleDto;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Min;
@@ -17,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 
 
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RegisterArticleRequest {
