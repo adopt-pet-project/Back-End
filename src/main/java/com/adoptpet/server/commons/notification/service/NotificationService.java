@@ -115,18 +115,6 @@ public class NotificationService {
         }
     }
 
-    //== 알림 생성 ==//
-    private Notification createNotification(Member sender, Member receiver, NotifiTypeEnum type, Integer refNo, String content) {
-        return Notification.builder()
-                .sender(sender)
-                .receiver(receiver)
-                .type(type)
-                .Url(PREFIX_URL + type.getPath() + refNo)
-                .content(content)
-                .isRead(false)
-                .isDel(false)
-                .build();
-    }
 
 
     //== 로그인 맴버 알림 전체 조회 ==//
