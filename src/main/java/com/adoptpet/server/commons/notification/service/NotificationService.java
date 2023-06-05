@@ -108,7 +108,7 @@ public class NotificationService {
             emitter.send(SseEmitter.event()
                     .id(id)
                     .name("sse")
-                    .data(String.valueOf(data)));
+                    .data(data));
         } catch (IOException ex) {
             emitterRepository.deleteById(id);
             log.error("--- SSE 연결 오류 ----", ex);
