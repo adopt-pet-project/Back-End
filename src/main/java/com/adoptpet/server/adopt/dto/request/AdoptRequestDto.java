@@ -2,9 +2,7 @@ package com.adoptpet.server.adopt.dto.request;
 
 import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.Gender;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -12,6 +10,8 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
+@Builder
 public class AdoptRequestDto {
 
     @NotBlank
