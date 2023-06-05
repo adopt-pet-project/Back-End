@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Enumeration;
 import java.util.List;
 
 @Slf4j
@@ -33,6 +36,7 @@ public class AdoptController {
     @PostMapping("/adopt")
     public ResponseEntity<StatusResponseDto> writeAdopt(@RequestBody @Valid AdoptRequestDto adoptDto, BindingResult bindingResult) {
 
+
         // 유효성 검증에 실패할경우 400번 에러를 내려준다.
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().body(StatusResponseDto.addStatus(400));
@@ -43,6 +47,7 @@ public class AdoptController {
 
         // 새로운 분양글을 저장한다.
         adoptService.insertAdopt(adoptDto, user);
+
 
         return ResponseEntity.ok(StatusResponseDto.addStatus(200));
 
@@ -71,6 +76,7 @@ public class AdoptController {
                                                                @RequestParam(value = "keyword", required = false) final String keyword,
                                                                @RequestParam(value = "option", required = false) final Integer option,
                                                                @RequestParam(value = "filter", required = false) final String filter) {
+
         List<AdoptResponseDto> adoptList = adoptQueryService.selectAdoptList(saleNo, keyword, option, filter);
         return ResponseEntity.ok(adoptList);
     }
@@ -110,4 +116,5 @@ public class AdoptController {
         adoptService.updateAdoptStatus(requestDto);
         return ResponseEntity.ok(StatusResponseDto.addStatus(200));
     }
+
 }
