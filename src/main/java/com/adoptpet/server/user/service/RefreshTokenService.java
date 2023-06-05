@@ -27,7 +27,7 @@ public class RefreshTokenService {
         RefreshToken token = tokenRepository.findByAccessToken(accessToken)
                 .orElseThrow(IllegalArgumentException::new);
 
-        String id = String.valueOf(SecurityUtils.getUser().getMemberNo());
+        String id = String.valueOf(userDto.getMemberNo());
         // 회원과 연결된 SseEmitter 객체를 제거
         emitterRepository.deleteAllStartWithId(id);
         // 알림 Event를 캐시에서 제거

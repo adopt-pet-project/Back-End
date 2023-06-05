@@ -2,6 +2,8 @@ package com.adoptpet.server.adopt.dto.request;
 
 import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.Gender;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
 
@@ -9,6 +11,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Getter
+@AllArgsConstructor
+@Builder
 public class AdoptUpdateRequestDto {
 
     @NotBlank

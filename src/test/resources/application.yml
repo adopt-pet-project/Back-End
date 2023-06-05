@@ -1,14 +1,59 @@
 spring:
   profiles:
     active: test
-
+    include: oauth, app, aws, mongo
 
   datasource:
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-    jdbc-url: jdbc:h2:tcp://localhost/~/querydsl
+    master:
+      hikari:
+        username: user
+        password: 1234
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://3.35.134.77:3306/db?serverTimezone=Asia/Seoul
 
-#  redis:
-#    host: localhost
-#    port: 6379
+
+    slave:
+      hikari:
+        username: user
+        password: 1234
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://3.35.134.77:3307/db?serverTimezone=Asia/Seoul
+
+  redis:
+    host: 3.36.132.160
+    port: 6379
+    password: adopt121212!
+
+  data:
+    mongodb:
+      uri: mongodb://3.35.134.77:27017/adopt
+
+  jpa:
+    open-in-view: false
+    hibernate:
+    #      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+logging.level:
+  org:
+    hibernate:
+      SQL: debug
+      type.descriptor.sql.BasicBinder: trace
+    springframework.jdbc : debug
+
+server:
+  port: 80
+
+management:
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+        step: 1m
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
