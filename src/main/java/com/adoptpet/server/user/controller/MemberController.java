@@ -42,7 +42,7 @@ public class MemberController {
     }
 
     @PatchMapping("/member")
-    public ResponseEntity<StatusResponseDto> modifyMember(@Valid @RequestBody MemberModifyRequest memberModifyRequest, BindingResult bindingResult) {
+    public ResponseEntity<StatusResponseDto> modifyMember(@Valid @RequestBody MemberModifyRequest memberModifyRequest) {
         memberService.modifyMember(memberModifyRequest, SecurityUtils.getUser());
         return ResponseEntity.ok(StatusResponseDto.success());
     }

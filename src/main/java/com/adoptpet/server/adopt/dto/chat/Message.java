@@ -32,6 +32,9 @@ public class Message implements Serializable {
 
     private Integer senderNo;
 
+    @NotNull
+    private Integer saleNo;
+
     private long sendTime;
     private Integer readCount;
     private String senderEmail;

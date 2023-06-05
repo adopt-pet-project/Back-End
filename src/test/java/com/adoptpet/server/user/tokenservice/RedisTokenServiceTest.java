@@ -1,5 +1,7 @@
 package com.adoptpet.server.user.tokenservice;
 
+import com.adoptpet.server.adopt.dto.redis.ChatRoom;
+import com.adoptpet.server.adopt.repository.ChatRoomRepository;
 import com.adoptpet.server.commons.security.dto.RefreshToken;
 import com.adoptpet.server.user.repository.RefreshTokenRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -11,16 +13,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Optional;
+
 @SpringBootTest
 @Slf4j
 public class RedisTokenServiceTest {
 
     @Autowired
     private RefreshTokenRepository repository;
+    private ChatRoomRepository chatRoomRepository;
 
     @BeforeEach
     public void after() {
-        repository.deleteAll();
+//        repository.deleteAll();
+        chatRoomRepository.deleteAll();
     }
 
     @Test

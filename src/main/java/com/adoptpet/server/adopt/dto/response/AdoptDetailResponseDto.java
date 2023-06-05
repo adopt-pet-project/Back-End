@@ -1,16 +1,14 @@
 package com.adoptpet.server.adopt.dto.response;
 
-import com.adoptpet.server.adopt.domain.AdoptStatus;
 import com.adoptpet.server.adopt.domain.Gender;
 import lombok.*;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class AdoptDetailResponseDto {
 
     private Integer id;
@@ -41,6 +39,7 @@ public class AdoptDetailResponseDto {
     @Getter
     @Setter
     @AllArgsConstructor
+    @ToString
     public static class Coords {
         private Float latitude;
         private Float longitude;
@@ -50,6 +49,7 @@ public class AdoptDetailResponseDto {
 
     @Getter
     @Setter
+    @ToString
     public static class Header {
         private String title;
         private Integer status;
@@ -64,6 +64,7 @@ public class AdoptDetailResponseDto {
 
     @Getter
     @Setter
+    @ToString
     @AllArgsConstructor
     public static class Metadata {
         private Gender gender;
@@ -74,6 +75,7 @@ public class AdoptDetailResponseDto {
 
     @Getter
     @Setter
+    @ToString
     @AllArgsConstructor
     public static class Context {
         private String context;
@@ -83,6 +85,7 @@ public class AdoptDetailResponseDto {
 
     @Getter
     @Setter
+    @ToString
     @AllArgsConstructor
     public static class Author {
         private Integer id;
