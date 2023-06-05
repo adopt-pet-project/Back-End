@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
-    private static final Long DEFAULT_TIMEOUT = 60L * 1000 * 60;
+    private static final Long DEFAULT_TIMEOUT = 1740000L;
     public static final String PREFIX_URL = "https://pet-hub.site/";
     private final EmitterRepository emitterRepository;
     private final MemberService memberService;
@@ -65,12 +65,26 @@ public class NotificationService {
         return emitter;
     }
 
+    @Transactional
+    public void send(Member sender, Member receiver, NotifiTypeEnum type, Integer refNo , String content) {
+        send(sender,receiver,type,String.valueOf(refNo),content);
+    }
+
+
 
     //== 알림 전송 ==//
     @Transactional
-    public void send(Member sender, Member receiver, NotifiTypeEnum type, Integer refNo , String content) {
+    public void send(Member sender, Member receiver, NotifiTypeEnum type, String resource , String content) {
         // 알림 생성
-        Notification notification = createNotification(sender, receiver, type, refNo, content);
+        Notification notification = Notification.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .type(type)
+                .Url(PREFIX_URL + type.getPath() + resource)
+                .content(content)
+                .isRead(false)
+                .isDel(false)
+                .build();
 
         // SseEmitter 캐시 조회를 위해 key의 prefix 생성
         String id = String.valueOf(notification.getReceiver().getMemberNo());
