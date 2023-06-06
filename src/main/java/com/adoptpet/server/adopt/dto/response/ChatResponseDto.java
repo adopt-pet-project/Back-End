@@ -1,11 +1,15 @@
 package com.adoptpet.server.adopt.dto.response;
 
 import com.adoptpet.server.adopt.domain.mongo.Chatting;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.ZoneId;
 
 @Getter
+@ToString
+@AllArgsConstructor
 public class ChatResponseDto {
     private String id;
     private Integer chatRoomNo;

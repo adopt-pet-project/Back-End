@@ -62,13 +62,6 @@ public class ChatController {
         chatService.sendMessage(message, accessToken);
     }
 
-    // 채팅 카운트 읽음 처리
-    @PostMapping("/chatroom/chat")
-    public ResponseEntity<Message> readChat(@Valid @RequestBody Message message, @RequestHeader("Authorization") final String accessToken) {
-        Message recievedMessage = chatService.updateCountToZero(message, accessToken);
-        return ResponseEntity.ok(recievedMessage);
-    }
-
     // 채팅방 접속 끊기
     @DeleteMapping("/chatroom")
     public ResponseEntity<StatusResponseDto> disconnectChat(@Valid @RequestBody final ChatDisconnectDto disconnectDto,

@@ -4,11 +4,13 @@ package com.adoptpet.server.adopt.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 @Getter
+@ToString
 public class ChatRoomResponseDto {
 
     private Integer chatNo;
@@ -47,12 +49,14 @@ public class ChatRoomResponseDto {
 
     @Getter
     @AllArgsConstructor
+    @ToString
     public static class Participant {
         private String username;
         private String profile;
     }
 
     @Getter
+    @ToString
     public static class LatestMessage {
         private String context;
         private long sendAt;
