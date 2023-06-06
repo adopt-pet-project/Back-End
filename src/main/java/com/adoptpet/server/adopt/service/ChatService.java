@@ -137,9 +137,11 @@ public class ChatService {
             Member receiveMember = chatQueryService.getReceiverNumber(message.getChatNo(), message.getSenderNo());
             String content =
                     message.getContentType().equals("image") ? "image" : message.getContent();
+            // 알람을 보낼 URL을 생성한다.
+            String sendUrl = getNotificationUrl(message.getSaleNo(), message.getChatNo());
 
             // 알림을 전송한다.
-            notificationService.send(findMember, receiveMember, NotifiTypeEnum.CHAT, message.getChatNo(), content);
+            notificationService.send(findMember, receiveMember, NotifiTypeEnum.CHAT, sendUrl, content);
         }
 
         // 보낸 사람일 경우에만 메시지를 저장 -> 중복 저장 방지
@@ -198,6 +200,15 @@ public class ChatService {
                 .and("senderNo").ne(senderNo));
 
         return mongoTemplate.count(query, Chatting.class);
+    }
+
+    private String getNotificationUrl(Integer saleNo, Integer chatNo) {
+        return new StringBuilder(NotificationService.PREFIX_URL)
+                                    .append("chat/")
+                                    .append(chatNo)
+                                    .append("?adoptId=")
+                                    .append(saleNo)
+                                    .toString();
     }
 
 
