@@ -1,6 +1,8 @@
 package com.adoptpet.server.user.dto.request;
 
 import com.adoptpet.server.user.domain.Member;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +12,8 @@ import java.util.Objects;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 public class RegisterDto {
 
     @NotBlank

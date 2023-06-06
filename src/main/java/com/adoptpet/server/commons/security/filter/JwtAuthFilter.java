@@ -8,6 +8,7 @@ import com.adoptpet.server.user.repository.MemberRepository;
 import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,6 +25,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j
+@Profile("local")
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
