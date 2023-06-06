@@ -16,11 +16,9 @@ import com.adoptpet.server.commons.security.service.JwtUtil;
 import com.adoptpet.server.user.service.MemberService;
 import com.adoptpet.testUser.WithMockCustomAccount;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.entity.ContentType;
-import org.checkerframework.checker.units.qual.A;
+import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,22 +27,17 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.BDDMockito.*;
 
@@ -100,13 +93,16 @@ public class AdoptControllerDocsTest {
 
         String requestJson = objectMapper.writeValueAsString(requestDto);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/adopt")
+        mockMvc.perform(RestDocumentationRequestBuilders.post("/adopt").headers(GenerateMockToken.getToken())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isOk())
                 .andDo(document("adopt-create",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
+                        ),
                         requestFields(
                                 fieldWithPath("title").description("title"),
                                 fieldWithPath("content").description("content"),
@@ -154,13 +150,16 @@ public class AdoptControllerDocsTest {
 
         String jsonString = objectMapper.writeValueAsString(requestDto);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.patch("/adopt")
+        mockMvc.perform(RestDocumentationRequestBuilders.patch("/adopt").headers(GenerateMockToken.getToken())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(jsonString))
                 .andExpect(status().isOk())
                 .andDo(document("adopt-modify",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
+                        ),
                         requestFields(
                                 fieldWithPath("title").description("title"),
                                 fieldWithPath("content").description("content"),
@@ -186,9 +185,13 @@ public class AdoptControllerDocsTest {
     @WithMockCustomAccount
     public void createAdoptBookmark() throws Exception{
         mockMvc.perform(RestDocumentationRequestBuilders.post("/adopt/bookmark/{saleNo}", 1)
+                        .headers(GenerateMockToken.getToken())
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andDo(document("adopt-bookmark-create",
+                        requestHeaders(
+                          headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
+                        ),
                         pathParameters(
                                 parameterWithName("saleNo").description("saleNo")
                         ),
@@ -203,9 +206,13 @@ public class AdoptControllerDocsTest {
     @WithMockCustomAccount
     public void deleteAdopt() throws Exception {
         mockMvc.perform(RestDocumentationRequestBuilders.delete("/adopt/{saleNo}", 1)
+                .headers(GenerateMockToken.getToken())
                 .with(csrf()))
                 .andExpect(status().isOk())
                 .andDo(document("adopt-remove",
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
+                        ),
                         pathParameters(
                                 parameterWithName("saleNo").description("saleNo")
                         ),
@@ -220,10 +227,10 @@ public class AdoptControllerDocsTest {
     @WithMockCustomAccount
     public void getAdoptList() throws Exception {
         List<AdoptResponseDto> adoptResponse = List.of(
-            new AdoptResponseDto(1, "드래곤분양", "서울 은평구", 3, 4, LocalDateTime.now(),
-                    "/png1", "몰티즈", 2),
-            new AdoptResponseDto(2, "허스키 분양", "서울 마포구", 7, 8, LocalDateTime.now(),
-                     "/png2", "시베리안 허스키", 3)
+                new AdoptResponseDto(1, "드래곤분양", "서울 은평구", 3, 4, LocalDateTime.now(),
+                        "/png1", "몰티즈", 2),
+                new AdoptResponseDto(2, "허스키 분양", "서울 마포구", 7, 8, LocalDateTime.now(),
+                        "/png2", "시베리안 허스키", 3)
         );
 
         given(adoptQueryService.selectAdoptList(null, null, null, null))
@@ -269,24 +276,27 @@ public class AdoptControllerDocsTest {
 
         AdoptDetailResponseDto responseDto = new AdoptDetailResponseDto(1, images, true, coords, header, metadata, context, author);
 
-        given(adoptService.readAdopt(1, null, null, null))
+        given(adoptService.readAdopt(any(), any(), any(), any()))
                 .willReturn(responseDto);
 
-
         mockMvc.perform(RestDocumentationRequestBuilders.get("/adopt/{saleNo}", 1)
+                .headers(GenerateMockToken.getToken())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(document("adopt-detail",
+                            requestHeaders(
+                                    headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken").optional()
+                            ),
                             pathParameters(
-                              parameterWithName("saleNo").description("saleNo")
+                                    parameterWithName("saleNo").description("saleNo")
                             ),
                             responseFields(
                                     fieldWithPath("id").description("id"),
                                     fieldWithPath("imageList").description("imageList"),
                                     fieldWithPath("imageList[].imgNo").description("imgNo"),
                                     fieldWithPath("imageList[].imgUrl").description("imgUrl"),
-                                    fieldWithPath("isMine").description("isMine"),
+                                    fieldWithPath("mine").description("mine"),
                                     fieldWithPath("coords").description("coords"),
                                     fieldWithPath("coords.latitude").description("latitude"),
                                     fieldWithPath("coords.longitude").description("longitude"),
@@ -308,7 +318,7 @@ public class AdoptControllerDocsTest {
                                     fieldWithPath("author.id").description("id"),
                                     fieldWithPath("author.username").description("username"),
                                     fieldWithPath("author.profile").description("profile"),
-                                    fieldWithPath("author.address").description("author.address")
+                                    fieldWithPath("author.address").description("address")
                             )
                         ));
 

@@ -44,4 +44,5 @@ class AdoptRepositoryTest {
         }).isInstanceOf(IllegalStateException.class);
 
     }
+
 }
