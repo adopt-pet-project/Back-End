@@ -203,8 +203,7 @@ public class ChatService {
     }
 
     private String getNotificationUrl(Integer saleNo, Integer chatNo) {
-        return new StringBuilder(NotificationService.PREFIX_URL)
-                                    .append("chat/")
+        return new StringBuilder()
                                     .append(chatNo)
                                     .append("?adoptId=")
                                     .append(saleNo)
