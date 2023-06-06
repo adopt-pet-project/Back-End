@@ -2,10 +2,7 @@ package com.adoptpet.server.commons.aspect;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterThrowing;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
@@ -49,9 +46,16 @@ public class LogAspect {
             }
         }
 
+    }
+
+    @AfterReturning("adoptBeforeExecute() || userBeforeExecute() || communityBeforeExecute()")
+    public void afterRequesting(JoinPoint joinPoint) {
+        // 실행되는 메서드 이름을 가져온다
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        Method method = methodSignature.getMethod();
+
         log.info("요청 종료 시간 = {}", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         log.info("요청 종료 , 종료된 메서드 => {}", method.getName());
-
     }
 
     @AfterThrowing(pointcut = "adoptBeforeExecute() || userBeforeExecute() || communityBeforeExecute()", throwing = "exception")
