@@ -31,6 +31,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.adoptpet.server.commons.support.StatusResponseDto.*;
+import static com.adoptpet.server.community.dto.request.HeartTargetEnum.ARTICLE;
+import static com.adoptpet.server.community.dto.request.HeartTargetEnum.COMMENT;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,20 +56,15 @@ public class CommunityController {
     public ResponseEntity<StatusResponseDto> heartRegistration(@Valid @RequestBody HeartRequest request){
 
         Integer like = null;
-
-        final String target = request.getTarget();
+        HeartTargetEnum target = request.getTarget();
         final Integer targetNo = request.getTargetNo();
 
-        if (target.equals("article")){
+        if (target.equals(ARTICLE)){
             // 게시글 좋아요 등록
             like = communityService.insertArticleHeart(SecurityUtils.getUser(), targetNo);
-
-        } else if(target.equals("comment")) {
+        } else if(target.equals(COMMENT)) {
             // 댓글 좋아요 등록
             like = commentService.insertCommentHeart(SecurityUtils.getUser(), targetNo);
-
-        } else {
-            //TODO 400 예외
         }
 
         return success(like);
@@ -76,21 +73,18 @@ public class CommunityController {
 
     @DeleteMapping("/heart/{target}/{targetId}")
     public ResponseEntity<StatusResponseDto> heartDeletion(
-            @PathVariable("target") String target,
-            @PathVariable("targetId") Integer targetNo
-    )
-    {
+            @PathVariable("target") String targetValue,
+            @PathVariable("targetId") Integer targetNo){
 
         Integer like = null;
+        HeartTargetEnum target = HeartTargetEnum.from(targetValue);
 
-        if (target.equals("article")){
+        if (target.equals(ARTICLE)){
             // 게시글 좋아요 삭제
             like = communityService.deleteArticleHeart(SecurityUtils.getUser(), targetNo);
-        } else if(target.equals("comment")) {
+        } else if(target.equals(COMMENT)) {
             // 댓글 좋아요 삭제
             like = commentService.deleteCommentHeart(SecurityUtils.getUser(), targetNo);
-        } else {
-            //TODO 400 예외
         }
 
         return success(like);
