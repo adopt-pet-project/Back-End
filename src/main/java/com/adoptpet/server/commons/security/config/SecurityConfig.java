@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .antMatchers("/mypage/**").hasAnyRole("MANAGER", "USER") // GET 요청을 제외한 나머지 /mypage/** 요청은 권한 필요
                 .antMatchers(HttpMethod.POST, "/member").permitAll() // /member POST 요청은 권한 없이 접근 가능
                 .antMatchers("/user/**").hasAnyRole("MANAGER", "USER") // 회원 페이지는 회원(USER) 또는 관리자(MANAGER) 권한이 있어야 접근 가능
+                .antMatchers(HttpMethod.POST,"/community/view").permitAll()
                 .antMatchers("/community/**").hasAnyRole("MANAGER", "USER") // GET 요청을 제외한 나머지 /community/** 요청은 권한 필요
                 .antMatchers("/admin/**").hasRole("MANAGER") // 관리자 페이지는 관리자(MANAGER) 권한이 있어야 접근 가능
                 .antMatchers(HttpMethod.DELETE, "chatroom/**").permitAll()
