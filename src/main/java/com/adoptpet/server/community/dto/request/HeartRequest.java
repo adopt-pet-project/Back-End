@@ -12,8 +12,8 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HeartRequest {
 
-    @NotBlank
-    private String target;
+    @JsonProperty("target")
+    private HeartTargetEnum target;
 
     @Min(value = 0)
     @JsonProperty("id")
