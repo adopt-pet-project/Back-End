@@ -14,7 +14,7 @@ public class ArticleListDto {
 
     @JsonProperty("id")
     private Integer articleNo; // community
-    @JsonProperty
+    @JsonProperty("title")
     private String title; // community
     @JsonProperty("context")
     private String content; // community
@@ -28,6 +28,6 @@ public class ArticleListDto {
     private Integer likeCnt; // articleHeart
     @JsonProperty("publishedAt")
     private LocalDateTime regDate; //community
-    @JsonProperty
+    @JsonProperty("thumbnail")
     private String thumbnail; // community
 }
