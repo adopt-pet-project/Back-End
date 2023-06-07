@@ -15,6 +15,7 @@ import com.adoptpet.server.community.service.CommentService;
 import com.adoptpet.server.community.service.CommunityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -189,6 +190,15 @@ public class CommunityController {
 
         return ResponseEntity.ok(articleDetailInfoDto.toResponse());
     }
+
+    @PostMapping("/view")
+    public ResponseEntity<StatusResponseDto> articleViewUpdate(
+            @Valid @RequestBody UpdateViewRequest viewRequest,
+            HttpServletRequest request, HttpServletResponse response){
+        communityService.increaseCount(viewRequest.getArticleNo(), request, response);
+        return success();
+    }
+
 
     @PostMapping("/article")
     public ResponseEntity<StatusResponseDto> articleRegistration(
