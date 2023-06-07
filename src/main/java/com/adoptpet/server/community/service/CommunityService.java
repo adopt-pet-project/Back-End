@@ -47,7 +47,7 @@ public class CommunityService {
 
 
     //== HOT 게시글 선정 스케줄러 ==//
-//    @Scheduled(cron = "0 0 0/6 * * *",zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 0/6 * * *",zone = "Asia/Seoul")
     public void selectionHotArticle(){
         log.info("====== 인기글(HOT) 스케줄 실행 ======");
         final LocalDateTime endAt = LocalDateTime.now();
