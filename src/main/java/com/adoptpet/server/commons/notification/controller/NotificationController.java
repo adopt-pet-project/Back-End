@@ -31,11 +31,9 @@ public class NotificationController {
             @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId,
             HttpServletResponse response) {
 
-        SseEmitter sseEmitter = notificationService.subscribe(SecurityUtils.getUser(), lastEventId);
-
         response.addHeader("X-Accel-Buffering","no");
 
-        return ResponseEntity.ok(sseEmitter);
+        return ResponseEntity.ok(notificationService.subscribe(SecurityUtils.getUser(), lastEventId));
     }
 
     /**
