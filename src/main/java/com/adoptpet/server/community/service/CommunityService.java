@@ -16,7 +16,6 @@ import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseCookie;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -220,7 +219,7 @@ public class CommunityService {
     * 게시글 수정
     **/
     @Transactional
-    public Community updateArticle(ArticleDto articleDto, Integer articleNo){
+    public void updateArticle(ArticleDto articleDto, Integer articleNo){
 
         // 게시글 고유키로 게시글 검증
         Community community = findByArticleNo(articleNo);
@@ -235,9 +234,7 @@ public class CommunityService {
         updateImageByArticleNo(articleDto.getImage(),articleNo);
 
         // 게시글 업데이트
-        Community updatedArticle = communityRepository.save(community);
-
-        return updatedArticle;
+        communityRepository.save(community);
     }
 
 
@@ -247,7 +244,11 @@ public class CommunityService {
     @Transactional(readOnly = true)
     public ArticleDetailInfoDto readArticle(Integer articleNo, String accessToken, HttpServletRequest request, HttpServletResponse response){
         // 게시글 고유키로 게시글 검증
-        findByArticleNo(articleNo);
+//        findByArticleNo(articleNo);
+        Optional<Community> findCommunity = communityRepository.findById(articleNo);
+        if(findCommunity.isEmpty()){
+            throw new CustomException(ARTICLE_NOT_FOUND);
+        }
         // 게시글 정보 조회
         ArticleDetailInfoDto articleDetail = communityQDslRepository.findArticleDetail(articleNo);
         // 조회 유저 검증 기본 값 지정
@@ -262,8 +263,8 @@ public class CommunityService {
         List<ImageInfoDto> images = communityQDslRepository.findImageUrlByArticleNo(articleNo);
         // 이미지 URL 리스트 추가
         articleDetail.addImages(images);
-        // 게시글 조회수 증가
-        increaseCount(articleNo, request, response);
+//         게시글 조회수 증가
+//        increaseCount(articleNo, request, response);
         // 조회된 게시글 정보 반환
         return articleDetail;
     }
@@ -300,8 +301,6 @@ public class CommunityService {
 
         return response;
     }
-
-
 
 
     @Transactional
@@ -384,6 +383,7 @@ public class CommunityService {
         Optional<Cookie> cookie = CookieUtil.getCookie(request, name);
         // 쿠기가 있을 경우 oldCookie로 만든다.
         if(cookie.isPresent()){
+            log.info("######## cookie : {} ", cookie.get().getDomain());
             oldCookie = cookie.get();
         }
 
