@@ -3,11 +3,9 @@ package com.adoptpet.server.community.dto.request;
 import com.adoptpet.server.community.dto.ArticleImageDto;
 import com.adoptpet.server.community.dto.ArticleDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
