@@ -28,6 +28,7 @@ public class CookieUtil {
         ResponseCookie cookie = ResponseCookie.from(name, value)
                 .domain(".pet-hub.site")
                 .path("/")
+                .httpOnly(false)
                 .maxAge(maxAge)
                 .build();
 
