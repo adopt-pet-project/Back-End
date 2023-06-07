@@ -11,6 +11,8 @@ import java.util.List;
 @ToString
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ArticleDetailInfoDto {
 
     private Integer articleNo; //  community
