@@ -27,7 +27,6 @@ public enum HeartTargetEnum {
     // JSON 역직렬화시 해당 메서드를 이용해 값을 변환
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public static HeartTargetEnum from(String value){
-        System.out.println(CODE_MAP.get(value));
         return Optional.ofNullable(CODE_MAP.get(value)).orElseThrow(ErrorCode::throwTypeNotFound);
     }
 }
