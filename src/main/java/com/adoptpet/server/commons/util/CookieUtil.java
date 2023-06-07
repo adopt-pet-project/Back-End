@@ -26,9 +26,11 @@ public class CookieUtil {
 
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         ResponseCookie cookie = ResponseCookie.from(name, value)
-                .domain(".pet-hub.site")
+                .domain(".ez-tour.org")
                 .path("/")
-                .httpOnly(false)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
                 .maxAge(maxAge)
                 .build();
 
