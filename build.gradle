@@ -8,7 +8,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.11'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-    id "org.asciidoctor.jvm.convert" version "3.3.2"
+    id "org.asciidoctor.jvm.convert" version "3.3.2" // Spring REST Docs
     // querydsl 추가
 	id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 }
@@ -75,7 +75,7 @@ dependencies {
 
     implementation "io.jsonwebtoken:jjwt:0.9.1"
 
-    //Spring REST Docs Extensions
+    //Spring REST Docs Extensions : adoc 파일들을 연산으로 사용할 수 있게 해주며, html로 export할 수 있게 해줌
     asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
     ///map struct
@@ -92,36 +92,46 @@ dependencies {
 
 
 
-tasks.named('test') {
+jar {
+    enabled = false
+}
+
+
+test {
     outputs.dir snippetsDir
     useJUnitPlatform()
 }
 
-tasks.named('asciidoctor'){
+asciidoctor {
     inputs.dir snippetsDir // snippetsDir 를 입력으로 구성
     dependsOn test // test 작업 이후에 작동하도록 하는 설정
     configurations 'asciidoctorExtensions' // 위에서 작성한 configuration 적용
+
+    // 변환할 adoc들을 명시한다.
+    sources{
+        include("**/*.adoc")
+    }
+
+    // include 연산을 사용할 때 base 디렉터리를 지정해줍니다.
+    baseDirFollowsSourceFile()
 }
 
 // asciidoctor 작업 이후 생성된 HTML 파일을 static/docs 로 copy
 task copyDocument(type: Copy) {
     dependsOn asciidoctor
     from file("build/docs/asciidoc")
-    into file("src/main/resources/static/docs")
+    into file("docs")
 }
 
-// static/docs 폴더 비우기
-//asciidoctor.doFirst {
-//    delete file('src/main/resources/static/docs')
-//}
+// docs 폴더 비우기
+asciidoctor.doFirst {
+    delete file('docs')
+}
+
 
 // build 의 의존작업 명시
 build {
     dependsOn copyDocument
-}
-
-jar {
-	enabled = false
 }
 
 //querydsl 추가 시작

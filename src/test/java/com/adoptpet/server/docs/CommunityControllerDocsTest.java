@@ -343,6 +343,7 @@ class CommunityControllerDocsTest {
 
         ResultActions result = this.mockMvc.perform(post("/community/comment")
                 .headers(GenerateMockToken.getToken())
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(requestJson));
@@ -375,6 +376,7 @@ class CommunityControllerDocsTest {
 
         ResultActions result = this.mockMvc.perform(patch("/community/comment")
                 .headers(GenerateMockToken.getToken())
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(jsonString));
@@ -401,6 +403,7 @@ class CommunityControllerDocsTest {
     void commentDeletion() throws Exception {
         ResultActions result = this.mockMvc.perform(delete("/community/comment/{id}", 1)
                 .headers(GenerateMockToken.getToken())
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
 

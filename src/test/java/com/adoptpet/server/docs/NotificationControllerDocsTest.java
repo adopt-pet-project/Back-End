@@ -1,26 +1,15 @@
 package com.adoptpet.server.docs;
 
-import com.adoptpet.server.adopt.mongo.MongoChatRepository;
 import com.adoptpet.server.commons.notification.controller.NotificationController;
 import com.adoptpet.server.commons.notification.domain.NotifiTypeEnum;
 import com.adoptpet.server.commons.notification.dto.NotificationResponse;
 import com.adoptpet.server.commons.notification.service.NotificationService;
-import com.adoptpet.server.commons.security.service.JwtUtil;
-import com.adoptpet.server.user.service.MemberService;
 import com.adoptpet.testUser.WithMockCustomAccount;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
@@ -31,7 +20,6 @@ import static org.apache.http.HttpHeaders.AUTHORIZATION;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -43,19 +31,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = NotificationController.class)
-@AutoConfigureRestDocs
-@AutoConfigureMockMvc
-@ExtendWith({RestDocumentationExtension.class})
-@MockBeans({
-        @MockBean(JwtUtil.class),
-        @MockBean(MongoChatRepository.class),
-        @MockBean(MemberService.class),
-        @MockBean(JpaMetamodelMappingContext.class),
-})
-class NotificationControllerDocsTest {
-
-    @Autowired
-    private MockMvc mockMvc;
+class NotificationControllerDocsTest extends RestDocsBasic{
 
     @MockBean
     private NotificationService notificationService;
@@ -67,14 +43,14 @@ class NotificationControllerDocsTest {
     @WithMockCustomAccount
     void connect() throws Exception {
 
-        ResultActions result = this.mockMvc.perform(get(REQUEST_MAPPING + "/connect")
+        ResultActions result = mvc.perform(get(REQUEST_MAPPING + "/connect")
                 .headers(GenerateMockToken.getToken())
                 .header("Last-Event-ID", "lastEventIdValue")
                 .accept(MediaType.TEXT_EVENT_STREAM_VALUE)
         );
 
         result.andExpect(status().isOk())
-                .andDo(document("note-send",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token"),
                                 headerWithName("Last-Event-ID").description("마지막 발생한 SSE ID")
@@ -106,13 +82,13 @@ class NotificationControllerDocsTest {
 
         given(notificationService.findAllById(any())).willReturn(responseList);
 
-        ResultActions result = this.mockMvc.perform(get(REQUEST_MAPPING + "/all")
+        ResultActions result = mvc.perform(get(REQUEST_MAPPING + "/all")
                 .headers(GenerateMockToken.getToken())
                 .accept(MediaType.APPLICATION_JSON));
 
 
         result.andExpect(status().isOk())
-                .andDo(document("notification-list",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -151,12 +127,12 @@ class NotificationControllerDocsTest {
     @WithMockCustomAccount
     void readNotification() throws Exception {
 
-        ResultActions result = this.mockMvc.perform(patch(REQUEST_MAPPING + "/checked/{id}",1)
+        ResultActions result = mvc.perform(patch(REQUEST_MAPPING + "/checked/{id}",1)
                 .with(csrf())
                 .headers(GenerateMockToken.getToken()));
 
         result.andExpect(status().isOk())
-                .andDo(document("notification-update-read",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -178,7 +154,7 @@ class NotificationControllerDocsTest {
 
         String jsonString = "{\"idList\":" + Arrays.toString(idList) + "}";
 
-        ResultActions result = this.mockMvc.perform(post(REQUEST_MAPPING)
+        ResultActions result = mvc.perform(post(REQUEST_MAPPING)
                 .with(csrf())
                 .headers(GenerateMockToken.getToken())
                 .content(jsonString)
@@ -187,7 +163,7 @@ class NotificationControllerDocsTest {
         );
 
         result.andExpect(status().isOk())
-                .andDo(document("notification-deletion",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
