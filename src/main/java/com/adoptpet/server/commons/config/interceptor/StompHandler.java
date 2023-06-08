@@ -68,7 +68,6 @@ public class StompHandler implements ChannelInterceptor {
     }
 
     private String verifyAccessToken(String accessToken) {
-        System.out.println("verifytoken = " + accessToken);
         if (!jwtUtil.verifyToken(accessToken)) {
             throw new IllegalStateException("토큰이 만료되었습니다.");
         }

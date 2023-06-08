@@ -63,15 +63,11 @@ public class ChatController {
     }
 
     // 채팅방 접속 끊기
-    @DeleteMapping("/chatroom")
-    public ResponseEntity<StatusResponseDto> disconnectChat(@Valid @RequestBody final ChatDisconnectDto disconnectDto,
-                                                            BindingResult bindingResult) {
+    @DeleteMapping("/chatroom/{chatroomNo}")
+    public ResponseEntity<StatusResponseDto> disconnectChat(@PathVariable("chatroomNo") Integer chatroomNo,
+                                                            @RequestParam("email") String email) {
 
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(StatusResponseDto.addStatus(400));
-        }
-
-        chatRoomService.disconnectChatRoom(disconnectDto.getChatRoomNo(), disconnectDto.getEmail());
+        chatRoomService.disconnectChatRoom(chatroomNo, email);
         return ResponseEntity.ok(StatusResponseDto.success());
     }
 
