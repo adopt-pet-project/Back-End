@@ -2,12 +2,12 @@ package com.adoptpet.server.docs;
 
 import com.adoptpet.server.adopt.controller.ChatController;
 import com.adoptpet.server.adopt.dto.chat.Message;
-import com.adoptpet.server.adopt.dto.request.ChatDisconnectDto;
 import com.adoptpet.server.adopt.dto.request.ChatRequestDto;
 import com.adoptpet.server.adopt.dto.response.ChatResponseDto;
 import com.adoptpet.server.adopt.dto.response.ChatRoomResponseDto;
 import com.adoptpet.server.adopt.dto.response.ChattingHistoryResponseDto;
 import com.adoptpet.server.adopt.mongo.MongoChatRepository;
+import com.adoptpet.server.adopt.repository.ChatRoomRepository;
 import com.adoptpet.server.adopt.service.ChatRoomService;
 import com.adoptpet.server.adopt.service.ChatService;
 import com.adoptpet.server.commons.security.config.CustomOAuth2UserService;
@@ -26,7 +26,7 @@ import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -44,14 +44,7 @@ import static org.mockito.BDDMockito.*;
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @WebMvcTest(controllers = ChatController.class)
-@MockBeans({
-        @MockBean(MongoChatRepository.class),
-        @MockBean(JwtUtil.class),
-        @MockBean(MemberService.class),
-        @MockBean(JpaMetamodelMappingContext.class),
-        @MockBean(CustomOAuth2UserService.class)
-})
-public class ChatControllerDocsTest {
+public class ChatControllerDocsTest extends RestDocsBasic{
 
     @MockBean
     ChatService chatService;
@@ -59,27 +52,21 @@ public class ChatControllerDocsTest {
     @MockBean
     ChatRoomService chatRoomService;
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    ObjectMapper objectMapper;
-
     @Test
     @DisplayName("채팅방 생성 테스트")
     @WithMockCustomAccount
     void createChatRoom() throws Exception {
         ChatRequestDto chatRequestDto = new ChatRequestDto(1, 3);
-        String requestJson = objectMapper.writeValueAsString(chatRequestDto);
+        String requestJson = createStringJson(chatRequestDto);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/chatroom")
+        mvc.perform(post("/chatroom")
                         .headers(GenerateMockToken.getToken())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andDo(document("chatroom-create",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
                         ),
@@ -118,16 +105,16 @@ public class ChatControllerDocsTest {
                 .senderEmail("rexDev@Dev.com")
                 .build();
 
-        String requestJson = objectMapper.writeValueAsString(requestMessage);
+        String requestJson = createStringJson(requestMessage);
         when(chatService.sendNotificationAndSaveMessage(any())).thenReturn(responseMessage);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/chatroom/notification")
+        mvc.perform(post("/chatroom/notification")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andDo(document("chat-callback",
+                .andDo(restDocs.document(
                         requestFields(
                                 fieldWithPath("id").description("id").ignored(),
                                 fieldWithPath("chatNo").description("chatNo"),
@@ -159,19 +146,20 @@ public class ChatControllerDocsTest {
     @DisplayName("채팅방 접속 끊기 테스트")
     @WithMockCustomAccount
     void disconnectChat() throws Exception {
-        ChatDisconnectDto chatDisconnectDto = new ChatDisconnectDto(1, "rexDev@Dev.com");
-        String requestJson = objectMapper.writeValueAsString(chatDisconnectDto);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.delete("/chatroom")
+        mvc.perform(post("/chatroom/{chatRoomNo}", 3)
                         .with(csrf())
+                        .param("email", "dev@Dev.com")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(requestJson))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("chatroom-delete",
-                        requestFields(
-                                fieldWithPath("chatRoomNo").description("chatRoomNo"),
-                                fieldWithPath("email").description("email")
+                .andDo(restDocs.document(
+                        pathParameters(
+                                parameterWithName("chatRoomNo").description("chatRoomNo")
+                        ),
+                        requestParameters(
+                                parameterWithName("_csrf").ignored(),
+                                parameterWithName("email").description("email")
                         ),
                         responseFields(
                                 fieldWithPath("status").description("status")
@@ -207,12 +195,11 @@ public class ChatControllerDocsTest {
 
         given(chatService.getChatList(any(), any())).willReturn(chatRoomlist);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/chatroom")
-                        .headers(GenerateMockToken.getToken())
+        mvc.perform(get("/chatroom").headers(GenerateMockToken.getToken())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("chatroom-list",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
                         ),
@@ -262,12 +249,12 @@ public class ChatControllerDocsTest {
 
         given(chatService.getChattingList(any(), any())).willReturn(chattingHistoryResponseDto);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/chatroom/{roomNo}", 1)
+        mvc.perform(get("/chatroom/{roomNo}", 1)
                         .headers(GenerateMockToken.getToken())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("chatting-list",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
                         ),
