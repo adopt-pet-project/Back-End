@@ -1,0 +1,51 @@
+:doctype: book
+:icons: font
+:source-highlighter:
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[overview]]
+== Overview
+
+[[overview-host]]
+=== Host
+
+|===
+| 환경 | Host
+
+| Beta
+| `localhost`
+
+| Production
+| '191.232.141.222 ex임'
+|===
+
+[[overview-http-status-codes]]
+=== HTTP status codes
+
+|===
+| 상태 코드 | 설명
+
+| `200 OK`
+| 성공
+
+| `400 Bad Request`
+| 잘못된 요청
+
+| `401 Unauthorized`
+| 비인증 상태
+
+| `403 Forbidden`
+| 권한 거부
+
+| `404 Not Found`
+| 존재하지 않는 요청 리소스
+
+| `500 Internal Server Error`
+| 서버 에러
+|===
+
+[[overview-error-response]]
+=== HTTP Error Response
+// operation::[snippets='http-response,response-fields']

@@ -1,0 +1,28 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Notification-API]]
+= Notification API
+
+[[Notification-SSE-연결]]
+=== SSE 연결
+operation::notification-controller-docs-test/connect[snippets="http-request,http-response"]
+
+
+[[Notification-조회]]
+=== 전체 알림 조회
+operation::notification-controller-docs-test/notifications[snippets="http-request,http-response"]
+
+
+[[Notification-삭제]]
+=== 알림 삭제
+operation::notification-controller-docs-test/delete-notification[snippets="http-request,http-response"]
+
+
+[[Notification-읽음-처리]]
+=== 알림 읽음 처리
+operation::notification-controller-docs-test/read-notification[snippets="http-request,http-response"]
