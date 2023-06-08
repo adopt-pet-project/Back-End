@@ -63,7 +63,7 @@ public class ChatController {
     }
 
     // 채팅방 접속 끊기
-    @DeleteMapping("/chatroom/{chatroomNo}")
+    @PostMapping("/chatroom/{chatroomNo}")
     public ResponseEntity<StatusResponseDto> disconnectChat(@PathVariable("chatroomNo") Integer chatroomNo,
                                                             @RequestParam("email") String email) {
 
