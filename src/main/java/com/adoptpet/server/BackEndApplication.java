@@ -25,6 +25,7 @@ import java.util.Optional;
 public class BackEndApplication implements CommandLineRunner{
 
     private final MongoChatRepository mongoChatRepository;
+    private final ChatRoomRepository chatRoomRepository;
 
     static {
         System.setProperty("com.amazonaws.sdk.disableEc2Metadata", "true");
@@ -36,8 +37,7 @@ public class BackEndApplication implements CommandLineRunner{
 
     @Override
     public void run(String... args) throws Exception {
-        List<Chatting> chat = mongoChatRepository.findAll();
-
-        chat.forEach(System.out::println);
+        List<ChatRoom> list = chatRoomRepository.findByChatroomNo(35);
+        System.out.println("list.size() = " + list.size());
     }
 }

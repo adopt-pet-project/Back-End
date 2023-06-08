@@ -83,8 +83,6 @@ public class AdoptQueryService {
                 case 4:
                     searchCondition = speciesLike(keyword);
                     break;
-                default:
-                    break;
             }
         }
 
@@ -125,16 +123,6 @@ public class AdoptQueryService {
                 .fetch();
     }
 
-    // 분양글과 관계가 이미지 리스트를 지우는 메서드
-    @Transactional
-    public void deleteAdoptImages(Integer saleNo) {
-        jpaQueryFactory.delete(adoptImage)
-                .where(adoptImage.saleNo.eq(saleNo))
-                .execute();
-
-        em.flush();
-        em.clear();
-    }
 
     // 현재 분양글이 분양 상태인지 조회하는 메서드
     public Adopt isAdopting(Integer saleNo) {
