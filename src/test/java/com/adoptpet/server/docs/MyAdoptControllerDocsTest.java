@@ -20,7 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -41,17 +41,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @WebMvcTest(controllers = MyAdoptController.class)
-@MockBeans({
-        @MockBean(MongoChatRepository.class),
-        @MockBean(JwtUtil.class),
-        @MockBean(MemberService.class),
-        @MockBean(JpaMetamodelMappingContext.class),
-        @MockBean(CustomOAuth2UserService.class)
-})
-public class MyAdoptControllerDocsTest {
-
-    @Autowired
-    MockMvc mockMvc;
+public class MyAdoptControllerDocsTest extends RestDocsBasic{
 
     @MockBean
     MyAdoptService myAdoptService;
@@ -68,13 +58,13 @@ public class MyAdoptControllerDocsTest {
         given(myAdoptService.myAdoptList(any(), any()))
                 .willReturn(myAdoptList);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/mypage/adopt")
+        mvc.perform(get("/mypage/adopt")
                         .headers(GenerateMockToken.getToken())
                         .param("status", "1")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("mypage-adopt-list",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
                         ),
