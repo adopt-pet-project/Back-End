@@ -76,7 +76,6 @@ public class AdoptController {
                                                                @RequestParam(value = "keyword", required = false) final String keyword,
                                                                @RequestParam(value = "option", required = false) final Integer option,
                                                                @RequestParam(value = "filter", required = false) final String filter) {
-
         List<AdoptResponseDto> adoptList = adoptQueryService.selectAdoptList(saleNo, keyword, option, filter);
         return ResponseEntity.ok(adoptList);
     }
