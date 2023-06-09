@@ -18,7 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
@@ -32,20 +32,10 @@ import static org.mockito.BDDMockito.*;
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @WebMvcTest(controllers = AdoptRenderController.class)
-@MockBeans({
-        @MockBean(MongoChatRepository.class),
-        @MockBean(JwtUtil.class),
-        @MockBean(MemberService.class),
-        @MockBean(JpaMetamodelMappingContext.class),
-        @MockBean(CustomOAuth2UserService.class)
-})
-public class AdoptRenderControllerDocsTest {
+public class AdoptRenderControllerDocsTest extends RestDocsBasic{
 
     @MockBean
     AdoptQueryService adoptQueryService;
-
-    @Autowired
-    MockMvc mockMvc;
 
     @Test
     @DisplayName("분양글 랜더링용 리스트 조회 테스트")
@@ -59,11 +49,11 @@ public class AdoptRenderControllerDocsTest {
         given(adoptQueryService.getAllAdoptList())
                 .willReturn(renderList);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/adopt/render")
+        mvc.perform(get("/adopt/render")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("adopt-render-list",
+                .andDo(restDocs.document(
                         requestParameters(
                                 parameterWithName("_csrf").ignored()
                         ),

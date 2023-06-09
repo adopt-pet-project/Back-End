@@ -27,7 +27,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,6 +36,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.headerWit
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.BDDMockito.*;
@@ -44,20 +44,8 @@ import static org.mockito.BDDMockito.*;
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @WebMvcTest(controllers = AdoptController.class)
-@MockBeans({
-        @MockBean(MongoChatRepository.class),
-        @MockBean(JwtUtil.class),
-        @MockBean(MemberService.class),
-        @MockBean(JpaMetamodelMappingContext.class),
-        @MockBean(CustomOAuth2UserService.class)
-})
-public class AdoptControllerDocsTest {
+public class AdoptControllerDocsTest extends RestDocsBasic {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    ObjectMapper objectMapper;
 
     @MockBean
     AdoptQueryService adoptQueryService;
@@ -91,15 +79,15 @@ public class AdoptControllerDocsTest {
                 })
                 .build();
 
-        String requestJson = objectMapper.writeValueAsString(requestDto);
+        String requestJson = createStringJson(requestDto);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/adopt").headers(GenerateMockToken.getToken())
+        mvc.perform(post("/adopt").headers(GenerateMockToken.getToken())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isOk())
-                .andDo(document("adopt-create",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
                         ),
@@ -148,15 +136,15 @@ public class AdoptControllerDocsTest {
                 })
                 .build();
 
-        String jsonString = objectMapper.writeValueAsString(requestDto);
+        String jsonString = createStringJson(requestDto);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.patch("/adopt").headers(GenerateMockToken.getToken())
+        mvc.perform(patch("/adopt").headers(GenerateMockToken.getToken())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(jsonString))
                 .andExpect(status().isOk())
-                .andDo(document("adopt-modify",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
                         ),
@@ -184,11 +172,11 @@ public class AdoptControllerDocsTest {
     @DisplayName("관심 분양글 등록 테스트")
     @WithMockCustomAccount
     public void createAdoptBookmark() throws Exception{
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/adopt/bookmark/{saleNo}", 1)
+        mvc.perform(post("/adopt/bookmark/{saleNo}", 1)
                         .headers(GenerateMockToken.getToken())
                         .with(csrf()))
                 .andExpect(status().isOk())
-                .andDo(document("adopt-bookmark-create",
+                .andDo(restDocs.document(
                         requestHeaders(
                           headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
                         ),
@@ -205,11 +193,11 @@ public class AdoptControllerDocsTest {
     @DisplayName("분양글 삭제 테스트")
     @WithMockCustomAccount
     public void deleteAdopt() throws Exception {
-        mockMvc.perform(RestDocumentationRequestBuilders.delete("/adopt/{saleNo}", 1)
+        mvc.perform(delete("/adopt/{saleNo}", 1)
                 .headers(GenerateMockToken.getToken())
                 .with(csrf()))
                 .andExpect(status().isOk())
-                .andDo(document("adopt-remove",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
                         ),
@@ -236,7 +224,7 @@ public class AdoptControllerDocsTest {
         given(adoptQueryService.selectAdoptList(null, null, null, null))
                 .willReturn(adoptResponse);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/adopt")
+        mvc.perform(get("/adopt")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -279,12 +267,12 @@ public class AdoptControllerDocsTest {
         given(adoptService.readAdopt(any(), any(), any(), any()))
                 .willReturn(responseDto);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/adopt/{saleNo}", 1)
+        mvc.perform(get("/adopt/{saleNo}", 1)
                 .headers(GenerateMockToken.getToken())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("adopt-detail",
+                .andDo(restDocs.document(
                             requestHeaders(
                                     headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken").optional()
                             ),

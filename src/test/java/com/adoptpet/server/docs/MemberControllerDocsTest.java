@@ -21,7 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -38,20 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @WebMvcTest(controllers = MemberController.class)
-@MockBeans({
-        @MockBean(MongoChatRepository.class),
-        @MockBean(JwtUtil.class),
-        @MockBean(MemberService.class),
-        @MockBean(JpaMetamodelMappingContext.class),
-        @MockBean(CustomOAuth2UserService.class)
-})
-public class MemberControllerDocsTest {
-
-    @Autowired
-    MockMvc mockMvc;
-
-    @Autowired
-    ObjectMapper objectMapper;
+public class MemberControllerDocsTest extends RestDocsBasic{
 
     @MockBean
     MemberService memberService;
@@ -68,14 +55,14 @@ public class MemberControllerDocsTest {
                 .address("서울 마포구")
                 .build();
 
-        String requestJson = objectMapper.writeValueAsString(registerDto);
+        String requestJson = createStringJson(registerDto);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/member")
+        mvc.perform(post("/member")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andDo(document("member-register",
+                .andDo(restDocs.document(
                         requestFields(
                                 fieldWithPath("provider").description("provider"),
                                 fieldWithPath("email").description("email"),
@@ -99,12 +86,12 @@ public class MemberControllerDocsTest {
 
         given(memberService.findMemberInfo(any())).willReturn(memberResponseDto);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/member/{id}", 1)
+        mvc.perform(get("/member/{id}", 1)
                         .headers(GenerateMockToken.getToken())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("member-info",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
                         ),
@@ -132,15 +119,15 @@ public class MemberControllerDocsTest {
         MemberModifyRequest.Image image = new MemberModifyRequest.Image("/image2", 2);
         MemberModifyRequest modifyRequest = new MemberModifyRequest("코린이", image);
 
-        String requestJson = objectMapper.writeValueAsString(modifyRequest);
+        String requestJson = createStringJson(modifyRequest);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.patch("/member")
+        mvc.perform(patch("/member")
                         .headers(GenerateMockToken.getToken())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andDo(document("member-modify",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
                         ),
@@ -164,12 +151,12 @@ public class MemberControllerDocsTest {
 
         given(memberService.isDuplicated(any())).willReturn(true);
 
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/member/validate")
+        mvc.perform(get("/member/validate")
                         .param("nickname", "코린이")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("member-validateNickname",
+                .andDo(restDocs.document(
                         requestParameters(
                                 parameterWithName("_csrf").ignored(),
                                 parameterWithName("nickname").description("nickname")
@@ -186,12 +173,12 @@ public class MemberControllerDocsTest {
     @WithMockCustomAccount
     public void removeUser() throws Exception{
 
-        mockMvc.perform(RestDocumentationRequestBuilders.delete("/member")
+        mvc.perform(delete("/member")
                         .headers(GenerateMockToken.getToken())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("member-remove",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
                         ),

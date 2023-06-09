@@ -18,7 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -32,17 +32,7 @@ import static org.mockito.BDDMockito.*;
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @WebMvcTest(controllers = AuthController.class)
-@MockBeans({
-        @MockBean(MongoChatRepository.class),
-        @MockBean(JwtUtil.class),
-        @MockBean(MemberService.class),
-        @MockBean(JpaMetamodelMappingContext.class),
-        @MockBean(CustomOAuth2UserService.class)
-})
-public class AuthControllerDocsTest {
-
-    @Autowired
-    MockMvc mockMvc;
+public class AuthControllerDocsTest extends RestDocsBasic{
 
     @MockBean
     RefreshTokenService tokenService;
@@ -52,12 +42,12 @@ public class AuthControllerDocsTest {
     @WithMockCustomAccount
     void logout() throws Exception {
 
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/token/logout")
+        mvc.perform(post("/token/logout")
                         .headers(GenerateMockToken.getToken())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("token-logout",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
                         ),
@@ -75,12 +65,12 @@ public class AuthControllerDocsTest {
         given(tokenService.republishAccessToken(any()))
                 .willReturn("newAccessToken");
 
-        mockMvc.perform(RestDocumentationRequestBuilders.post("/token/refresh")
+        mvc.perform(post("/token/refresh")
                         .headers(GenerateMockToken.getToken())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("token-refresh",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
                         ),

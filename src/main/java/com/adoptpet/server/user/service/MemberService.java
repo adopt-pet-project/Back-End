@@ -14,6 +14,7 @@ import com.adoptpet.server.user.repository.MemberRepository;
 import com.adoptpet.server.user.repository.ProfileImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -57,7 +58,6 @@ public class MemberService {
 
         // 회원을 저장한다.
         Member savedMember = memberRepository.save(member);
-        System.out.println("member = " + member);
 
         if (Objects.nonNull(registerDto.getImgNo())) {
             // 첨부된 사진이 있을 경우, 현재 회원의 프로필 사진으로 업데이트 해준다.
@@ -74,9 +74,7 @@ public class MemberService {
                 .orElseThrow(IllegalStateException::new);
         commentRepository.deleteComment(findMember.getMemberNo());
         memberRepository.delete(findMember);
-        noteHistoryRepository.deleteHistoryByReceiverNo(findMember.getMemberNo());
-        noteHistoryRepository.deleteHistoryBySenderNo(findMember.getMemberNo());
-        notificationRepository.deleteAllByMemberNo(findMember.getMemberNo());
+        deleteHistory(findMember.getMemberNo());
     }
 
     // 회원정보 수정 메서드
@@ -115,6 +113,13 @@ public class MemberService {
     public boolean isDuplicated(String nickname) {
         Optional<Member> findMember = memberRepository.findByNickname(nickname);
         return findMember.isPresent();
+    }
+
+    @Transactional
+    public void deleteHistory(Integer memberNo) {
+        noteHistoryRepository.deleteHistoryByReceiverNo(memberNo);
+        noteHistoryRepository.deleteHistoryBySenderNo(memberNo);
+        notificationRepository.deleteAllByMemberNo(memberNo);
     }
 
 
