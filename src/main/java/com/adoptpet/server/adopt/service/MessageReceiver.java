@@ -1,6 +1,7 @@
 package com.adoptpet.server.adopt.service;
 
 import com.adoptpet.server.adopt.dto.chat.Message;
+import com.adoptpet.server.commons.properties.KafkaProperties;
 import com.adoptpet.server.commons.util.ConstantUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

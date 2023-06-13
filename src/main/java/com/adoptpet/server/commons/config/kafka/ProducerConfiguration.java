@@ -1,8 +1,10 @@
 package com.adoptpet.server.commons.config.kafka;
 
 import com.adoptpet.server.adopt.dto.chat.Message;
+import com.adoptpet.server.commons.properties.KafkaProperties;
 import com.adoptpet.server.commons.util.ConstantUtil;
 import com.google.common.collect.ImmutableMap;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +19,10 @@ import java.util.Map;
 
 @EnableKafka
 @Configuration
+@RequiredArgsConstructor
 public class ProducerConfiguration {
+
+    private final KafkaProperties kafkaProperties;
 
     // Kafka ProducerFactory를 생성하는 Bean 메서드
     @Bean
@@ -29,7 +34,7 @@ public class ProducerConfiguration {
     @Bean
     public Map<String, Object> producerConfigurations() {
         return ImmutableMap.<String, Object>builder()
-                .put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, ConstantUtil.KAFKA_BROKER)
+                .put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBroker())
                 .put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
                 .put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class)
                 .build();

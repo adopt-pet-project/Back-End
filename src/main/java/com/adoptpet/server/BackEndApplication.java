@@ -22,7 +22,7 @@ import java.util.Optional;
 @EnableScheduling // SpringScheduling 사용 설정
 @RequiredArgsConstructor
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-public class BackEndApplication implements CommandLineRunner{
+public class BackEndApplication {
 
     private final MongoChatRepository mongoChatRepository;
     private final ChatRoomRepository chatRoomRepository;
@@ -35,9 +35,4 @@ public class BackEndApplication implements CommandLineRunner{
         SpringApplication.run(BackEndApplication.class, args);
     }
 
-    @Override
-    public void run(String... args) throws Exception {
-        List<ChatRoom> list = chatRoomRepository.findByChatroomNo(35);
-        System.out.println("list.size() = " + list.size());
-    }
 }
