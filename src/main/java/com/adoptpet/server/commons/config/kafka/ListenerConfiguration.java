@@ -1,8 +1,10 @@
 package com.adoptpet.server.commons.config.kafka;
 
 import com.adoptpet.server.adopt.dto.chat.Message;
+import com.adoptpet.server.commons.properties.KafkaProperties;
 import com.adoptpet.server.commons.util.ConstantUtil;
 import com.google.common.collect.ImmutableMap;
+import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +18,10 @@ import java.util.Map;
 
 @EnableKafka
 @Configuration
+@RequiredArgsConstructor
 public class ListenerConfiguration {
+
+    private final KafkaProperties kafkaProperties;
 
     // KafkaListener 컨테이너 팩토리를 생성하는 Bean 메서드
     @Bean
@@ -36,8 +41,8 @@ public class ListenerConfiguration {
         // Kafka Consumer 구성을 위한 설정값들을 설정 -> 변하지 않는 값이므로 ImmutableMap을 이용하여 설정
         Map<String, Object> consumerConfigurations =
                 ImmutableMap.<String, Object>builder()
-                        .put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ConstantUtil.KAFKA_BROKER)
-                        .put(ConsumerConfig.GROUP_ID_CONFIG, ConstantUtil.GROUP_ID)
+                        .put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBroker())
+                        .put(ConsumerConfig.GROUP_ID_CONFIG, kafkaProperties.getGroupId())
                         .put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
                         .put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer)
                         .put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest")
