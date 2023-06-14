@@ -157,29 +157,16 @@ public class ChatService {
         return message;
     }
 
-    public void updateMessage(String email) {
+    public void updateMessage(String email, Integer chatRoomNo) {
         Message message = Message.builder()
                 .contentType("notice")
+                .chatNo(chatRoomNo)
                 .content(email + " 님이 돌아오셨습니다.")
                 .build();
 
         sender.send(ConstantUtil.KAFKA_TOPIC, message);
     }
 
-    // 현재 보낸 메시지가 상대방이 접속 중이라면 메시지 상태를 읽음 상태로 업데이트
-    public Message updateCountToZero(Message message, String accessToken) {
-        Member findMember = memberRepository.findByEmail(jwtUtil.getUid(accessToken))
-                .orElseThrow(IllegalStateException::new);
-
-        if (!message.getSenderNo().equals(findMember.getMemberNo())) {
-            Update update = new Update().set("readCount", 0);
-            Query query = new Query(Criteria.where("_id").is(message.getId()));
-
-            mongoTemplate.updateMulti(query, update, Chatting.class);
-        }
-
-        return message;
-    }
 
     // 읽지 않은 메시지 채팅장 입장시 읽음 처리
     public void updateCountAllZero(Integer chatNo, String email) {

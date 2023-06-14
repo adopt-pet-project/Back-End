@@ -63,7 +63,7 @@ public class StompHandler implements ChannelInterceptor {
         boolean isConnected = chatRoomService.isConnected(chatRoomNo);
 
         if (isConnected) {
-            chatService.updateMessage(email);
+            chatService.updateMessage(email, chatRoomNo);
         }
     }
 
