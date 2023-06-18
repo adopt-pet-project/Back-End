@@ -7,6 +7,7 @@ import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.repository.CommentRepository;
 import com.adoptpet.server.community.repository.CommunityRepository;
 import com.adoptpet.server.community.repository.NoteHistoryRepository;
+import com.adoptpet.server.community.repository.NoteRepository;
 import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.dto.request.MemberModifyRequest;
 import com.adoptpet.server.user.dto.request.RegisterDto;
@@ -30,6 +31,7 @@ public class MemberService {
     private final ProfileImageRepository profileImageRepository;
     private final MemberQueryService queryService;
     private final CommentRepository commentRepository;
+    private final NoteRepository noteRepository;
     private final NoteHistoryRepository noteHistoryRepository;
     private final NotificationRepository notificationRepository;
     private final CommunityRepository communityRepository;
@@ -121,6 +123,8 @@ public class MemberService {
     public void deleteHistory(Integer memberNo) {
         noteHistoryRepository.deleteHistoryByReceiverNo(memberNo);
         noteHistoryRepository.deleteHistoryBySenderNo(memberNo);
+        noteRepository.updateCreateMemberByDeletion(memberNo);
+        noteRepository.updateJoinMemberByDeletion(memberNo);
         notificationRepository.updateAllBySenderNo(memberNo);
         notificationRepository.deleteAllByReceiverNo(memberNo);
     }
