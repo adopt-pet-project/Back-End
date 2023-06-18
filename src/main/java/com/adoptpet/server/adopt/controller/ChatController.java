@@ -1,7 +1,6 @@
 package com.adoptpet.server.adopt.controller;
 
 import com.adoptpet.server.adopt.dto.chat.Message;
-import com.adoptpet.server.adopt.dto.request.ChatDisconnectDto;
 import com.adoptpet.server.adopt.dto.request.ChatRequestDto;
 import com.adoptpet.server.adopt.dto.response.ChattingHistoryResponseDto;
 import com.adoptpet.server.adopt.dto.response.ChatRoomResponseDto;
@@ -57,8 +56,6 @@ public class ChatController {
 
     @MessageMapping("/message")
     public void sendMessage(@Valid Message message, @Header("Authorization") final String accessToken) {
-
-        log.info("Produce message : " + message.toString());
         chatService.sendMessage(message, accessToken);
     }
 
@@ -75,7 +72,6 @@ public class ChatController {
     // 메시지 전송 후 callback
     @PostMapping("/chatroom/notification")
     public ResponseEntity<Message> sendNotification(@Valid @RequestBody Message message) {
-        log.info("message = {}", message);
         Message savedMessage = chatService.sendNotificationAndSaveMessage(message);
         return ResponseEntity.ok(savedMessage);
     }
