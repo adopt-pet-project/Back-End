@@ -117,7 +117,7 @@ public class CommunityQDslRepository {
         }
 
         return findArticleListQuery()
-                .where(searchCondition,community.logicalDel.eq(LogicalDelEnum.NORMAL))
+                .where(searchCondition)
                 .orderBy(order.equals("like") ? likeAlias.desc() : community.articleNo.desc())
                 .offset(offset).limit(limit)
                 .fetch();
