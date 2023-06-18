@@ -190,11 +190,9 @@ public class ChatService {
     }
 
     private String getNotificationUrl(Integer saleNo, Integer chatNo) {
-        return new StringBuilder()
-                                    .append(chatNo)
-                                    .append("?adoptId=")
-                                    .append(saleNo)
-                                    .toString();
+        return chatNo +
+                "?adoptId=" +
+                saleNo;
     }
 
 

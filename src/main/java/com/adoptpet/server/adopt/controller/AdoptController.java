@@ -105,7 +105,8 @@ public class AdoptController {
     public ResponseEntity<AdoptDetailResponseDto> readAdopt(@PathVariable("saleNo") final Integer saleNo,
                                                             @RequestHeader(value = "Authorization", required = false) final String accessToken,
                                                             HttpServletRequest request, HttpServletResponse response) {
-        AdoptDetailResponseDto responseDto = adoptService.readAdopt(saleNo, accessToken, request, response);
+        AdoptDetailResponseDto responseDto = adoptService.readAdopt(saleNo, accessToken);
+        adoptService.increaseCount(saleNo, request, response);
         return ResponseEntity.ok(responseDto);
     }
 

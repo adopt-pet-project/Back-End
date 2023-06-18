@@ -27,7 +27,6 @@ public class StompHandler implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        System.out.println("presend 검증 = " + accessor.getCommand());
         // StompCommand에 따라서 로직을 분기해서 처리하는 메서드를 호출한다.
         String email = verifyAccessToken(getAccessToken(accessor));
         handleMessage(accessor.getCommand(), accessor, email);
