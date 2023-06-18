@@ -56,16 +56,16 @@ public class Member {
     @Column(name = "passmod_date", nullable = false)
     private LocalDateTime passModDate;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member")
     private List<AdoptBookmark> adoptBookmarkList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "member")
     private List<Comment> commentList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "receiver")
     private List<Notification> receiverList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "sender")
     private List<Notification> senderList = new ArrayList<>();
 
     public void addProfileImage(String imgUrl) {

@@ -176,11 +176,10 @@ public class CommunityController {
     @GetMapping("/article/{articleNo}")
     public ResponseEntity<ArticleInfoResponse> readArticle(
             @PathVariable("articleNo") Integer articleNo,
-            @RequestHeader(value = "Authorization",required = false) String accessToken,
-            HttpServletRequest request, HttpServletResponse response){
+            @RequestHeader(value = "Authorization",required = false) String accessToken){
 
         ArticleDetailInfoDto articleDetailInfoDto =
-                communityService.readArticle(articleNo,accessToken, request, response);
+                communityService.readArticle(articleNo,accessToken);
 
         return ResponseEntity.ok(articleDetailInfoDto.toResponse());
     }
@@ -189,7 +188,9 @@ public class CommunityController {
     public ResponseEntity<StatusResponseDto> articleViewUpdate(
             @Valid @RequestBody UpdateViewRequest viewRequest,
             HttpServletRequest request, HttpServletResponse response){
+
         communityService.increaseCount(viewRequest.getArticleNo(), request, response);
+
         return success();
     }
 
