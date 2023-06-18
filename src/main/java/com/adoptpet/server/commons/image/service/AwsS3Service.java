@@ -115,7 +115,7 @@ public class AwsS3Service {
     public String deleteMultipleFile(List<String> imageUrls){
         // 이미지 URL에서 keyName 추출
         List<String> keyNames = imageUrls.stream()
-                .map(url -> extractKeyName(url))
+                .map(this::extractKeyName)
                 .collect(Collectors.toList());
 
         // S3에 삭제 요청
