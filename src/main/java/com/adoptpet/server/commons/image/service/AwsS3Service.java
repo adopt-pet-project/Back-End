@@ -39,8 +39,7 @@ public class AwsS3Service {
     private final ProfileImageRepository profileImageRepository;
     private final AdoptImageRepository adoptImageRepository;
 
-    private static String DOT = ".";
-
+    private static final String DOT = ".";
 
     @Transactional
     public String delete(String type, Integer imageNo){
@@ -79,10 +78,8 @@ public class AwsS3Service {
                 break;
         }
 
-        String result = deleteFile(imageUrl);
-
         // S3 이미지 파일 삭제 요청
-        return result;
+        return deleteFile(imageUrl);
 
     }
 
@@ -96,32 +93,25 @@ public class AwsS3Service {
 
         // URL 에서 keyName 추출
         final String keyName = extractKeyName(imageUrl);
-        log.info("keyName : {} ", keyName);
 
         // keyName으로 S3에 delete request
-        String result = awsS3Repository.deleteFile(keyName);
-
-        return result;
+        return awsS3Repository.deleteFile(keyName);
     }
 
     /**
-    * S3 여러 파일 삭제
+     * S3 여러 파일 삭제
+     *
      * @param imageUrls : S3 image URL 리스트
-     * @return String  :
-     *          - 성공시 : result = "Success delete all image file"
-     *          - 실패시 : result = "n개의 이미지가 삭제되지 않았습니다."
-    **/
+     **/
     @Transactional
-    public String deleteMultipleFile(List<String> imageUrls){
+    public void deleteMultipleFile(List<String> imageUrls){
         // 이미지 URL에서 keyName 추출
         List<String> keyNames = imageUrls.stream()
                 .map(this::extractKeyName)
                 .collect(Collectors.toList());
 
         // S3에 삭제 요청
-        String result = awsS3Repository.deleteFiles(keyNames);
-
-        return result;
+        awsS3Repository.deleteFiles(keyNames);
     }
 
     //== 이미지 URL 에서 keyName 추출 ==//
@@ -130,9 +120,7 @@ public class AwsS3Service {
         final int secondSlashIndex = imageUrl.indexOf("/") + 2;
         final int thirdSlashIndex = imageUrl.indexOf("/", secondSlashIndex);
 
-        final String keyName = imageUrl.substring(thirdSlashIndex + 1);
-
-        return keyName;
+        return imageUrl.substring(thirdSlashIndex + 1);
     }
 
     /**
@@ -175,10 +163,9 @@ public class AwsS3Service {
             URL responseUrl = awsS3Repository.uploadFile(objectMetadata, inputStream, fileName ,keyName);
 
             // Server DB에 upload된 image 정보 저장
-            ImageInfoDto savedImageInfo = saveImage(regId, typeEnum, responseUrl, imageName);
 
             // 저장된 이미지 PK 반환
-            return savedImageInfo;
+            return saveImage(regId, typeEnum, responseUrl, imageName);
         } catch (IOException ex) {
             log.error(ex.getMessage());
             throw new CustomException(UNSUCCESSFUL_UPLOAD);
