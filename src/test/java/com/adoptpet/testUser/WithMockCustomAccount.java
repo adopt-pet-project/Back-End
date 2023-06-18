@@ -14,8 +14,4 @@ public @interface WithMockCustomAccount {
     String name() default "name";
 
     String email() default "test-email";
-
-    String role() default "ROLE_USER";
-
-    String registrationId() default "google";
 }
