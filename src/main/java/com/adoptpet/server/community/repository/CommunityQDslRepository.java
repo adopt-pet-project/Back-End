@@ -1,6 +1,7 @@
 package com.adoptpet.server.community.repository;
 
 import com.adoptpet.server.commons.image.dto.ImageInfoDto;
+import com.adoptpet.server.community.domain.BlindEnum;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.dto.*;
@@ -164,6 +165,7 @@ public class CommunityQDslRepository {
                 ))
                 .from(community)
                 .leftJoin(member).on(community.regId.eq(member.email))
+                .where(community.blindYn.eq(BlindEnum.NORMAL))
                 .groupBy(community.articleNo,community.title,community.content,
                         member.nickname,community.viewCount,community.regDate,
                         community.thumbnail);
