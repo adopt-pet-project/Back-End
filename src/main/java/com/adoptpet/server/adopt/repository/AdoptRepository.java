@@ -18,9 +18,9 @@ public interface AdoptRepository extends JpaRepository<Adopt, Integer> {
     @Modifying(clearAutomatically = true)
     void deleteBySaleNo(@Param("saleNo") Integer saleNo);
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Query("update Adopt a set a.viewCnt = a.viewCnt + 1 where a.saleNo = :saleNo")
     @Modifying(clearAutomatically = true)
+    @Transactional
     void increaseCount(@Param("saleNo") Integer saleNo);
 
     @Query("update Adopt a set a.status = :status where a.saleNo = :saleNo")

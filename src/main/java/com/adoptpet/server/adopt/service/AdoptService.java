@@ -94,7 +94,6 @@ public class AdoptService {
         Adopt adopt = findBySaleNo(saleNo);
         // AdoptRequestDto의 내용으로 분양글 엔티티의 내용을 변경한다.
         adopt.updateAdopt(adoptDto, user);
-        log.info("adopt = {}", adopt);
         // 이미지 배열 중 가장 첫번째 URL을 썸네일 이미지로 넣어준다.
         if (Objects.nonNull(adoptDto.getImage()) && adoptDto.getImage().length != 0) {
             adopt.addThumbnail(adoptDto.getImage()[0].getImgUrl());
@@ -131,7 +130,7 @@ public class AdoptService {
         adoptBookmarkRepository.save(adoptBookmark);
     }
 
-    public AdoptDetailResponseDto readAdopt(Integer saleNo, String accessToken, HttpServletRequest request, HttpServletResponse response) {
+    public AdoptDetailResponseDto readAdopt(Integer saleNo, String accessToken) {
         // Adopt 테이블과 Member 테이블을 조인해서 가져올 수 있는 데이터를 먼저 채운다.
         AdoptDetailResponseDto responseDto = queryService.selectAdoptAndMember(saleNo);
         // 현재 분양 게시글과 관련이 있는 이미지 url을 조회해온다.
@@ -148,8 +147,6 @@ public class AdoptService {
         // 현재 비어있는 responseDto의 이미지 필드의 값을 채워준다.
         responseDto.addImages(images);
 
-        // 분양글의 조회수를 증가시키는 로직 실행
-        increaseCount(saleNo, request, response);
         return responseDto;
     }
 
@@ -162,7 +159,7 @@ public class AdoptService {
     }
 
     @Transactional
-    private void increaseCount(Integer saleNo, HttpServletRequest request, HttpServletResponse response) {
+    public void increaseCount(Integer saleNo, HttpServletRequest request, HttpServletResponse response) {
         Cookie oldCookie = null;
         // 현재 브라우저의 쿠키를 전부 가져온다.
         Cookie[] cookies = request.getCookies();

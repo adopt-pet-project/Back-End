@@ -39,13 +39,11 @@ public class ChatRoomService {
 
     public boolean isAllConnected(Integer chatRoomNo) {
         List<ChatRoom> connectedList = chatRoomRepository.findByChatroomNo(chatRoomNo);
-        log.info("chatroomSize = {}", connectedList.size());
         return connectedList.size() == 2;
     }
 
     public boolean isConnected(Integer chatRoomNo) {
         List<ChatRoom> connectedList = chatRoomRepository.findByChatroomNo(chatRoomNo);
-
         return connectedList.size() == 1;
     }
 }

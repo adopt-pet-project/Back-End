@@ -4,7 +4,6 @@ import com.adoptpet.server.commons.exception.JwtException;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.security.service.JwtUtil;
 import com.adoptpet.server.user.domain.Member;
-import com.adoptpet.server.user.repository.MemberRepository;
 import com.adoptpet.server.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

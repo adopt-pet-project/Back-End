@@ -4,6 +4,7 @@ import com.adoptpet.server.adopt.service.ChatRoomService;
 import com.adoptpet.server.adopt.service.ChatService;
 import com.adoptpet.server.commons.security.service.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.messaging.Message;
@@ -18,6 +19,7 @@ import java.util.Objects;
 @Order(Ordered.HIGHEST_PRECEDENCE + 99) // 우선 순위를 높게 설정해서 SecurityFilter들 보다 앞서 실행되게 해준다.
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class StompHandler implements ChannelInterceptor {
 
     private final JwtUtil jwtUtil;
@@ -27,9 +29,9 @@ public class StompHandler implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        System.out.println("presend 검증 = " + accessor.getCommand());
         // StompCommand에 따라서 로직을 분기해서 처리하는 메서드를 호출한다.
         String email = verifyAccessToken(getAccessToken(accessor));
+        log.info("StompAccessor = {}", accessor);
         handleMessage(accessor.getCommand(), accessor, email);
         return message;
     }
