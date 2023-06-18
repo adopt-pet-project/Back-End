@@ -243,8 +243,7 @@ public class CommunityService {
     **/
     @Transactional(readOnly = true)
     public ArticleDetailInfoDto readArticle(Integer articleNo, String accessToken, HttpServletRequest request, HttpServletResponse response){
-        // 게시글 고유키로 게시글 검증
-//        findByArticleNo(articleNo);
+
         Optional<Community> findCommunity = communityRepository.findById(articleNo);
         if(findCommunity.isEmpty()){
             throw new CustomException(ARTICLE_NOT_FOUND);
@@ -263,8 +262,7 @@ public class CommunityService {
         List<ImageInfoDto> images = communityQDslRepository.findImageUrlByArticleNo(articleNo);
         // 이미지 URL 리스트 추가
         articleDetail.addImages(images);
-//         게시글 조회수 증가
-//        increaseCount(articleNo, request, response);
+
         // 조회된 게시글 정보 반환
         return articleDetail;
     }
@@ -383,14 +381,11 @@ public class CommunityService {
         Optional<Cookie> cookie = CookieUtil.getCookie(request, name);
         // 쿠기가 있을 경우 oldCookie로 만든다.
         if(cookie.isPresent()){
-            log.info("######## cookie : {} ", cookie.get().getDomain());
             oldCookie = cookie.get();
         }
 
         // name에 해당하는 쿠키가 null이 아닐경우 실행한다.
         if (Objects.nonNull(oldCookie)) {
-            log.info("######### old Cookie Name  : {} ,",oldCookie.getName());
-            log.info("######### old Cookie Value : {} ,",oldCookie.getValue());
             // 현재 게시글 번호를 값으로 포함한 쿠키가 oldCookie에 없을 경우 실행한다.
             if (!oldCookie.getValue().contains(value)) {
                 // 조회수를 1 증가시킨다.
@@ -399,7 +394,6 @@ public class CommunityService {
                 CookieUtil.addCookie(response,name,oldCookie.getValue() + "_" + value, maxAge);
             }
         } else {
-            log.info("######## Cookie가 null임");
             // oldCookie의 값이 없다면 현재 조회한 게시글이 하나도 없는 상태이므로 조회 수 카운트를 올려준다.
             communityRepository.increaseCount(articleNo);
             // 쿠키를 새로 생성하면서 현재 게시글의 번호를 값으로 넣어준다.
