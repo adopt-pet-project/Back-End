@@ -243,8 +243,7 @@ public class CommunityService {
     **/
     @Transactional(readOnly = true)
     public ArticleDetailInfoDto readArticle(Integer articleNo, String accessToken, HttpServletRequest request, HttpServletResponse response){
-        // 게시글 고유키로 게시글 검증
-//        findByArticleNo(articleNo);
+
         Optional<Community> findCommunity = communityRepository.findById(articleNo);
         if(findCommunity.isEmpty()){
             throw new CustomException(ARTICLE_NOT_FOUND);
@@ -263,8 +262,7 @@ public class CommunityService {
         List<ImageInfoDto> images = communityQDslRepository.findImageUrlByArticleNo(articleNo);
         // 이미지 URL 리스트 추가
         articleDetail.addImages(images);
-//         게시글 조회수 증가
-//        increaseCount(articleNo, request, response);
+
         // 조회된 게시글 정보 반환
         return articleDetail;
     }
