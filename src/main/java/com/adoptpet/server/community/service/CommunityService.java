@@ -210,7 +210,7 @@ public class CommunityService {
     @Transactional(readOnly = true)
     public void checkCategoryNo(Integer categoryNo) {
         Optional<Category> findCategory = categoryRepository.findById(categoryNo);
-        if(!findCategory.isPresent()){
+        if(findCategory.isEmpty()){
             throw new CustomException(CATEGORY_NOT_FOUND);
         }
     }
@@ -264,12 +264,11 @@ public class CommunityService {
 
 
     /**
-    * @title 게시글 등록 메서드
-    * @param articleDto  : 게시글 생성 정보
-    * @return response     : 생성 완료된 게시글 정보
-    **/
+     * @param articleDto : 게시글 생성 정보
+     * @title 게시글 등록 메서드
+     **/
     @Transactional
-    public ArticleDto insertArticle(ArticleDto articleDto){
+    public void insertArticle(ArticleDto articleDto){
         // CreateArticleMapper 인스턴스 생성
         final CreateArticleMapper createArticleMapper = CreateArticleMapper.INSTANCE;
 
@@ -292,7 +291,6 @@ public class CommunityService {
         // 반환값에 null 대신 image 기입
         response.addImgNo(images);
 
-        return response;
     }
 
 
@@ -313,7 +311,7 @@ public class CommunityService {
      * @title 게시글 논리 삭제
      */
     @Transactional
-    public Community softDeleteArticle(Integer articleNo) {
+    public void softDeleteArticle(Integer articleNo) {
 
         // 게시글 번호를 사용하여 해당 게시글을 조회한다.
         Community community = findByArticleNo(articleNo);
@@ -325,9 +323,8 @@ public class CommunityService {
         // 게시글 이미지의 게시글 번호 컬럼을 비운다.(batch를 통해 자정에 삭제)
         communityImageRepository.updateAllByArticleNo(articleNo);
         // 변경된 게시글을 DB에 저장하여 업데이트한다.
-        Community deletedCommunity = communityRepository.save(community);
+        communityRepository.save(community);
 
-        return deletedCommunity;
     }
 
 
