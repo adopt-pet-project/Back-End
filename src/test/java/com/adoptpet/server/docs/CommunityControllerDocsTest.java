@@ -123,7 +123,7 @@ class CommunityControllerDocsTest extends RestDocsBasic{
                 .build();
 
 
-        given(communityService.readArticle(eq(1), anyString(), any(), any()))
+        given(communityService.readArticle(eq(1), anyString()))
                 .willReturn(articleDetailInfoDto);
 
         ResultActions result = mvc.perform(

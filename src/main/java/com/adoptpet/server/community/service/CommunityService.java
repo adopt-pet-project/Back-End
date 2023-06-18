@@ -188,13 +188,13 @@ public class CommunityService {
 
 
     /**
-    * 게시글 유무 검증
+    * @title 게시글 유무 검증
     **/
     @Transactional(readOnly = true)
     public Community findByArticleNo(Integer articleNo){
         // 게시글 번호로 게시글을 조회하고, 조회되지 않을 경우 예외를 발생시킨다.
         Optional<Community> findCommunity = communityRepository.findById(articleNo);
-        if(!findCommunity.isPresent()){
+        if(findCommunity.isEmpty()){
             throw new CustomException(ARTICLE_NOT_FOUND);
         }
 
@@ -216,7 +216,7 @@ public class CommunityService {
     }
 
     /**
-    * 게시글 수정
+    * @title 게시글 수정
     **/
     @Transactional
     public void updateArticle(ArticleDto articleDto, Integer articleNo){
@@ -238,18 +238,13 @@ public class CommunityService {
     }
 
 
-    /**
-    * 게시글 상세 내용 조회
-    **/
+    //== 게시글 상세 내용 조회 ==//
     @Transactional(readOnly = true)
-    public ArticleDetailInfoDto readArticle(Integer articleNo, String accessToken, HttpServletRequest request, HttpServletResponse response){
+    public ArticleDetailInfoDto readArticle(Integer articleNo, String accessToken){
 
-        Optional<Community> findCommunity = communityRepository.findById(articleNo);
-        if(findCommunity.isEmpty()){
-            throw new CustomException(ARTICLE_NOT_FOUND);
-        }
+        Community article = findByArticleNo(articleNo);
         // 게시글 정보 조회
-        ArticleDetailInfoDto articleDetail = communityQDslRepository.findArticleDetail(articleNo);
+        ArticleDetailInfoDto articleDetail = communityQDslRepository.findArticleDetail(article.getArticleNo());
         // 조회 유저 검증 기본 값 지정
         articleDetail.addIsMine(false);
         // 엑세스 토큰 있을 시 조회한 유저가 게시글의 주인인지 확인
@@ -269,9 +264,9 @@ public class CommunityService {
 
 
     /**
-    * 게시글 등록 메서드
-     *  @param articleDto  : 게시글 생성 정보
-     *  @return response     : 생성 완료된 게시글 정보
+    * @title 게시글 등록 메서드
+    * @param articleDto  : 게시글 생성 정보
+    * @return response     : 생성 완료된 게시글 정보
     **/
     @Transactional
     public ArticleDto insertArticle(ArticleDto articleDto){
@@ -315,7 +310,7 @@ public class CommunityService {
     
     
     /**
-     * 게시글 논리 삭제
+     * @title 게시글 논리 삭제
      */
     @Transactional
     public Community softDeleteArticle(Integer articleNo) {
