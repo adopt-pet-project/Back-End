@@ -27,6 +27,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -54,12 +56,13 @@ public class AdoptControllerDocsTest extends RestDocsBasic {
     AdoptService adoptService;
 
 
+
     @Test
     @DisplayName("분양글 등록 테스트")
     @WithMockCustomAccount
     public void createAdopt() throws Exception{
         AdoptRequestDto requestDto = AdoptRequestDto.builder()
-                .title("드래곤 분양띠")
+                .title("드래곤 분양합니다")
                 .age("1년 반")
                 .address("서울 은평구")
                 .gender(Gender.MAN)
@@ -117,7 +120,7 @@ public class AdoptControllerDocsTest extends RestDocsBasic {
     @WithMockCustomAccount
     public void modifyAdopt() throws Exception {
         AdoptUpdateRequestDto requestDto = AdoptUpdateRequestDto.builder()
-                .title("드래곤 분양띠")
+                .title("드래곤 분양해요")
                 .age("1년 반")
                 .address("서울 은평구")
                 .gender(Gender.MAN)
@@ -264,7 +267,7 @@ public class AdoptControllerDocsTest extends RestDocsBasic {
 
         AdoptDetailResponseDto responseDto = new AdoptDetailResponseDto(1, images, true, coords, header, metadata, context, author);
 
-        given(adoptService.readAdopt(any(), any(), any(), any()))
+        given(adoptService.readAdopt(any(), any()))
                 .willReturn(responseDto);
 
         mvc.perform(get("/adopt/{saleNo}", 1)
