@@ -2,6 +2,7 @@ package com.adoptpet.server.community.repository;
 
 import com.adoptpet.server.community.domain.Note;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -19,4 +20,12 @@ public interface NoteRepository extends JpaRepository<Note, Integer> {
             "OR (n.createMember = :receiverNo AND n.joinMember = :senderNo)")
     Optional<Note> findBySenderAndReceiver(@Param("senderNo") Integer senderNo,
                                           @Param("receiverNo") Integer receiverNo);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE Note n SET n.createMember = 0 WHERE n.createMember = :memberNo")
+    void updateCreateMemberByDeletion(@Param("memberNo") Integer memberNo);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE Note n SET n.joinMember = 0 WHERE n.joinMember = :memberNo")
+    void updateJoinMemberByDeletion(@Param("memberNo") Integer memberNo);
 }
