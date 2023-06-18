@@ -25,11 +25,9 @@ public interface NoteRepository extends JpaRepository<Note, Integer> {
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Note n SET n.createMember = 0 WHERE n.createMember = :memberNo")
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     void updateCreateMemberByDeletion(@Param("memberNo") Integer memberNo);
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Note n SET n.joinMember = 0 WHERE n.joinMember = :memberNo")
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     void updateJoinMemberByDeletion(@Param("memberNo") Integer memberNo);
 }
