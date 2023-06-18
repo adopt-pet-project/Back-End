@@ -5,7 +5,9 @@ import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.util.ConstantUtil;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.repository.CommentRepository;
+import com.adoptpet.server.community.repository.CommunityRepository;
 import com.adoptpet.server.community.repository.NoteHistoryRepository;
+import com.adoptpet.server.community.service.CommunityService;
 import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.dto.request.MemberModifyRequest;
 import com.adoptpet.server.user.dto.request.RegisterDto;
@@ -32,6 +34,7 @@ public class MemberService {
     private final CommentRepository commentRepository;
     private final NoteHistoryRepository noteHistoryRepository;
     private final NotificationRepository notificationRepository;
+    private final CommunityRepository communityRepository;
 
 
     public Optional<Member> findByEmail(String email) {
@@ -73,6 +76,7 @@ public class MemberService {
         Member findMember = memberRepository.findById(user.getMemberNo())
                 .orElseThrow(IllegalStateException::new);
         commentRepository.deleteComment(findMember.getMemberNo());
+        communityRepository.updateIdByEmail(findMember.getEmail());
         memberRepository.delete(findMember);
         deleteHistory(findMember.getMemberNo());
     }
