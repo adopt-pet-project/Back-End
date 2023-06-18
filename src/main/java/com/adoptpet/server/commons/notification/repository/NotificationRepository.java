@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,9 +28,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Notification n SET n.sender.memberNo = 0 WHERE n.sender.memberNo = :memberNo")
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     void updateAllBySenderNo(Integer memberNo);
 
     @Modifying(clearAutomatically = true)
     @Query("DELETE FROM Notification n WHERE n.receiver.memberNo = :memberNo")
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     void deleteAllByReceiverNo(Integer memberNo);
 }
