@@ -48,26 +48,10 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = NoteController.class)
-@AutoConfigureRestDocs
-@AutoConfigureMockMvc
-@ExtendWith({RestDocumentationExtension.class})
-@MockBeans({
-        @MockBean(JwtUtil.class),
-        @MockBean(MongoChatRepository.class),
-        @MockBean(MemberService.class),
-        @MockBean(JpaMetamodelMappingContext.class),
-})
-class NoteControllerDocsTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+class NoteControllerDocsTest extends RestDocsBasic {
 
     @MockBean
     private NoteService noteService;
-
 
     @Test
     @DisplayName("쪽지 - 전송")
@@ -75,9 +59,9 @@ class NoteControllerDocsTest {
     void sendNote() throws Exception {
 
         SendNoteRequest requestDto = new SendNoteRequest(1,"쪽지 내용");
-        String jsonString = objectMapper.writeValueAsString(requestDto);
+        String jsonString = mapper.writeValueAsString(requestDto);
 
-        ResultActions result = this.mockMvc.perform(post("/note/send")
+        ResultActions result = mvc.perform(post("/note/send")
                         .headers(GenerateMockToken.getToken())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -85,7 +69,7 @@ class NoteControllerDocsTest {
                         .content(jsonString));
 
         result.andExpect(status().isOk())
-                .andDo(document("note-send",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -119,12 +103,12 @@ class NoteControllerDocsTest {
 
         given(noteService.readNoteList(any())).willReturn(noteDtoList);
 
-        ResultActions result = this.mockMvc.perform(get("/note/list")
+        ResultActions result = mvc.perform(get("/note/list")
                 .headers(GenerateMockToken.getToken())
                 .accept(MediaType.APPLICATION_JSON));
 
         result.andExpect(status().isOk())
-                .andDo(document("note-list",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -170,12 +154,12 @@ class NoteControllerDocsTest {
 
         given(noteService.readNoteHistoryList(any(),eq(1))).willReturn(historyDtoList);
 
-        ResultActions result = this.mockMvc.perform(get("/note/history/{id}",1)
+        ResultActions result = mvc.perform(get("/note/history/{id}",1)
                 .headers(GenerateMockToken.getToken())
                 .accept(MediaType.APPLICATION_JSON));
 
         result.andExpect(status().isOk())
-                .andDo(document("history-list",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -204,12 +188,12 @@ class NoteControllerDocsTest {
     @DisplayName("쪽지 - 읽음 처리")
     @WithMockCustomAccount
     void updateNote() throws Exception{
-        ResultActions result = this.mockMvc.perform(patch("/note/checked/{id}",1)
+        ResultActions result = mvc.perform(patch("/note/checked/{id}",1)
                 .with(csrf())
                 .headers(GenerateMockToken.getToken()));
 
         result.andExpect(status().isOk())
-                .andDo(document("note-update-read",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -226,12 +210,12 @@ class NoteControllerDocsTest {
     @DisplayName("쪽지 - 대화 내역 삭제")
     @WithMockCustomAccount
     void deleteHistory() throws Exception{
-        ResultActions result = this.mockMvc.perform(delete("/note/history/{id}",1)
+        ResultActions result = mvc.perform(delete("/note/history/{id}",1)
                 .with(csrf())
                 .headers(GenerateMockToken.getToken()));
 
         result.andExpect(status().isOk())
-                .andDo(document("history-deletion",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
