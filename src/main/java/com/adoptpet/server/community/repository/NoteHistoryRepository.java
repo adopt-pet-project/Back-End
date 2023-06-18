@@ -23,11 +23,9 @@ public interface NoteHistoryRepository extends JpaRepository<NoteHistory, Intege
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE NoteHistory nh SET nh.receiverDel = 2, nh.receiverNo = 0 WHERE nh.receiverNo = :memberNo")
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     void deleteHistoryByReceiverNo(@Param("memberNo") Integer memberNo);
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE NoteHistory nh SET nh.senderDel = 2, nh.senderNo = 0 WHERE nh.senderNo = :memberNo")
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     void deleteHistoryBySenderNo(@Param("memberNo") Integer memberNo);
 }
