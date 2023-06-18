@@ -74,7 +74,7 @@ public class MemberService {
         Member findMember = memberRepository.findById(user.getMemberNo())
                 .orElseThrow(IllegalStateException::new);
         commentRepository.deleteComment(findMember.getMemberNo());
-        communityRepository.updateIdByEmail(findMember.getEmail());
+        communityRepository.updateLogicalDelByEmail(findMember.getEmail());
         memberRepository.delete(findMember);
         deleteHistory(findMember.getMemberNo());
     }

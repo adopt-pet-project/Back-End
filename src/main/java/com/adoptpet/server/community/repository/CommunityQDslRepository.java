@@ -165,7 +165,8 @@ public class CommunityQDslRepository {
                 ))
                 .from(community)
                 .leftJoin(member).on(community.regId.eq(member.email))
-                .where(community.blindYn.eq(BlindEnum.NORMAL))
+                .where(community.blindYn.eq(BlindEnum.NORMAL),
+                        community.logicalDel.eq(LogicalDelEnum.NORMAL))
                 .groupBy(community.articleNo,community.title,community.content,
                         member.nickname,community.viewCount,community.regDate,
                         community.thumbnail);

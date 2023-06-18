@@ -18,7 +18,7 @@ public interface CommunityRepository extends JpaRepository<Community,Integer> {
 
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @Query("UPDATE Community c SET c.regId = \'former_member\', c.modId = \'former_member\' WHERE c.regId = :email")
+    @Query("UPDATE Community c SET c.logicalDel = 2 WHERE c.regId = :email")
     @Modifying(clearAutomatically = true)
-    void updateIdByEmail(String email);
+    void updateLogicalDelByEmail(String email);
 }
