@@ -2,6 +2,8 @@ package com.adoptpet.server;
 
 import com.adoptpet.server.adopt.domain.mongo.Chatting;
 import com.adoptpet.server.adopt.mongo.MongoChatRepository;
+import com.adoptpet.server.adopt.repository.ChatRepository;
+import com.adoptpet.server.adopt.repository.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -32,8 +34,6 @@ public class PetHubApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        List<Chatting> list = chatRepository.findAll();
 
-        list.forEach(System.out::println);
     }
 }
