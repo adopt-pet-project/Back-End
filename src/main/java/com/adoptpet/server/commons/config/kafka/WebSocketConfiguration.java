@@ -29,7 +29,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/subscribe"); // /subscribe/{chatNo}로 주제 구독 가능
-        registry.setApplicationDestinationPrefixes("/publish"); // /publish/message로 메시지 전송 컨트롤러 라우팅 가능
+        registry.setApplicationDestinationPrefixes("/publish"); // /pubㄴlish/message로 메시지 전송 컨트롤러 라우팅 가능
     }
 
     // 클라이언트 인바운드 채널을 구성하는 메서드
