@@ -81,7 +81,6 @@ class ImageControllerDocsTest extends RestDocsBasic{
                 .file(typePart)
                 .file(emailPart)
                 .headers(GenerateMockToken.getToken())
-                .with(csrf())
         );
 
         result.andExpect(status().isOk())
@@ -116,7 +115,6 @@ class ImageControllerDocsTest extends RestDocsBasic{
         ResultActions result = mvc.perform(
                 RestDocumentationRequestBuilders.delete(REQUEST_MAPPING + "/{type}/{id}",type,id)
                     .headers(GenerateMockToken.getToken())
-                    .with(csrf())
         );
 
         result.andExpect(status().isOk())

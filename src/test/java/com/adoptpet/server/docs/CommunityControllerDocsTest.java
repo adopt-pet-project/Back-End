@@ -77,7 +77,6 @@ class CommunityControllerDocsTest extends RestDocsBasic{
 
         ResultActions result = mvc.perform(
                 post("/community/article")
-                        .with(csrf())
                         .headers(GenerateMockToken.getToken())
                         .content(mapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -107,15 +106,15 @@ class CommunityControllerDocsTest extends RestDocsBasic{
         ArticleDetailInfoDto articleDetailInfoDto = ArticleDetailInfoDto.builder()
                 .articleNo(1)
                 .mine(true)
-                .title("Sample Article")
+                .title("제목")
                 .memberNo(123)
-                .nickname("john")
+                .nickname("닉네임")
                 .profile("profile.jpg")
                 .view(10)
                 .like(5)
                 .comment(3)
                 .regDate(LocalDateTime.now())
-                .content("This is a sample article.")
+                .content("내용")
                 .images(Collections.singletonList(ImageInfoDto.builder()
                     .imageUrl("image.jpg")
                     .imageNo(51)
@@ -128,7 +127,6 @@ class CommunityControllerDocsTest extends RestDocsBasic{
 
         ResultActions result = mvc.perform(
                 get("/community/article/{id}", articleDetailInfoDto.getArticleNo())
-                                .with(csrf())
                                 .headers(GenerateMockToken.getToken())
                                 .accept(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk());
@@ -141,21 +139,21 @@ class CommunityControllerDocsTest extends RestDocsBasic{
                         headerWithName(HttpHeaders.AUTHORIZATION).description("Access token").optional()
                 ),
                 responseFields(
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("The article number"),
-                        fieldWithPath("mine").type(JsonFieldType.BOOLEAN).description("Indicates if the article belongs to the current user"),
-                        subsectionWithPath("header").description("Article header information"),
-                        subsectionWithPath("context").description("Article context information"),
-                        fieldWithPath("header.title").type(JsonFieldType.STRING).description("Title of the article"),
-                        fieldWithPath("header.authorId").type(JsonFieldType.NUMBER).description("ID of the author"),
-                        fieldWithPath("header.username").type(JsonFieldType.STRING).description("Username of the author"),
-                        fieldWithPath("header.profile").type(JsonFieldType.STRING).description("Profile image URL of the author"),
-                        fieldWithPath("header.view").type(JsonFieldType.NUMBER).description("Number of views"),
-                        fieldWithPath("header.like").type(JsonFieldType.NUMBER).description("Number of likes"),
-                        fieldWithPath("header.comment").type(JsonFieldType.NUMBER).description("Number of comments"),
-                        fieldWithPath("header.publishedAt").type(JsonFieldType.STRING).description("Date and time of publication"),
-                        fieldWithPath("context.context").type(JsonFieldType.STRING).description("Content of the article"),
-                        fieldWithPath("context.imageList").type(JsonFieldType.ARRAY).description("List of images in the article"),
-                        fieldWithPath("context.imageList[].imageUrl").type(JsonFieldType.STRING).description("URL of the image")
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("게시글 고유번호"),
+                        fieldWithPath("mine").type(JsonFieldType.BOOLEAN).description("요청 회원 검증 속성"),
+                        fieldWithPath("header").type(OBJECT).description("정보 파트"),
+                        fieldWithPath("header.title").type(JsonFieldType.STRING).description("제목"),
+                        fieldWithPath("header.authorId").type(JsonFieldType.NUMBER).description("작성자 고유번호"),
+                        fieldWithPath("header.username").type(JsonFieldType.STRING).description("작성자 닉네임"),
+                        fieldWithPath("header.profile").type(JsonFieldType.STRING).description("작성자 프로필"),
+                        fieldWithPath("header.view").type(JsonFieldType.NUMBER).description("조회수"),
+                        fieldWithPath("header.like").type(JsonFieldType.NUMBER).description("좋아요수"),
+                        fieldWithPath("header.comment").type(JsonFieldType.NUMBER).description("댓글수"),
+                        fieldWithPath("header.publishedAt").type(JsonFieldType.STRING).description("작성일"),
+                        fieldWithPath("context").type(OBJECT).description("내용 파트"),
+                        fieldWithPath("context.context").type(JsonFieldType.STRING).description("내용"),
+                        fieldWithPath("context.imageList[].imageNo").type(NUMBER).description("이미지 고유번호"),
+                        fieldWithPath("context.imageList[].imageUrl").type(JsonFieldType.STRING).description("이미지 주소")
                 )
         ));
     }
@@ -180,7 +178,6 @@ class CommunityControllerDocsTest extends RestDocsBasic{
 
         ResultActions result = mvc.perform(patch("/community/article/{id}", 1)
                         .headers(GenerateMockToken.getToken())
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonString));
@@ -214,7 +211,6 @@ class CommunityControllerDocsTest extends RestDocsBasic{
 
         ResultActions result = mvc.perform(delete("/community/article/{id}", 1)
                 .headers(GenerateMockToken.getToken())
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
 
@@ -329,7 +325,6 @@ class CommunityControllerDocsTest extends RestDocsBasic{
 
         ResultActions result = mvc.perform(post("/community/comment")
                 .headers(GenerateMockToken.getToken())
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(requestJson));
@@ -362,7 +357,6 @@ class CommunityControllerDocsTest extends RestDocsBasic{
 
         ResultActions result = mvc.perform(patch("/community/comment")
                 .headers(GenerateMockToken.getToken())
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(jsonString));
@@ -389,7 +383,6 @@ class CommunityControllerDocsTest extends RestDocsBasic{
     void commentDeletion() throws Exception {
         ResultActions result = mvc.perform(delete("/community/comment/{id}", 1)
                 .headers(GenerateMockToken.getToken())
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
 
@@ -516,7 +509,6 @@ class CommunityControllerDocsTest extends RestDocsBasic{
 
         ResultActions result = mvc.perform(post("/community/heart")
                 .headers(GenerateMockToken.getToken())
-                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonString)
@@ -554,7 +546,6 @@ class CommunityControllerDocsTest extends RestDocsBasic{
 
         ResultActions result = mvc.perform(delete("/community/heart/{target}/{id}","article",1)
                 .headers(GenerateMockToken.getToken())
-                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
         );
@@ -587,7 +578,6 @@ class CommunityControllerDocsTest extends RestDocsBasic{
 
         ResultActions result = mvc.perform(post("/community/bookmark/{id}",1)
                 .headers(GenerateMockToken.getToken())
-                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
         );
@@ -613,7 +603,6 @@ class CommunityControllerDocsTest extends RestDocsBasic{
 
         ResultActions result = mvc.perform(delete("/community/bookmark/{id}",1)
                 .headers(GenerateMockToken.getToken())
-                .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
         );
