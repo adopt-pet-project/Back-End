@@ -14,7 +14,7 @@ operation::chat-controller-docs-test/create-chat-room[snippets="http-request,htt
 
 
 [[Chatting-알람-전송]]
-== 알람 전송
+== 채팅 알람 전송
 operation::chat-controller-docs-test/send-notification[snippets="http-request,http-response"]
 
 
