@@ -33,3 +33,4 @@ hooks:
       timeout: 60
       # CodeDeploy 중 실행되는 스크립트 또는 명령을 실행할 사용자를 지정
       runas: ec2-user
+      
