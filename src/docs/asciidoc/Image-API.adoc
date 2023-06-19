@@ -1,0 +1,18 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Community-API]]
+= Community API
+
+[[이미지-업로드]]
+== 이미지 업로드
+operation::image-controller-docs-test/upload-image[snippets="http-request,http-response,response-fields"]
+
+[[이미지-제거]]
+== 이미지 제거
+operation::image-controller-docs-test/delete-image[snippets="http-request,http-response,response-fields"]
+

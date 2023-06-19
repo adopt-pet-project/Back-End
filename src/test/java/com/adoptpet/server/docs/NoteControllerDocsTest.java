@@ -63,7 +63,6 @@ class NoteControllerDocsTest extends RestDocsBasic {
 
         ResultActions result = mvc.perform(post("/note/send")
                         .headers(GenerateMockToken.getToken())
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(jsonString));
@@ -189,7 +188,6 @@ class NoteControllerDocsTest extends RestDocsBasic {
     @WithMockCustomAccount
     void updateNote() throws Exception{
         ResultActions result = mvc.perform(patch("/note/checked/{id}",1)
-                .with(csrf())
                 .headers(GenerateMockToken.getToken()));
 
         result.andExpect(status().isOk())
@@ -211,7 +209,6 @@ class NoteControllerDocsTest extends RestDocsBasic {
     @WithMockCustomAccount
     void deleteHistory() throws Exception{
         ResultActions result = mvc.perform(delete("/note/history/{id}",1)
-                .with(csrf())
                 .headers(GenerateMockToken.getToken()));
 
         result.andExpect(status().isOk())
