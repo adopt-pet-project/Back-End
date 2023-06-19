@@ -1,4 +1,4 @@
-# 체크메이트 프로젝트
+# Pet - Hub
 
 <img width="600" alt="check-mate" src="https://github.com/adopt-pet-project/Back-End/assets/91787050/28bdcadc-d8da-40cc-a858-2e447636037a">
 
