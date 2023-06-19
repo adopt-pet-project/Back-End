@@ -1,0 +1,36 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Adopt-API]]
+= Adopt API
+
+[[Adopt-분양글-등록]]
+== 분양글 등록
+operation::adopt-controller-docs-test/create-adopt[snippets="http-request,http-response"]
+
+
+[[Adopt-분양글-수정]]
+== 분양글 수정
+operation::adopt-controller-docs-test/modify-adopt[snippets="http-request,http-response,response-fields"]
+
+
+[[Adopt-분양글-삭제]]
+== 분양글 삭제
+operation::adopt-controller-docs-test/delete-adopt[snippets="http-request,http-response,response-fields"]
+
+
+[[Adopt-관심-분양글-등록]]
+== 관심 분양글 등록
+operation::adopt-controller-docs-test/create-adopt-bookmark[snippets="http-request,http-response,response-fields"]
+
+[[Adopt-분양글-리스트-조회]]
+== 분양글 리스트 조회
+operation::adopt-controller-docs-test/get-adopt-list[snippets="http-request,http-response"]
+
+[[Adopt-분양글-상세-조회]]
+== 분양글 상세 조회
+operation::adopt-controller-docs-test/get-adopt-detail[snippets="http-request,http-response"]

@@ -44,7 +44,6 @@ public class AuthControllerDocsTest extends RestDocsBasic{
 
         mvc.perform(post("/token/logout")
                         .headers(GenerateMockToken.getToken())
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
@@ -67,7 +66,6 @@ public class AuthControllerDocsTest extends RestDocsBasic{
 
         mvc.perform(post("/token/refresh")
                         .headers(GenerateMockToken.getToken())
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(

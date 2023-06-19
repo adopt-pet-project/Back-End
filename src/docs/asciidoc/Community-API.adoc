@@ -1,0 +1,63 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Community-API]]
+= Community API
+
+[[게시글-상세-조회]]
+== 게시글 상세 조회
+operation::community-controller-docs-test/read-article[snippets="http-request,http-response,response-fields"]
+
+[[게시글-목록-조회]]
+== 게시글 목록 조회
+operation::community-controller-docs-test/read-article-list[snippets="http-request,http-response,response-fields"]
+
+[[게시글-등록]]
+== 게시글 등록
+operation::community-controller-docs-test/article-registration[snippets="http-request,http-response,response-fields"]
+
+[[게시글-수정]]
+== 게시글 수정
+operation::community-controller-docs-test/article-modification[snippets="http-request,http-response,response-fields"]
+
+[[게시글-삭제]]
+== 게시글 삭제
+operation::community-controller-docs-test/article-deletion[snippets="http-request,http-response,response-fields"]
+
+[[북마크-추가]]
+== 북마크 추가
+operation::community-controller-docs-test/article-bookmark-addition[snippets="http-request,http-response,response-fields"]
+
+[[북마크-제거]]
+== 북마크 제거
+operation::community-controller-docs-test/article-bookmark-deletion[snippets="http-request,http-response,response-fields"]
+
+[[댓글-목록-조회]]
+== 댓글 목록 조회
+operation::community-controller-docs-test/read-comment-list[snippets="http-request,http-response,response-fields"]
+
+[[댓글-등록]]
+== 댓글 등록
+operation::community-controller-docs-test/comment-registration[snippets="http-request,http-response,response-fields"]
+
+[[댓글-수정]]
+== 댓글 수정
+operation::community-controller-docs-test/comment-modification[snippets="http-request,http-response,response-fields"]
+
+[[댓글-삭제]]
+== 댓글 삭제
+operation::community-controller-docs-test/comment-deletion[snippets="http-request,http-response,response-fields"]
+
+[[좋아요-추가]]
+== 좋아요 추가
+operation::community-controller-docs-test/heart-registration[snippets="http-request,http-response,response-fields"]
+
+[[좋아요-제거]]
+== 좋아요 제거
+operation::community-controller-docs-test/heart-deletion[snippets="http-request,http-response,response-fields"]
+
+

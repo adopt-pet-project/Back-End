@@ -497,7 +497,8 @@ Host: localhost:8080</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
-X-Accel-Buffering: no</code></pre>
+X-Accel-Buffering: no
+Connection: keep-alive</code></pre>
 </div>
 </div>
 </div>
@@ -530,7 +531,7 @@ Content-Length: 201
   "type" : "comment",
   "content" : "알림 내용",
   "url" : "/board/1",
-  "publishedAt" : [ 2023, 6, 18, 13, 37, 3 ],
+  "publishedAt" : [ 2023, 6, 19, 15, 49, 2 ],
   "name" : "닉네임",
   "checked" : false,
   "del" : false
@@ -606,7 +607,7 @@ Content-Length: 201
 <h3 id="Notification-삭제_http_request"><a class="link" href="#Notification-삭제_http_request">HTTP request</a></h3>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /notification?_csrf=ed63f2e1-33b3-4101-a5a8-c0a5caea38ae HTTP/1.1
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">POST /notification HTTP/1.1
 Content-Type: application/json;charset=UTF-8
 Authorization: "access token"
 Accept: application/json
@@ -716,7 +717,7 @@ Content-Length: 20
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2023-06-18 13:26:00 +0900
+Last updated 2023-06-19 05:18:08 +0900
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
