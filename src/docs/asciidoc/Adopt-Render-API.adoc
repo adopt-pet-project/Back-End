@@ -1,0 +1,13 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Adopt-Render-API]]
+= Adopt Render API
+
+[[Adopt-Render-리스트-조회]]
+== 분양글 랜더링 리스트 조회
+operation::adopt-render-controller-docs-test/get-render-adopt-list[snippets="http-request,http-response"]

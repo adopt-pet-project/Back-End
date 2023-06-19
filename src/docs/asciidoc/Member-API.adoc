@@ -1,0 +1,32 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Member-API]]
+= Member API
+
+[[Member-회원가입]]
+== 회원가입
+operation::member-controller-docs-test/register[snippets="http-request,http-response"]
+
+
+[[Member-회원정보-조회]]
+== 회원정보 조회
+operation::member-controller-docs-test/user-info[snippets="http-request,http-response"]
+
+
+[[Member-회원정보-수정]]
+== 회원정보 수정
+operation::member-controller-docs-test/modify-member[snippets="http-request,http-response,response-fields"]
+
+
+[[Member-닉네임-중복확인]]
+== 닉네임 중복확인
+operation::member-controller-docs-test/validate-nickname[snippets="http-request,http-response,response-fields"]
+
+[[Member-회원탈퇴]]
+== 회원탈퇴
+operation::member-controller-docs-test/remove-user[snippets="http-request,http-response,response-fields"]

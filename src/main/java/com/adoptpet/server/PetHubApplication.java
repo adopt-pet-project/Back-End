@@ -20,7 +20,7 @@ import java.util.List;
 @EnableScheduling // SpringScheduling 사용 설정
 @RequiredArgsConstructor
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-public class PetHubApplication implements CommandLineRunner {
+public class PetHubApplication {
 
     private final MongoChatRepository chatRepository;
 
@@ -32,8 +32,5 @@ public class PetHubApplication implements CommandLineRunner {
         SpringApplication.run(PetHubApplication.class, args);
     }
 
-    @Override
-    public void run(String... args) throws Exception {
 
-    }
 }

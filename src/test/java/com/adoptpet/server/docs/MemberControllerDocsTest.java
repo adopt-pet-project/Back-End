@@ -53,12 +53,13 @@ public class MemberControllerDocsTest extends RestDocsBasic{
                 .email("dev@Dev.com")
                 .nickname("개발자2")
                 .address("서울 마포구")
+                .imgNo(1)
+                .imgUrl("/profile")
                 .build();
 
         String requestJson = createStringJson(registerDto);
 
         mvc.perform(post("/member")
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
@@ -88,7 +89,6 @@ public class MemberControllerDocsTest extends RestDocsBasic{
 
         mvc.perform(get("/member/{id}", 1)
                         .headers(GenerateMockToken.getToken())
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
@@ -123,7 +123,6 @@ public class MemberControllerDocsTest extends RestDocsBasic{
 
         mvc.perform(patch("/member")
                         .headers(GenerateMockToken.getToken())
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
@@ -153,12 +152,10 @@ public class MemberControllerDocsTest extends RestDocsBasic{
 
         mvc.perform(get("/member/validate")
                         .param("nickname", "코린이")
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
                         requestParameters(
-                                parameterWithName("_csrf").ignored(),
                                 parameterWithName("nickname").description("nickname")
                         ),
                         responseFields(
@@ -175,7 +172,6 @@ public class MemberControllerDocsTest extends RestDocsBasic{
 
         mvc.perform(delete("/member")
                         .headers(GenerateMockToken.getToken())
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
