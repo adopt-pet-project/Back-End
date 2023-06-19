@@ -1,0 +1,32 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Note-API]]
+= Note API
+
+[[쪽지-목록-조회]]
+== 쪽지 목록 조회
+operation::note-controller-docs-test/read-note-list[snippets="http-request,http-response,response-fields"]
+
+
+[[쪽지-내역-조회]]
+== 쪽지 내역 조회
+operation::note-controller-docs-test/read-note-history-list[snippets="http-request,http-response,response-fields"]
+
+
+[[쪽지-전송]]
+== 쪽지 전송
+operation::note-controller-docs-test/send-note[snippets="http-request,http-response,response-fields"]
+
+
+[[쪽지-읽음-처리]]
+== 쪽지 읽음 처리
+operation::note-controller-docs-test/update-note[snippets="http-request,http-response,response-fields"]
+
+[[쪽지-내역-삭제]]
+== 쪽지 내역 삭제
+operation::note-controller-docs-test/delete-history[snippets="http-request,http-response,response-fields"]

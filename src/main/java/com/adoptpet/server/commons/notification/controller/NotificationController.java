@@ -32,6 +32,7 @@ public class NotificationController {
             HttpServletResponse response) {
 
         response.addHeader("X-Accel-Buffering","no");
+        response.addHeader("Connection","keep-alive");
 
         return ResponseEntity.ok(notificationService.subscribe(SecurityUtils.getUser(), lastEventId));
     }

@@ -12,4 +12,3 @@ include::overview.adoc[]
 [[API-LIST]]
 == APIs
 link:Notification-API.html[Notification-Api, widow=blank]
-
