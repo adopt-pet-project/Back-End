@@ -1,65 +1,65 @@
-# Pet - Hub
+# Pet-Hub Project
 
-<img width="600" alt="check-mate" src="https://github.com/adopt-pet-project/Back-End/assets/91787050/28bdcadc-d8da-40cc-a858-2e447636037a">
+<img width="600" alt="Pet-Hub" src="https://github.com/adopt-pet-project/Back-End/assets/91787050/28bdcadc-d8da-40cc-a858-2e447636037a">
 
-## 🙌 Intro
+## 👆 Introduce
 
-모두가 부지런하고 계획적인 삶을 꿈꾸지만 꾸준히 노력하고 목적을 달성하기는 쉽지 않습니다.   
-체크메이트는 팀원들이 서로에게 긍정적인 영향을 주며 목표 달성을 위해 함께 나아갈 수 있도록 돕는 서비스입니다.
+새로운 가족이 생긴다는 일은 매우 설레고 가슴 벅찬 일입니다.<br>
+우리의 새로운 가족이 될 소중한 반려동물을 분양받는 일은 인생에서 매우 중요하고 소중한 순간입니다.<br>
+펫샵이나 브리더를 통해 분양받았던 것과 다르게 기존에 시장에 존재하지 않던 혁신적인 가치를 제공하려는 노력에서 Pet-Hub는 시작되었습니다.<br>
+우리의 소중한 가족이며 동반자가 될 반려동물, 이제는 샵과 브리더에만 의존하지 않고 개인과 개인간의 분양으로 새로운 가치를 만들어갑니다.<br>
+
 
 ### 팀 구성
 
-백엔드 1, 안드로이드 1, 기획 1로 구성된 3인 프로젝트
+백엔드 개발자 2명, 프론트엔드 개발자 2명이 진행한 프로젝트 입니다.
 
 ### 주요 기능
-- 일정 기간동안 이루고자 하는 목표를 생성하고 정해진 날마다 목표 수행을 업로드합니다. 목표에는 나뿐만 아니라 다른 유저들을 초대해 함께 진행 할 수 있습니다.
-- 목표 생성 시, 시작일과 종료일 뿐만 아니라 인증 요일, 인증 시간, 인증 방식 등을 설정할 수 있어요.
-- 목표에 참여했지만, 성실하게 목표를 수행하지 않는 팀원들은 자동으로 퇴출됩니다.
-- 목표 인증 시, 글과 사진을 업로드할 수 있습니다. 팀원이 목표를 인증하면 좋아요 버튼을 눌러줄 수 있어요.
-- 팀원이 목표를 인증한 경우, 목표 초대를 받은 경우 등 푸쉬 알림을 통해 열심히 목표를 완수할 수 있도록 돕습니다.
+- 작성된 분양 게시글에 실시간 채팅을 이용한 문의가 가능하고, 채팅을 상대가 읽었는지 여부를 확인할 수 있는 안읽음 표시 기능이 제공됩니다.
+- 게시글에 댓글이 달리거나, 채팅방에 새로운 채팅이 있을 경우 SSE를 이용한 실시간 알람이 발송됩니다.
+- 게시글과, 분양글을 작성하고 사진을 업로드 할 수 있습니다. 게시글과 분양글에 좋아요를 눌러줄 수 있습니다.
+- Google, Naver, Kakao 3가지 플랫폼으로 간편 로그인을 지원하고 있습니다.
 
 
-## 🛠 BE Skills
+## 🚀 Back-End Skills
 
-<img width="600" alt="check-mate" src="https://user-images.githubusercontent.com/78997487/210977228-bf71daf6-e7b9-4047-9a99-e7bf4d88acae.png">
+<img width="600" alt="Pet-Hub" src="https://github.com/adopt-pet-project/Back-End/assets/91787050/daa077ad-9561-490f-b854-3fccd194242d">
 
-- JDK 8 → JDK 17
-- Spring Boot 2.7.5
-- MariaDB
+- Open JDK 11
+- Spring Boot 2.7.11
+- MySQL
+- MongoDB
 - Spring Data JPA & QueryDsl
+- Spring Security & OAuth 2
 - Spring Data Redis
 - Spring Rest Docs
-- AWS 인프라 (EC2, RDS, S3, CloudWatch)
-- Firebase
+- AWS Infra (EC2, S3, IAM, CodeDeploy, Route 53)
+- Docker(Docker Compose)
+- Kafka & Stomp
+- NginX
+- Prometheus & Grafana
+- Github Actions
+- Web Socket
 
-## 📚 Achieved
+## ✍ Achieved
 
-### 트러블 슈팅 및 학습 기록
--  [Spring Event를 적용해 외부 서비스와 핵심 비즈니스 로직 간 강결합 분리](https://yeoji21.github.io/posts/spring-event/) 
--  [디자인 패턴과 스프링 DI를 적용해 OCP를 만족하는 코드로 리팩토링](https://yeoji21.github.io/posts/notification-factory/) 
--  [요일 계산 로직을 문자열 비교에서 비트 연산으로 개선](https://yeoji21.github.io/posts/week-days-refactoring/) 
--  [Custom Exception 명확한 기준을 두고 사용하기](https://yeoji21.github.io/posts/custom-exception/)
--  [JWT 비밀키를 외부로 분리하기 위한 문제 해결 과정](https://yeoji21.github.io/posts/jwt-refactoring/)
--  [AWS CloudWatch를 통한 로그 수집](https://yeoji21.github.io/posts/cloudwatch-log/) 
--  [예외 상황에 대한 힌트를 주는 Request 로깅하기](https://yeoji21.github.io/posts/request-logging/)
--  [컨트롤러에서 습관성 ResponseEntity 남발](https://yeoji21.github.io/posts/controller-return/)
+### 트러블슈팅 & 요구사항 해결
+-  [Blue/Green 배포시 런타임 에러로 인한 서버다운 문제해결](https://velog.io/@ch4570/Github-Actions-Nginx%EB%A5%BC-%EC%9D%B4%EC%9A%A9%ED%95%9C-CICD-%EB%AC%B4%EC%A4%91%EB%8B%A8-%EB%B0%B0%ED%8F%AC-%EC%9E%90%EB%8F%99%ED%99%94-%EA%B5%AC%EC%B6%95-%EC%A7%84%EC%A7%9C-%EB%AC%B4%EC%A4%91%EB%8B%A8-%EB%B0%B0%ED%8F%AC%EA%B0%80-%EB%A7%9E%EC%9D%84%EA%B9%8Cfeat.-%EB%9F%B0%ED%83%80%EC%9E%84-%EC%97%90%EB%9F%AC) 
+-  [MySQL 데이터 분산 처리를 위한 Master-Slave 이중화 구성](https://velog.io/@ch4570/MySQL-%EB%8D%B0%EC%9D%B4%ED%84%B0-%EB%B6%84%EC%82%B0-%EC%B2%98%EB%A6%AC%EB%A5%BC-%EC%9C%84%ED%95%9C-Master-Slave-%EC%9D%B4%EC%A4%91%ED%99%94%EB%A5%BC-%EA%B5%AC%EC%84%B1%ED%95%98%EB%8B%A4MySQL-Replication-%EC%84%A4%EC%A0%95%EA%B3%BC-%EA%B5%AC%EC%84%B1) 
+-  [AOP를 활용한 로깅 기능 분리하기](https://velog.io/@ch4570/Spring-AOP%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%EB%A1%9C%EA%B9%85-%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84%ED%95%98%EA%B8%B0) 
+-  [채팅 안읽음 기능 구현을 위한 채팅방 접속자 관리하기](https://velog.io/@ch4570/Pet-Hub-11-%EC%B1%84%ED%8C%85-%EA%B8%B0%EB%8A%A5%EC%97%90%EC%84%9C-%EC%B1%84%ED%8C%85-%EC%9D%BD%EC%9D%8C-%EC%97%AC%EB%B6%80-%ED%91%9C%EC%8B%9C%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84)
+-  [채팅방 퇴장시 Authorization Header를 포함하지 못하는 문제 해결](https://velog.io/@ch4570/Pet-Hub-%EC%B1%84%ED%8C%85%EB%B0%A9-%ED%87%B4%EC%9E%A5%EC%8B%9C-Disconnect-Header%EC%97%90-Authorization-Header%EB%A5%BC-%ED%8F%AC%ED%95%A8%ED%95%98%EC%A7%80-%EB%AA%BB%ED%95%98%EB%8A%94-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0)
+-  [Spring Security 환경에서 Spring Rest Docs Custom 인증객체 사용 문제 해결](https://velog.io/@ch4570/Pet-Hub-Spring-RestDocs-%EB%AC%B8%EC%84%9C%ED%99%94%EB%A5%BC-%EC%9C%84%ED%95%9C-Custom-Security-%EC%9D%B8%EC%A6%9D%EA%B0%9D%EC%B2%B4-%EC%A3%BC%EC%9E%85%ED%95%98%EA%B8%B0)
 
-### 테스트 코드
-
-<img width="500" alt="check-mate" src="https://user-images.githubusercontent.com/78997487/213957776-9c43db20-cbca-4e41-a143-64a04c07dfd9.png">
-
-유닛 테스트를 통해 테스트 커버리지 70% 이상 유지
 
 ### ERD
 
-<img width="800" alt="check-mate" src="https://user-images.githubusercontent.com/78997487/211186163-8efc0050-6006-42fd-b7a0-a8f6a35f6820.png">
+<img width="800" alt="Pet-Hub" src="https://github.com/adopt-pet-project/Back-End/assets/91787050/81e1aa75-eb02-40c2-bfcf-a3cc1626c644">
 
-https://www.erdcloud.com/d/DoHeXawHAHQA6GJxy
+### API 명세 문서화
 
-### API 명세 및 에러 코드 문서화
+- [Spring Rest Docs로 정리한 API 명세 문서화](https://adopt-pet-project.github.io/Back-End/docs/)
 
-<img width="700" alt="check-mate" src="https://user-images.githubusercontent.com/78997487/211143903-b09a6c7c-d91b-4cc2-97bc-aa5725f2ebdf.png">
-
-<img width="700" alt="check-mate" src="https://user-images.githubusercontent.com/78997487/211143907-e4fa600e-ddad-46ff-b776-6dfddfab4884.png">
+<img width="800" alt="스크린샷 2023-06-19 오후 5 30 32" src="https://github.com/adopt-pet-project/Back-End/assets/91787050/1e12a97e-2784-46e6-a145-de6d157ff8a2">
 
 
