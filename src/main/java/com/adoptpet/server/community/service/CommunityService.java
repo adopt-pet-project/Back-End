@@ -188,13 +188,13 @@ public class CommunityService {
 
 
     /**
-    * 게시글 유무 검증
+    * @title 게시글 유무 검증
     **/
     @Transactional(readOnly = true)
     public Community findByArticleNo(Integer articleNo){
         // 게시글 번호로 게시글을 조회하고, 조회되지 않을 경우 예외를 발생시킨다.
         Optional<Community> findCommunity = communityRepository.findById(articleNo);
-        if(!findCommunity.isPresent()){
+        if(findCommunity.isEmpty()){
             throw new CustomException(ARTICLE_NOT_FOUND);
         }
 
@@ -210,13 +210,13 @@ public class CommunityService {
     @Transactional(readOnly = true)
     public void checkCategoryNo(Integer categoryNo) {
         Optional<Category> findCategory = categoryRepository.findById(categoryNo);
-        if(!findCategory.isPresent()){
+        if(findCategory.isEmpty()){
             throw new CustomException(CATEGORY_NOT_FOUND);
         }
     }
 
     /**
-    * 게시글 수정
+    * @title 게시글 수정
     **/
     @Transactional
     public void updateArticle(ArticleDto articleDto, Integer articleNo){
@@ -238,19 +238,13 @@ public class CommunityService {
     }
 
 
-    /**
-    * 게시글 상세 내용 조회
-    **/
+    //== 게시글 상세 내용 조회 ==//
     @Transactional(readOnly = true)
-    public ArticleDetailInfoDto readArticle(Integer articleNo, String accessToken, HttpServletRequest request, HttpServletResponse response){
-        // 게시글 고유키로 게시글 검증
-//        findByArticleNo(articleNo);
-        Optional<Community> findCommunity = communityRepository.findById(articleNo);
-        if(findCommunity.isEmpty()){
-            throw new CustomException(ARTICLE_NOT_FOUND);
-        }
+    public ArticleDetailInfoDto readArticle(Integer articleNo, String accessToken){
+
+        Community article = findByArticleNo(articleNo);
         // 게시글 정보 조회
-        ArticleDetailInfoDto articleDetail = communityQDslRepository.findArticleDetail(articleNo);
+        ArticleDetailInfoDto articleDetail = communityQDslRepository.findArticleDetail(article.getArticleNo());
         // 조회 유저 검증 기본 값 지정
         articleDetail.addIsMine(false);
         // 엑세스 토큰 있을 시 조회한 유저가 게시글의 주인인지 확인
@@ -263,20 +257,18 @@ public class CommunityService {
         List<ImageInfoDto> images = communityQDslRepository.findImageUrlByArticleNo(articleNo);
         // 이미지 URL 리스트 추가
         articleDetail.addImages(images);
-//         게시글 조회수 증가
-//        increaseCount(articleNo, request, response);
+
         // 조회된 게시글 정보 반환
         return articleDetail;
     }
 
 
     /**
-    * 게시글 등록 메서드
-     *  @param articleDto  : 게시글 생성 정보
-     *  @return response     : 생성 완료된 게시글 정보
-    **/
+     * @param articleDto : 게시글 생성 정보
+     * @title 게시글 등록 메서드
+     **/
     @Transactional
-    public ArticleDto insertArticle(ArticleDto articleDto){
+    public void insertArticle(ArticleDto articleDto){
         // CreateArticleMapper 인스턴스 생성
         final CreateArticleMapper createArticleMapper = CreateArticleMapper.INSTANCE;
 
@@ -299,7 +291,6 @@ public class CommunityService {
         // 반환값에 null 대신 image 기입
         response.addImgNo(images);
 
-        return response;
     }
 
 
@@ -317,10 +308,10 @@ public class CommunityService {
     
     
     /**
-     * 게시글 논리 삭제
+     * @title 게시글 논리 삭제
      */
     @Transactional
-    public Community softDeleteArticle(Integer articleNo) {
+    public void softDeleteArticle(Integer articleNo) {
 
         // 게시글 번호를 사용하여 해당 게시글을 조회한다.
         Community community = findByArticleNo(articleNo);
@@ -332,9 +323,8 @@ public class CommunityService {
         // 게시글 이미지의 게시글 번호 컬럼을 비운다.(batch를 통해 자정에 삭제)
         communityImageRepository.updateAllByArticleNo(articleNo);
         // 변경된 게시글을 DB에 저장하여 업데이트한다.
-        Community deletedCommunity = communityRepository.save(community);
+        communityRepository.save(community);
 
-        return deletedCommunity;
     }
 
 
@@ -383,14 +373,11 @@ public class CommunityService {
         Optional<Cookie> cookie = CookieUtil.getCookie(request, name);
         // 쿠기가 있을 경우 oldCookie로 만든다.
         if(cookie.isPresent()){
-            log.info("######## cookie : {} ", cookie.get().getDomain());
             oldCookie = cookie.get();
         }
 
         // name에 해당하는 쿠키가 null이 아닐경우 실행한다.
         if (Objects.nonNull(oldCookie)) {
-            log.info("######### old Cookie Name  : {} ,",oldCookie.getName());
-            log.info("######### old Cookie Value : {} ,",oldCookie.getValue());
             // 현재 게시글 번호를 값으로 포함한 쿠키가 oldCookie에 없을 경우 실행한다.
             if (!oldCookie.getValue().contains(value)) {
                 // 조회수를 1 증가시킨다.
@@ -399,7 +386,6 @@ public class CommunityService {
                 CookieUtil.addCookie(response,name,oldCookie.getValue() + "_" + value, maxAge);
             }
         } else {
-            log.info("######## Cookie가 null임");
             // oldCookie의 값이 없다면 현재 조회한 게시글이 하나도 없는 상태이므로 조회 수 카운트를 올려준다.
             communityRepository.increaseCount(articleNo);
             // 쿠키를 새로 생성하면서 현재 게시글의 번호를 값으로 넣어준다.

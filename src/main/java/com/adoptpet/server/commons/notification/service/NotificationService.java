@@ -71,7 +71,6 @@ public class NotificationService {
     }
 
 
-
     //== 알림 전송 ==//
     @Transactional
     public void send(Member sender, Member receiver, NotifiTypeEnum type, String resource , String content) {

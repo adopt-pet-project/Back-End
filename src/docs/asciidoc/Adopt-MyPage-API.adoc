@@ -1,0 +1,13 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Adopt-MyPage-API]]
+= Adopt MyPage API
+
+[[Adopt-MyPage-리스트-조회]]
+== 나의 분양글 조회
+operation::my-adopt-controller-docs-test/my-adopt[snippets="http-request,http-response"]

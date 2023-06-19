@@ -1,6 +1,7 @@
 package com.adoptpet.server.community.repository;
 
 import com.adoptpet.server.commons.image.dto.ImageInfoDto;
+import com.adoptpet.server.community.domain.BlindEnum;
 import com.adoptpet.server.community.domain.Community;
 import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.community.dto.*;
@@ -116,7 +117,7 @@ public class CommunityQDslRepository {
         }
 
         return findArticleListQuery()
-                .where(searchCondition,community.logicalDel.eq(LogicalDelEnum.NORMAL))
+                .where(searchCondition)
                 .orderBy(order.equals("like") ? likeAlias.desc() : community.articleNo.desc())
                 .offset(offset).limit(limit)
                 .fetch();
@@ -164,6 +165,8 @@ public class CommunityQDslRepository {
                 ))
                 .from(community)
                 .leftJoin(member).on(community.regId.eq(member.email))
+                .where(community.blindYn.eq(BlindEnum.NORMAL),
+                        community.logicalDel.eq(LogicalDelEnum.NORMAL))
                 .groupBy(community.articleNo,community.title,community.content,
                         member.nickname,community.viewCount,community.regDate,
                         community.thumbnail);

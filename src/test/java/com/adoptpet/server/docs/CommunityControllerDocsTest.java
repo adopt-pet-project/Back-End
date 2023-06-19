@@ -50,21 +50,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = CommunityController.class)
-@AutoConfigureRestDocs
-@AutoConfigureMockMvc
-@ExtendWith({RestDocumentationExtension.class})
-@MockBeans({
-        @MockBean(JwtUtil.class),
-        @MockBean(MongoChatRepository.class),
-        @MockBean(MemberService.class),
-        @MockBean(JpaMetamodelMappingContext.class),
-})
-class CommunityControllerDocsTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper objectMapper;
+class CommunityControllerDocsTest extends RestDocsBasic{
 
     @MockBean
     private CommunityService communityService;
@@ -89,17 +75,17 @@ class CommunityControllerDocsTest {
                 .thumbnail("testThumb@url.com")
                 .build();
 
-        ResultActions result = this.mockMvc.perform(
+        ResultActions result = mvc.perform(
                 post("/community/article")
                         .with(csrf())
                         .headers(GenerateMockToken.getToken())
-                        .content(objectMapper.writeValueAsString(request))
+                        .content(mapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
         );
 
         result.andExpect(status().isOk())
-                .andDo(document("article-register",
+                .andDo(restDocs.document(
                         requestFields(
                                 fieldWithPath("categoryId").type(NUMBER).description("카테고리 번호"),
                                 fieldWithPath("title").type(STRING).description("게시글 제목"),
@@ -137,17 +123,17 @@ class CommunityControllerDocsTest {
                 .build();
 
 
-        given(communityService.readArticle(eq(1), anyString(), any(), any()))
+        given(communityService.readArticle(eq(1), anyString()))
                 .willReturn(articleDetailInfoDto);
 
-        ResultActions result = this.mockMvc.perform(
+        ResultActions result = mvc.perform(
                 get("/community/article/{id}", articleDetailInfoDto.getArticleNo())
                                 .with(csrf())
                                 .headers(GenerateMockToken.getToken())
                                 .accept(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk());
 
-        result.andDo(document("article-read",
+        result.andDo(restDocs.document(
                 pathParameters(
                         parameterWithName("id").description("게시글 고유번호")
                 ),
@@ -190,9 +176,9 @@ class CommunityControllerDocsTest {
                 .image(imageListDto)
                 .build();
 
-        String jsonString = objectMapper.writeValueAsString(request);
+        String jsonString = mapper.writeValueAsString(request);
 
-        ResultActions result = this.mockMvc.perform(patch("/community/article/{id}", 1)
+        ResultActions result = mvc.perform(patch("/community/article/{id}", 1)
                         .headers(GenerateMockToken.getToken())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -200,7 +186,7 @@ class CommunityControllerDocsTest {
                         .content(jsonString));
 
         result.andExpect(status().isOk())
-                .andDo(document("article-modification",
+                .andDo(restDocs.document(
                 requestHeaders(
                         headerWithName(AUTHORIZATION).description("Access Token")
                 ),
@@ -226,7 +212,7 @@ class CommunityControllerDocsTest {
     @WithMockCustomAccount
     void articleDeletion() throws Exception {
 
-        ResultActions result = this.mockMvc.perform(delete("/community/article/{id}", 1)
+        ResultActions result = mvc.perform(delete("/community/article/{id}", 1)
                 .headers(GenerateMockToken.getToken())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -234,7 +220,7 @@ class CommunityControllerDocsTest {
 
 
         result.andExpect(status().isOk())
-                .andDo(document("article-deletion",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -272,12 +258,12 @@ class CommunityControllerDocsTest {
         given(communityService.readArticleList(anyString(),any(),any(),anyString()))
                 .willReturn(articleList);
 
-        ResultActions result = this.mockMvc.perform(get("/community/list/{order}", "recent")
+        ResultActions result = mvc.perform(get("/community/list/{order}", "recent")
                 .headers(GenerateMockToken.getToken())
                 .contentType(MediaType.APPLICATION_JSON));
 
         result.andExpect(status().isOk())
-                .andDo(document("articleList-list",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -339,9 +325,9 @@ class CommunityControllerDocsTest {
 
         RegisterCommentRequest request = new RegisterCommentRequest(1,2,"댓글 내용");
 
-        String requestJson = objectMapper.writeValueAsString(request);
+        String requestJson = mapper.writeValueAsString(request);
 
-        ResultActions result = this.mockMvc.perform(post("/community/comment")
+        ResultActions result = mvc.perform(post("/community/comment")
                 .headers(GenerateMockToken.getToken())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -349,7 +335,7 @@ class CommunityControllerDocsTest {
                 .content(requestJson));
 
         result.andExpect(status().isOk())
-                .andDo(document("comment-register",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -372,9 +358,9 @@ class CommunityControllerDocsTest {
 
         ModifyCommentRequest request = new ModifyCommentRequest(1,"수정 내용");
 
-        String jsonString = objectMapper.writeValueAsString(request);
+        String jsonString = mapper.writeValueAsString(request);
 
-        ResultActions result = this.mockMvc.perform(patch("/community/comment")
+        ResultActions result = mvc.perform(patch("/community/comment")
                 .headers(GenerateMockToken.getToken())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -382,7 +368,7 @@ class CommunityControllerDocsTest {
                 .content(jsonString));
 
         result.andExpect(status().isOk())
-                .andDo(document("comment-modification",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -401,14 +387,14 @@ class CommunityControllerDocsTest {
     @DisplayName("댓글 - 삭제")
     @WithMockCustomAccount
     void commentDeletion() throws Exception {
-        ResultActions result = this.mockMvc.perform(delete("/community/comment/{id}", 1)
+        ResultActions result = mvc.perform(delete("/community/comment/{id}", 1)
                 .headers(GenerateMockToken.getToken())
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
 
         result.andExpect(status().isOk())
-                .andDo(document("article-deletion",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -461,12 +447,12 @@ class CommunityControllerDocsTest {
         given(commentService.readCommentList(eq(1),anyString()))
                 .willReturn(commentDtoList);
 
-        ResultActions result = this.mockMvc.perform(get("/community/comment/{id}", 1)
+        ResultActions result = mvc.perform(get("/community/comment/{id}", 1)
                 .headers(GenerateMockToken.getToken())
                 .contentType(MediaType.APPLICATION_JSON));
 
         result.andExpect(status().isOk())
-                .andDo(document("comment-list",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -528,7 +514,7 @@ class CommunityControllerDocsTest {
 
         String jsonString = "{ \"target\": \"article\" , \"id\" : 1 }";
 
-        ResultActions result = this.mockMvc.perform(post("/community/heart")
+        ResultActions result = mvc.perform(post("/community/heart")
                 .headers(GenerateMockToken.getToken())
                 .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
@@ -537,7 +523,7 @@ class CommunityControllerDocsTest {
         );
 
         result.andExpect(status().isOk())
-                .andDo(document("heart-addition",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -566,7 +552,7 @@ class CommunityControllerDocsTest {
         given(communityService.deleteArticleHeart(any(),eq(1))).willReturn(like);
         given(commentService.deleteCommentHeart(any(),eq(1))).willReturn(like);
 
-        ResultActions result = this.mockMvc.perform(delete("/community/heart/{target}/{id}","article",1)
+        ResultActions result = mvc.perform(delete("/community/heart/{target}/{id}","article",1)
                 .headers(GenerateMockToken.getToken())
                 .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
@@ -574,7 +560,7 @@ class CommunityControllerDocsTest {
         );
 
         result.andExpect(status().isOk())
-                .andDo(document("heart-deletion",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -599,7 +585,7 @@ class CommunityControllerDocsTest {
     @WithMockCustomAccount
     void articleBookmarkAddition() throws Exception {
 
-        ResultActions result = this.mockMvc.perform(post("/community/bookmark/{id}",1)
+        ResultActions result = mvc.perform(post("/community/bookmark/{id}",1)
                 .headers(GenerateMockToken.getToken())
                 .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
@@ -607,7 +593,7 @@ class CommunityControllerDocsTest {
         );
 
         result.andExpect(status().isOk())
-                .andDo(document("heart-addition",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -625,7 +611,7 @@ class CommunityControllerDocsTest {
     @WithMockCustomAccount
     void articleBookmarkDeletion() throws Exception {
 
-        ResultActions result = this.mockMvc.perform(delete("/community/bookmark/{id}",1)
+        ResultActions result = mvc.perform(delete("/community/bookmark/{id}",1)
                 .headers(GenerateMockToken.getToken())
                 .with(csrf())
                 .accept(MediaType.APPLICATION_JSON)
@@ -633,7 +619,7 @@ class CommunityControllerDocsTest {
         );
 
         result.andExpect(status().isOk())
-                .andDo(document("heart-deletion",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
