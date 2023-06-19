@@ -19,7 +19,7 @@ public class GlobalCatcher {
 
     @ExceptionHandler({Exception.class, RuntimeException.class})
     protected ResponseEntity<StatusResponseDto> catchException(RuntimeException ex) {
-        log.error("예외 핸들링",ex.getLocalizedMessage());
+        log.error("예외 핸들링",ex);
         return ResponseEntity.internalServerError().body(StatusResponseDto.addStatus(500));
     }
 
