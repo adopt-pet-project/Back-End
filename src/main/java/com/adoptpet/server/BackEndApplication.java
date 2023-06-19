@@ -37,7 +37,7 @@ public class BackEndApplication implements CommandLineRunner{
 
     @Override
     public void run(String... args) throws Exception {
-        List<ChatRoom> list = chatRoomRepository.findByChatroomNo(35);
-        System.out.println("list.size() = " + list.size());
+        List<Chatting> chatlist = mongoChatRepository.findAll();
+        chatlist.forEach(System.out::println);
     }
 }
