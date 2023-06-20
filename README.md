@@ -1,14 +1,13 @@
 # Pet-Hub Project
 
-<img width="600" alt="Pet-Hub" src="https://github.com/adopt-pet-project/Back-End/assets/91787050/28bdcadc-d8da-40cc-a858-2e447636037a">
+<img width="600" alt="Pet-Hub" src="https://github.com/adopt-pet-project/Back-End/assets/91787050/28bdcadc-d8da-40cc-a858-2e447636037a"/>
 
 ## 👆 Introduce
 
-개인과 개인간의 반려동물 분양 중개 서비스를 제공하는 분양 플랫폼입니다.<br>
-
+개인과 개인간의 반려동물 분양 중개 서비스를 제공하는 분양 플랫폼입니다.
 
 ### 서비스 링크
-서비스 링크 👉 [Pet-Hub로 이동](https://pet-hub.site)
+서비스 링크 👉 [Pet-Hub로 이동](https://pet-hub.site).
 
 
 ### 팀 구성
