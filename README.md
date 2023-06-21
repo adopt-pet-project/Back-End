@@ -49,6 +49,7 @@
 -  [채팅 안읽음 기능 구현을 위한 채팅방 접속자 관리하기](https://velog.io/@ch4570/Pet-Hub-11-%EC%B1%84%ED%8C%85-%EA%B8%B0%EB%8A%A5%EC%97%90%EC%84%9C-%EC%B1%84%ED%8C%85-%EC%9D%BD%EC%9D%8C-%EC%97%AC%EB%B6%80-%ED%91%9C%EC%8B%9C%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84)
 -  [채팅방 퇴장시 Authorization Header를 포함하지 못하는 문제 해결](https://velog.io/@ch4570/Pet-Hub-%EC%B1%84%ED%8C%85%EB%B0%A9-%ED%87%B4%EC%9E%A5%EC%8B%9C-Disconnect-Header%EC%97%90-Authorization-Header%EB%A5%BC-%ED%8F%AC%ED%95%A8%ED%95%98%EC%A7%80-%EB%AA%BB%ED%95%98%EB%8A%94-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0)
 -  [Spring Security 환경에서 Spring Rest Docs Custom 인증객체 사용 문제 해결](https://velog.io/@ch4570/Pet-Hub-Spring-RestDocs-%EB%AC%B8%EC%84%9C%ED%99%94%EB%A5%BC-%EC%9C%84%ED%95%9C-Custom-Security-%EC%9D%B8%EC%A6%9D%EA%B0%9D%EC%B2%B4-%EC%A3%BC%EC%9E%85%ED%95%98%EA%B8%B0)
+-  [DB Server 인스턴스의 용량 부족으로 인해 발생한 PessimisticLockException 문제 해결](https://velog.io/@ch4570/Pet-Hub-Lock%EC%9D%84-%EA%B1%B8%EC%A7%80-%EC%95%8A%EC%95%84%EB%8F%84-%EB%B0%9C%EC%83%9D%ED%95%9C-PessimisticLockException%ED%95%B4%EA%B2%B0)
 
 
 ### ERD
