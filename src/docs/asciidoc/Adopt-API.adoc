@@ -27,6 +27,10 @@ operation::adopt-controller-docs-test/delete-adopt[snippets="http-request,http-r
 == 관심 분양글 등록
 operation::adopt-controller-docs-test/create-adopt-bookmark[snippets="http-request,http-response,response-fields"]
 
+[[Adopt-관심-분양글-삭제]]
+== 관심 분양글 삭제
+operation::adopt-controller-docs-test/remove-adopt-bookmark[snippets="http-request,http-response,response-fields"]
+
 [[Adopt-분양글-리스트-조회]]
 == 분양글 리스트 조회
 operation::adopt-controller-docs-test/get-adopt-list[snippets="http-request,http-response"]
