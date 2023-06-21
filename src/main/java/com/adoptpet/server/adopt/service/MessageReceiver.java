@@ -1,13 +1,11 @@
 package com.adoptpet.server.adopt.service;
 
 import com.adoptpet.server.adopt.dto.chat.Message;
-import com.adoptpet.server.commons.properties.KafkaProperties;
 import com.adoptpet.server.commons.util.ConstantUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -17,7 +15,7 @@ public class MessageReceiver {
 
     private final SimpMessageSendingOperations template;
 
-    @KafkaListener(topics = ConstantUtil.KAFKA_TOPIC)
+    @KafkaListener(topics = ConstantUtil.KAFKA_TOPIC, containerFactory = "kafkaAdoptContainerFactory")
     public void receiveMessage(Message message) {
         log.info("전송 위치 = /subscribe/public/"+ message.getChatNo());
         log.info("채팅 방으로 메시지 전송 = {}", message);
