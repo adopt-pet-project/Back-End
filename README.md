@@ -22,7 +22,7 @@
 
 ## 🚀 Back-End Skills
 
-<img width="600" alt="Pet-Hub" src="https://github.com/adopt-pet-project/Back-End/assets/91787050/daa077ad-9561-490f-b854-3fccd194242d">
+<img width="1000" alt="Pet-Hub" src="https://github.com/adopt-pet-project/Back-End/assets/91787050/daa077ad-9561-490f-b854-3fccd194242d">
 
 - Open JDK 11
 - Spring Boot 2.7.11
