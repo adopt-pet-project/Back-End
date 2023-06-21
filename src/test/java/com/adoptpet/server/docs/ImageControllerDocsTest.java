@@ -42,23 +42,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = ImageController.class)
-@AutoConfigureRestDocs
-@AutoConfigureMockMvc
-@ExtendWith({RestDocumentationExtension.class})
-@MockBeans({
-        @MockBean(JwtUtil.class),
-        @MockBean(MongoChatRepository.class),
-        @MockBean(MemberService.class),
-        @MockBean(JpaMetamodelMappingContext.class),
-})
-class ImageControllerDocsTest {
-
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+class ImageControllerDocsTest extends RestDocsBasic{
 
     @MockBean
     private AwsS3Service awsS3Service;
@@ -91,17 +75,16 @@ class ImageControllerDocsTest {
         MockMultipartFile emailPart
                 = new MockMultipartFile("email", "", "application/json", email.getBytes(StandardCharsets.UTF_8));
 
-        ResultActions result = this.mockMvc.perform(
+        ResultActions result = mvc.perform(
                 multipart(REQUEST_MAPPING)
                 .file(file)
                 .file(typePart)
                 .file(emailPart)
                 .headers(GenerateMockToken.getToken())
-                .with(csrf())
         );
 
         result.andExpect(status().isOk())
-                .andDo(document("image-upload",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),
@@ -129,14 +112,13 @@ class ImageControllerDocsTest {
 
         given(awsS3Service.delete(eq(type),eq(id))).willReturn(resultString);
 
-        ResultActions result = this.mockMvc.perform(
+        ResultActions result = mvc.perform(
                 RestDocumentationRequestBuilders.delete(REQUEST_MAPPING + "/{type}/{id}",type,id)
                     .headers(GenerateMockToken.getToken())
-                    .with(csrf())
         );
 
         result.andExpect(status().isOk())
-                .andDo(document("image-deletion",
+                .andDo(restDocs.document(
                         requestHeaders(
                                 headerWithName(AUTHORIZATION).description("Access Token")
                         ),

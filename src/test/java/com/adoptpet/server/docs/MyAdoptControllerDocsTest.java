@@ -61,7 +61,6 @@ public class MyAdoptControllerDocsTest extends RestDocsBasic{
         mvc.perform(get("/mypage/adopt")
                         .headers(GenerateMockToken.getToken())
                         .param("status", "1")
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
@@ -69,7 +68,6 @@ public class MyAdoptControllerDocsTest extends RestDocsBasic{
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
                         ),
                         requestParameters(
-                                parameterWithName("_csrf").ignored(),
                                 parameterWithName("status").description("status")
                         ),
                         responseFields(

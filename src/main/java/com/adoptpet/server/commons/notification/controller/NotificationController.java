@@ -28,11 +28,7 @@ public class NotificationController {
      **/
     @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> connect(
-            @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId,
-            HttpServletResponse response) {
-
-        response.addHeader("X-Accel-Buffering","no");
-
+            @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
         return ResponseEntity.ok(notificationService.subscribe(SecurityUtils.getUser(), lastEventId));
     }
 

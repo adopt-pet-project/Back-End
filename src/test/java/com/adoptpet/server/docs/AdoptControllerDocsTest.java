@@ -85,7 +85,6 @@ public class AdoptControllerDocsTest extends RestDocsBasic {
         String requestJson = createStringJson(requestDto);
 
         mvc.perform(post("/adopt").headers(GenerateMockToken.getToken())
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(requestJson))
@@ -142,7 +141,6 @@ public class AdoptControllerDocsTest extends RestDocsBasic {
         String jsonString = createStringJson(requestDto);
 
         mvc.perform(patch("/adopt").headers(GenerateMockToken.getToken())
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(jsonString))
@@ -176,8 +174,7 @@ public class AdoptControllerDocsTest extends RestDocsBasic {
     @WithMockCustomAccount
     public void createAdoptBookmark() throws Exception{
         mvc.perform(post("/adopt/bookmark/{saleNo}", 1)
-                        .headers(GenerateMockToken.getToken())
-                        .with(csrf()))
+                        .headers(GenerateMockToken.getToken()))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
                         requestHeaders(
@@ -218,8 +215,7 @@ public class AdoptControllerDocsTest extends RestDocsBasic {
     @WithMockCustomAccount
     public void deleteAdopt() throws Exception {
         mvc.perform(delete("/adopt/{saleNo}", 1)
-                .headers(GenerateMockToken.getToken())
-                .with(csrf()))
+                .headers(GenerateMockToken.getToken()))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
                         requestHeaders(
@@ -249,12 +245,10 @@ public class AdoptControllerDocsTest extends RestDocsBasic {
                 .willReturn(adoptResponse);
 
         mvc.perform(get("/adopt")
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(document("adopt-list",
                         requestParameters(
-                                parameterWithName("_csrf").ignored(),
                                 parameterWithName("saleNo").description("saleNo").optional(),
                                 parameterWithName("keyword").description("keyword").optional(),
                                 parameterWithName("option").description("option").optional(),
@@ -293,7 +287,6 @@ public class AdoptControllerDocsTest extends RestDocsBasic {
 
         mvc.perform(get("/adopt/{saleNo}", 1)
                 .headers(GenerateMockToken.getToken())
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(

@@ -5,7 +5,9 @@ import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.util.ConstantUtil;
 import com.adoptpet.server.commons.util.SecurityUtils;
 import com.adoptpet.server.community.repository.CommentRepository;
+import com.adoptpet.server.community.repository.CommunityRepository;
 import com.adoptpet.server.community.repository.NoteHistoryRepository;
+import com.adoptpet.server.community.repository.NoteRepository;
 import com.adoptpet.server.user.domain.Member;
 import com.adoptpet.server.user.dto.request.MemberModifyRequest;
 import com.adoptpet.server.user.dto.request.RegisterDto;
@@ -29,8 +31,10 @@ public class MemberService {
     private final ProfileImageRepository profileImageRepository;
     private final MemberQueryService queryService;
     private final CommentRepository commentRepository;
+    private final NoteRepository noteRepository;
     private final NoteHistoryRepository noteHistoryRepository;
     private final NotificationRepository notificationRepository;
+    private final CommunityRepository communityRepository;
 
 
     public Optional<Member> findByEmail(String email) {
@@ -57,7 +61,6 @@ public class MemberService {
 
         // 회원을 저장한다.
         Member savedMember = memberRepository.save(member);
-        System.out.println("member = " + member);
 
         if (Objects.nonNull(registerDto.getImgNo())) {
             // 첨부된 사진이 있을 경우, 현재 회원의 프로필 사진으로 업데이트 해준다.
@@ -73,10 +76,9 @@ public class MemberService {
         Member findMember = memberRepository.findById(user.getMemberNo())
                 .orElseThrow(IllegalStateException::new);
         commentRepository.deleteComment(findMember.getMemberNo());
+        communityRepository.updateLogicalDelByEmail(findMember.getEmail());
         memberRepository.delete(findMember);
-        noteHistoryRepository.deleteHistoryByReceiverNo(findMember.getMemberNo());
-        noteHistoryRepository.deleteHistoryBySenderNo(findMember.getMemberNo());
-        notificationRepository.deleteAllByMemberNo(findMember.getMemberNo());
+        deleteHistory(findMember.getMemberNo());
     }
 
     // 회원정보 수정 메서드
@@ -115,6 +117,16 @@ public class MemberService {
     public boolean isDuplicated(String nickname) {
         Optional<Member> findMember = memberRepository.findByNickname(nickname);
         return findMember.isPresent();
+    }
+
+    @Transactional
+    public void deleteHistory(Integer memberNo) {
+        noteHistoryRepository.deleteHistoryByReceiverNo(memberNo);
+        noteHistoryRepository.deleteHistoryBySenderNo(memberNo);
+        noteRepository.updateCreateMemberByDeletion(memberNo);
+        noteRepository.updateJoinMemberByDeletion(memberNo);
+        notificationRepository.updateAllBySenderNo(memberNo);
+        notificationRepository.deleteAllByReceiverNo(memberNo);
     }
 
 

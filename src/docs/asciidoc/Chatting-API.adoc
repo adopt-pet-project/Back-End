@@ -1,0 +1,33 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Chatting-API]]
+= Chatting API
+
+[[Chatting-채팅방-생성]]
+== 채팅방 생성
+operation::chat-controller-docs-test/create-chat-room[snippets="http-request,http-response,response-fields"]
+
+
+[[Chatting-알람-전송]]
+== 채팅 알람 전송
+operation::chat-controller-docs-test/send-notification[snippets="http-request,http-response"]
+
+
+[[Chatting-접속-끊기]]
+== 접속 끊기
+operation::chat-controller-docs-test/disconnect-chat[snippets="http-request,http-response,response-fields"]
+
+
+[[Chatting-채팅방-리스트-조회]]
+== 채팅방 리스트 조회
+operation::chat-controller-docs-test/chat-room-list[snippets="http-request,http-response"]
+
+
+[[Chatting-채팅-리스트-조회]]
+== 채팅 리스트 조회
+operation::chat-controller-docs-test/chatting-list[snippets="http-request,http-response"]

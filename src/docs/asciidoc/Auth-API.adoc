@@ -1,0 +1,18 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Auth-API]]
+= Auth API
+
+[[Auth-로그아웃]]
+== 회원 로그아웃
+operation::auth-controller-docs-test/logout[snippets="http-request,http-response,response-fields"]
+
+
+[[Auth-Access-Token-재발급]]
+== Access Token 재발급
+operation::auth-controller-docs-test/refresh[snippets="http-request,http-response,response-fields"]

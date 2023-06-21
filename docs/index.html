@@ -450,9 +450,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel1">
 <li><a href="#overview">Overview</a>
 <ul class="sectlevel2">
-<li><a href="#overview-host">Host</a></li>
 <li><a href="#overview-http-status-codes">HTTP status codes</a></li>
-<li><a href="#overview-error-response">HTTP Error Response</a></li>
 </ul>
 </li>
 <li><a href="#API-LIST">APIs</a></li>
@@ -463,31 +461,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect1">
 <h2 id="overview"><a class="link" href="#overview">Overview</a></h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="overview-host"><a class="link" href="#overview-host">Host</a></h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">환경</th>
-<th class="tableblock halign-left valign-top">Host</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Beta</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>localhost</code></p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Production</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">'191.232.141.222 ex임'</p></td>
-</tr>
-</tbody>
-</table>
-</div>
 <div class="sect2">
 <h3 id="overview-http-status-codes"><a class="link" href="#overview-http-status-codes">HTTP status codes</a></h3>
 <table class="tableblock frame-all grid-all stretch">
@@ -523,15 +496,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 요청 리소스</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>409 CONFLICT</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">리소스의 현재 상태와 충돌</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>500 Internal Server Error</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">서버 에러</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect2">
-<h3 id="overview-error-response"><a class="link" href="#overview-error-response">HTTP Error Response</a></h3>
-
 </div>
 </div>
 </div>
@@ -539,7 +512,34 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="API-LIST"><a class="link" href="#API-LIST">APIs</a></h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><a href="Notification-API.html">notification-Api</a></p>
+<p><a href="Adopt-API.html">Adpot API</a></p>
+</div>
+<div class="paragraph">
+<p><a href="Adopt-Render-API.html">Adpot Render API</a></p>
+</div>
+<div class="paragraph">
+<p><a href="Auth-API.html">Auth API</a></p>
+</div>
+<div class="paragraph">
+<p><a href="Chatting-API.html">Chatting API</a></p>
+</div>
+<div class="paragraph">
+<p><a href="Community-API.html">Community API</a></p>
+</div>
+<div class="paragraph">
+<p><a href="Image-API.html">Image API</a></p>
+</div>
+<div class="paragraph">
+<p><a href="Member-API.html">Member API</a></p>
+</div>
+<div class="paragraph">
+<p><a href="Adopt-MyPage-API.html">My Page API</a></p>
+</div>
+<div class="paragraph">
+<p><a href="Note-API.html">Note API</a></p>
+</div>
+<div class="paragraph">
+<p><a href="Notification-API.html">Notification API</a></p>
 </div>
 </div>
 </div>
@@ -547,7 +547,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2023-06-08 17:32:09 +0900
+Last updated 2023-06-19 17:06:32 +0900
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">

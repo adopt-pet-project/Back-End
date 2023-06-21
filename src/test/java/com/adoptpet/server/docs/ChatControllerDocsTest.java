@@ -61,7 +61,6 @@ public class ChatControllerDocsTest extends RestDocsBasic{
 
         mvc.perform(post("/chatroom")
                         .headers(GenerateMockToken.getToken())
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(requestJson))
@@ -109,7 +108,6 @@ public class ChatControllerDocsTest extends RestDocsBasic{
         when(chatService.sendNotificationAndSaveMessage(any())).thenReturn(responseMessage);
 
         mvc.perform(post("/chatroom/notification")
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(requestJson))
@@ -148,7 +146,6 @@ public class ChatControllerDocsTest extends RestDocsBasic{
     void disconnectChat() throws Exception {
 
         mvc.perform(post("/chatroom/{chatRoomNo}", 3)
-                        .with(csrf())
                         .param("email", "dev@Dev.com")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -158,7 +155,6 @@ public class ChatControllerDocsTest extends RestDocsBasic{
                                 parameterWithName("chatRoomNo").description("chatRoomNo")
                         ),
                         requestParameters(
-                                parameterWithName("_csrf").ignored(),
                                 parameterWithName("email").description("email")
                         ),
                         responseFields(
@@ -196,7 +192,6 @@ public class ChatControllerDocsTest extends RestDocsBasic{
         given(chatService.getChatList(any(), any())).willReturn(chatRoomlist);
 
         mvc.perform(get("/chatroom").headers(GenerateMockToken.getToken())
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
@@ -204,7 +199,6 @@ public class ChatControllerDocsTest extends RestDocsBasic{
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
                         ),
                         requestParameters(
-                                parameterWithName("_csrf").ignored(),
                                 parameterWithName("saleNo").description("saleNo").optional()
                         ),
                         responseFields(
@@ -251,7 +245,6 @@ public class ChatControllerDocsTest extends RestDocsBasic{
 
         mvc.perform(get("/chatroom/{roomNo}", 1)
                         .headers(GenerateMockToken.getToken())
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
@@ -260,9 +253,6 @@ public class ChatControllerDocsTest extends RestDocsBasic{
                         ),
                         pathParameters(
                           parameterWithName("roomNo").description("roomNo")
-                        ),
-                        requestParameters(
-                                parameterWithName("_csrf").ignored()
                         ),
                         responseFields(
                                 fieldWithPath("email").description("email"),

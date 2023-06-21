@@ -14,7 +14,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling // SpringScheduling 사용 설정
 @RequiredArgsConstructor
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-public class PetHubApplication  {
+public class PetHubApplication {
+
 
     static {
         System.setProperty("com.amazonaws.sdk.disableEc2Metadata", "true");

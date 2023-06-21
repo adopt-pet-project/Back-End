@@ -17,4 +17,8 @@ public interface CommunityRepository extends JpaRepository<Community,Integer> {
     void increaseCount(@Param("articleNo") Integer articleNo);
 
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Query("UPDATE Community c SET c.logicalDel = 2 WHERE c.regId = :email")
+    @Modifying(clearAutomatically = true)
+    void updateLogicalDelByEmail(String email);
 }

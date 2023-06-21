@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 2.0.10">
-<title>Overview</title>
+<title>Adopt Render API</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
@@ -437,14 +437,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body class="book toc2 toc-left">
+<body id="Adopt-Render-API" class="book toc2 toc-left">
 <div id="header">
+<h1>Adopt Render API</h1>
+<div class="details">
+<span id="revnumber">version 0.0.1-SNAPSHOT</span>
+</div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#overview">Overview</a>
+<li><a href="#Adopt-Render-리스트-조회">분양글 랜더링 리스트 조회</a>
 <ul class="sectlevel2">
-<li><a href="#overview-http-status-codes">HTTP status codes</a></li>
+<li><a href="#Adopt-Render-리스트-조회_http_request">HTTP request</a></li>
+<li><a href="#Adopt-Render-리스트-조회_http_response">HTTP response</a></li>
 </ul>
 </li>
 </ul>
@@ -452,52 +457,47 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="overview"><a class="link" href="#overview">Overview</a></h2>
+<h2 id="Adopt-Render-리스트-조회"><a class="link" href="#Adopt-Render-리스트-조회">분양글 랜더링 리스트 조회</a></h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="overview-http-status-codes"><a class="link" href="#overview-http-status-codes">HTTP status codes</a></h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">상태 코드</th>
-<th class="tableblock halign-left valign-top">설명</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>200 OK</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">성공</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>400 Bad Request</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">잘못된 요청</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>401 Unauthorized</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">비인증 상태</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>403 Forbidden</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">권한 거부</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>404 Not Found</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">존재하지 않는 요청 리소스</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>409 CONFLICT</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">리소스의 현재 상태와 충돌</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>500 Internal Server Error</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">서버 에러</p></td>
-</tr>
-</tbody>
-</table>
+<h3 id="Adopt-Render-리스트-조회_http_request"><a class="link" href="#Adopt-Render-리스트-조회_http_request">HTTP request</a></h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">GET /adopt/render?_csrf=ffd94388-aa4b-4fcf-935a-6bcd083f11c6 HTTP/1.1
+Content-Type: application/json;charset=UTF-8
+Host: localhost:8080</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="Adopt-Render-리스트-조회_http_response"><a class="link" href="#Adopt-Render-리스트-조회_http_response">HTTP response</a></h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="http" class="language-http hljs">HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Content-Length: 365
+
+[ {
+  "id" : 1,
+  "name" : "댕댕이1",
+  "age" : "1년 반",
+  "kind" : "강아지",
+  "latitude" : 75.32,
+  "longitude" : 31.23,
+  "thumbnail" : "thumbnail1",
+  "modal" : false
+}, {
+  "id" : 2,
+  "name" : "댕댕이2",
+  "age" : "5년 반",
+  "kind" : "강아지",
+  "latitude" : 55.32,
+  "longitude" : 71.23,
+  "thumbnail" : "thumbnail13",
+  "modal" : false
+} ]</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -505,8 +505,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="footer">
 <div id="footer-text">
 Version 0.0.1-SNAPSHOT<br>
-Last updated 2023-06-19 17:14:10 +0900
+Last updated 2023-06-19 15:52:12 +0900
 </div>
 </div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+<script>hljs.initHighlighting()</script>
 </body>
 </html>

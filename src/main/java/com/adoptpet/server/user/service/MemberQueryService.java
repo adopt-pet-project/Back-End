@@ -6,6 +6,9 @@ import static com.adoptpet.server.user.domain.QProfileImage.*;
 import static com.adoptpet.server.community.domain.QComment.*;
 import static com.adoptpet.server.community.domain.QCommunity.*;
 import static com.adoptpet.server.user.domain.QMemberDenied.*;
+
+import com.adoptpet.server.community.domain.BlindEnum;
+import com.adoptpet.server.community.domain.LogicalDelEnum;
 import com.adoptpet.server.user.dto.response.MemberResponseDto;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
@@ -38,14 +41,16 @@ public class MemberQueryService {
                             ExpressionUtils.as(
                                     JPAExpressions.select(community.count())
                                             .from(community)
-                                            .where(community.regId.eq(member.email)),
+                                            .where(community.regId.eq(member.email),
+                                                    community.logicalDel.eq(LogicalDelEnum.NORMAL)),
                                     "document"
                             ),
                             // 회원 작성 댓글수 카운팅
                             ExpressionUtils.as(
                                     JPAExpressions.select(comment.count())
                                             .from(comment)
-                                            .where(comment.regId.eq(member.email)),
+                                            .where(comment.regId.eq(member.email),
+                                                    comment.logicalDel.eq(LogicalDelEnum.NORMAL)),
                                     "comment"
                             ),
                             // 회원 정지 누적 수 카운팅

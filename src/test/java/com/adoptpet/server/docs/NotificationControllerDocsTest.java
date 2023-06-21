@@ -24,8 +24,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -128,7 +127,6 @@ class NotificationControllerDocsTest extends RestDocsBasic{
     void readNotification() throws Exception {
 
         ResultActions result = mvc.perform(patch(REQUEST_MAPPING + "/checked/{id}",1)
-                .with(csrf())
                 .headers(GenerateMockToken.getToken()));
 
         result.andExpect(status().isOk())
@@ -155,7 +153,6 @@ class NotificationControllerDocsTest extends RestDocsBasic{
         String jsonString = "{\"idList\":" + Arrays.toString(idList) + "}";
 
         ResultActions result = mvc.perform(post(REQUEST_MAPPING)
-                .with(csrf())
                 .headers(GenerateMockToken.getToken())
                 .content(jsonString)
                 .contentType(MediaType.APPLICATION_JSON)
