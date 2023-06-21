@@ -12,5 +12,6 @@ public abstract class ConstantUtil {
             ="https://project-adopt-bucket.s3.ap-northeast-2.amazonaws.com/other/cat.jpeg";
 
     public static final String KAFKA_TOPIC = "adopt-chat";
+    public static final String KAFKA_AGGREGATION = "aggregation";
 
 }

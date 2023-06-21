@@ -190,6 +190,27 @@ public class AdoptControllerDocsTest extends RestDocsBasic {
     }
 
     @Test
+    @DisplayName("관심 분양글 삭제 테스트")
+    @WithMockCustomAccount
+    public void removeAdoptBookmark() throws Exception{
+        mvc.perform(delete("/adopt/bookmark/{saleNo}", 1)
+                        .headers(GenerateMockToken.getToken())
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andDo(restDocs.document(
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("accessToken")
+                        ),
+                        pathParameters(
+                                parameterWithName("saleNo").description("saleNo")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").description("status")
+                        )
+                ));
+    }
+
+    @Test
     @DisplayName("분양글 삭제 테스트")
     @WithMockCustomAccount
     public void deleteAdopt() throws Exception {
