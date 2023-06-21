@@ -194,8 +194,7 @@ public class AdoptControllerDocsTest extends RestDocsBasic {
     @WithMockCustomAccount
     public void removeAdoptBookmark() throws Exception{
         mvc.perform(delete("/adopt/bookmark/{saleNo}", 1)
-                        .headers(GenerateMockToken.getToken())
-                        .with(csrf()))
+                        .headers(GenerateMockToken.getToken()))
                 .andExpect(status().isOk())
                 .andDo(restDocs.document(
                         requestHeaders(
