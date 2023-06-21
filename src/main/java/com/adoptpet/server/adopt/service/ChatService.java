@@ -3,6 +3,8 @@ package com.adoptpet.server.adopt.service;
 import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.Chat;
 import com.adoptpet.server.adopt.domain.mongo.Chatting;
+import com.adoptpet.server.adopt.dto.aggregation.AggregationDto;
+import com.adoptpet.server.adopt.dto.aggregation.AggregationTarget;
 import com.adoptpet.server.adopt.dto.chat.Message;
 import com.adoptpet.server.adopt.dto.request.ChatRequestDto;
 import com.adoptpet.server.adopt.dto.response.ChatResponseDto;
@@ -43,6 +45,7 @@ public class ChatService {
     private final AdoptQueryService queryService;
     private final MongoChatRepository mongoChatRepository;
     private final MessageSender sender;
+    private final AggregationSender aggregationSender;
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
     private final ChatQueryService chatQueryService;
@@ -67,8 +70,18 @@ public class ChatService {
                 .regDate(LocalDateTime.now())
                 .build();
 
-        return chatRepository.save(chat);
+        Chat savedChat = chatRepository.save(chat);
 
+        // 채팅방 카운트 증가
+        AggregationDto aggregationDto = AggregationDto
+                .builder()
+                .isIncrease("true")
+                .target(AggregationTarget.CHAT)
+                .saleNo(requestDto.getSaleNo())
+                .build();
+
+        aggregationSender.send(ConstantUtil.KAFKA_AGGREGATION, aggregationDto);
+        return savedChat;
     }
 
     public List<ChatRoomResponseDto> getChatList(SecurityUserDto userDto, Integer saleNo) {

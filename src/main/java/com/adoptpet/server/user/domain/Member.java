@@ -47,13 +47,13 @@ public class Member {
     @Column(name = "profile")
     private String profile;
 
-    @Column(name = "reg_date", nullable = false)
+    @Column(name = "reg_date")
     private LocalDateTime regDate;
 
-    @Column(name = "nickmod_date", nullable = false)
+    @Column(name = "nickmod_date")
     private LocalDateTime nickModDate;
 
-    @Column(name = "passmod_date", nullable = false)
+    @Column(name = "passmod_date")
     private LocalDateTime passModDate;
 
     @OneToMany(mappedBy = "member")

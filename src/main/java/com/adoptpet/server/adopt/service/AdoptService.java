@@ -1,15 +1,15 @@
 package com.adoptpet.server.adopt.service;
 
-import com.adoptpet.server.adopt.domain.Adopt;
-import com.adoptpet.server.adopt.domain.AdoptBookmark;
-import com.adoptpet.server.adopt.domain.AdoptImage;
-import com.adoptpet.server.adopt.domain.AdoptStatus;
+import com.adoptpet.server.adopt.domain.*;
+import com.adoptpet.server.adopt.dto.aggregation.AggregationDto;
+import com.adoptpet.server.adopt.dto.aggregation.AggregationTarget;
 import com.adoptpet.server.adopt.dto.request.AdoptImageRequestDto;
 import com.adoptpet.server.adopt.dto.request.AdoptRequestDto;
 import com.adoptpet.server.adopt.dto.request.AdoptStatusRequestDto;
 import com.adoptpet.server.adopt.dto.request.AdoptUpdateRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import com.adoptpet.server.adopt.dto.response.AdoptImageResponseDto;
+import com.adoptpet.server.adopt.repository.AdoptAggregationRepository;
 import com.adoptpet.server.adopt.repository.AdoptBookmarkRepository;
 import com.adoptpet.server.adopt.repository.AdoptImageRepository;
 import com.adoptpet.server.adopt.repository.AdoptRepository;
@@ -43,6 +43,9 @@ public class AdoptService {
     private final AdoptBookmarkRepository adoptBookmarkRepository;
     private final AdoptQueryService queryService;
     private final MemberService memberService;
+    private final AdoptAggregationRepository aggregationRepository;
+    private final AggregationSender sender;
+    private final AdoptQueryService2 queryService2;
 
     public Adopt findBySaleNo(Integer saleNo) {
         return adoptRepository.findById(saleNo)
@@ -64,6 +67,8 @@ public class AdoptService {
         removeBookMarkAndAdopt(saleNo);
         // 삭제한 분양글과 관계가 있는 이미지의 key 값을 전부 null로 업데이트 한다.
         adoptImageRepository.updateAdoptImageNull(saleNo);
+        // 통계 테이블의 데이터를 삭제
+        aggregationRepository.removeAggregation(saleNo);
     }
 
     @Transactional
@@ -80,6 +85,16 @@ public class AdoptService {
         Adopt adopt = getAdopt(adoptDto, user);
         // 분양 글을 저장한다.
         Adopt savedAdopt = adoptRepository.save(adopt);
+
+        // 분양 통계 테이블에 데이터 생성
+        AdoptAggregation aggregation = AdoptAggregation.builder()
+                .saleNo(savedAdopt.getSaleNo())
+                .bookmarkCount(0)
+                .chatCount(0)
+                .build();
+
+        aggregationRepository.save(aggregation);
+
         // 분양 글과 연관있는 이미지들의 데이터를 업데이트 해준다.
         updateAdoptImageSaleNo(adoptDto.getImage(), savedAdopt.getSaleNo());
         return savedAdopt;
@@ -128,6 +143,31 @@ public class AdoptService {
         // 외래키 업데이트를 위해 관심 분양 게시글 엔티티에 회원과 분양 게시글 엔티티를 셋팅해준다.
         AdoptBookmark adoptBookmark = new AdoptBookmark(dto.getEmail(), adopt, member);
         adoptBookmarkRepository.save(adoptBookmark);
+
+        AggregationDto aggregationDto = AggregationDto.builder()
+                .isIncrease("true")
+                .target(AggregationTarget.ADOPT)
+                .saleNo(saleNo)
+                .build();
+
+        sender.send(ConstantUtil.KAFKA_AGGREGATION, aggregationDto);
+    }
+
+    @Transactional
+    public void deleteAdoptBookmark(SecurityUserDto dto, Integer saleNo) {
+        // 회원번호와 분양번호로 북마크를 찾아온다.
+        AdoptBookmark adoptBookmark = adoptBookmarkRepository.findByMemberNoAndSaleNo(dto.getMemberNo(), saleNo)
+                .orElseThrow(IllegalStateException::new);
+
+        adoptBookmarkRepository.delete(adoptBookmark);
+
+        AggregationDto aggregationDto = AggregationDto.builder()
+                .isIncrease("false")
+                .target(AggregationTarget.ADOPT)
+                .saleNo(saleNo)
+                .build();
+
+        sender.send(ConstantUtil.KAFKA_AGGREGATION, aggregationDto);
     }
 
     public AdoptDetailResponseDto readAdopt(Integer saleNo, String accessToken) {

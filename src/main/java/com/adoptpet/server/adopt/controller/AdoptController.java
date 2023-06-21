@@ -5,7 +5,9 @@ import com.adoptpet.server.adopt.dto.request.AdoptStatusRequestDto;
 import com.adoptpet.server.adopt.dto.request.AdoptUpdateRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
+import com.adoptpet.server.adopt.dto.response.AdoptResponseDto2;
 import com.adoptpet.server.adopt.service.AdoptQueryService;
+import com.adoptpet.server.adopt.service.AdoptQueryService2;
 import com.adoptpet.server.adopt.service.AdoptService;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.support.StatusResponseDto;
@@ -31,6 +33,7 @@ public class AdoptController {
 
     private final AdoptService adoptService;
     private final AdoptQueryService adoptQueryService;
+    private final AdoptQueryService2 queryService2;
 
     // 분양글 등록
     @PostMapping("/adopt")
@@ -61,6 +64,16 @@ public class AdoptController {
         adoptService.insertAdoptBookmark(SecurityUtils.getUser(), saleNo);
 
         return ResponseEntity.ok(StatusResponseDto.addStatus(200));
+    }
+
+    // 관심 분양 게시글 삭제
+    @DeleteMapping("/adopt/bookmark/{saleNo}")
+    public ResponseEntity<StatusResponseDto> removeBookmark(@PathVariable("saleNo") Integer saleNo) {
+
+        // 관심 분양 게시글 삭제
+        adoptService.deleteAdoptBookmark(SecurityUtils.getUser(), saleNo);
+
+        return ResponseEntity.ok(StatusResponseDto.success());
     }
 
     // 분양글 삭제
