@@ -50,6 +50,7 @@
 -  [채팅방 퇴장시 Authorization Header를 포함하지 못하는 문제 해결](https://velog.io/@ch4570/Pet-Hub-%EC%B1%84%ED%8C%85%EB%B0%A9-%ED%87%B4%EC%9E%A5%EC%8B%9C-Disconnect-Header%EC%97%90-Authorization-Header%EB%A5%BC-%ED%8F%AC%ED%95%A8%ED%95%98%EC%A7%80-%EB%AA%BB%ED%95%98%EB%8A%94-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0)
 -  [Spring Security 환경에서 Spring Rest Docs Custom 인증객체 사용 문제 해결](https://velog.io/@ch4570/Pet-Hub-Spring-RestDocs-%EB%AC%B8%EC%84%9C%ED%99%94%EB%A5%BC-%EC%9C%84%ED%95%9C-Custom-Security-%EC%9D%B8%EC%A6%9D%EA%B0%9D%EC%B2%B4-%EC%A3%BC%EC%9E%85%ED%95%98%EA%B8%B0)
 -  [DB Server 인스턴스의 용량 부족으로 인해 발생한 PessimisticLockException 문제 해결](https://velog.io/@ch4570/Pet-Hub-Lock%EC%9D%84-%EA%B1%B8%EC%A7%80-%EC%95%8A%EC%95%84%EB%8F%84-%EB%B0%9C%EC%83%9D%ED%95%9C-PessimisticLockException%ED%95%B4%EA%B2%B0)
+-  [SSE(Sever-Sent-Event)를 이용한 실시간 알림 구현시 트러블 슈팅](https://wimoney.tistory.com/entry/Pet-Hub-SSE-%EC%8B%A4%EC%8B%9C%EA%B0%84-%EC%95%8C%EB%A6%BC-%EA%B5%AC%ED%98%84%EC%8B%9C-%ED%8A%B8%EB%9F%AC%EB%B8%94-%EC%8A%88%ED%8C%85)
 
 
 ### ERD
