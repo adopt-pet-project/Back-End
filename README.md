@@ -51,7 +51,7 @@
 -  [Spring Security 환경에서 Spring Rest Docs Custom 인증객체 사용 문제 해결](https://velog.io/@ch4570/Pet-Hub-Spring-RestDocs-%EB%AC%B8%EC%84%9C%ED%99%94%EB%A5%BC-%EC%9C%84%ED%95%9C-Custom-Security-%EC%9D%B8%EC%A6%9D%EA%B0%9D%EC%B2%B4-%EC%A3%BC%EC%9E%85%ED%95%98%EA%B8%B0)
 -  [DB Server 인스턴스의 용량 부족으로 인해 발생한 PessimisticLockException 문제 해결](https://velog.io/@ch4570/Pet-Hub-Lock%EC%9D%84-%EA%B1%B8%EC%A7%80-%EC%95%8A%EC%95%84%EB%8F%84-%EB%B0%9C%EC%83%9D%ED%95%9C-PessimisticLockException%ED%95%B4%EA%B2%B0)
 -  [SSE(Sever-Sent-Event)를 이용한 실시간 알림 구현시 문제 해결](https://wimoney.tistory.com/entry/Pet-Hub-SSE-%EC%8B%A4%EC%8B%9C%EA%B0%84-%EC%95%8C%EB%A6%BC-%EA%B5%AC%ED%98%84%EC%8B%9C-%ED%8A%B8%EB%9F%AC%EB%B8%94-%EC%8A%88%ED%8C%85)
-
+- [이미지가 포함된 게시글 등록시 지연시간 문제 해결](https://wimoney.tistory.com/entry/Pet-Hub-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%97%85%EB%A1%9C%EB%93%9C%EC%82%AD%EC%A0%9C%EC%8B%9C-%EC%A0%95%ED%95%A9%EC%84%B1-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0)
 
 ### ERD
 
