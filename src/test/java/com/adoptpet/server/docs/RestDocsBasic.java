@@ -3,7 +3,7 @@ package com.adoptpet.server.docs;
 
 import com.adoptpet.server.adopt.mongo.MongoChatRepository;
 import com.adoptpet.server.adopt.repository.ChatRoomRepository;
-import com.adoptpet.server.adopt.service.AdoptQueryService2;
+import com.adoptpet.server.adopt.service.AdoptQueryService;
 import com.adoptpet.server.commons.security.service.JwtUtil;
 import com.adoptpet.server.user.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,7 +31,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
         @MockBean(MemberService.class),
         @MockBean(JpaMetamodelMappingContext.class),
         @MockBean(ChatRoomRepository.class),
-        @MockBean(AdoptQueryService2.class)
+        @MockBean(AdoptQueryService.class)
 })
 @ExtendWith(RestDocumentationExtension.class)
 @Import(RestDocsConfiguration.class)
