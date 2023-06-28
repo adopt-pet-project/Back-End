@@ -16,15 +16,15 @@ public class AdoptResponseDto {
     private Integer id;
     private String title;
     private String address;
-    private long bookmark;
-    private long chat;
+    private Integer bookmark;
+    private Integer chat;
     private long publishedAt;
     private String thumbnail;
     private String species;
     private Integer status;
 
 
-    public AdoptResponseDto(Integer id, String title, String address, long bookmark, long chat, LocalDateTime publishedAt, String thumbnail, String species, Integer status) {
+    public AdoptResponseDto(Integer id, String title, String address, Integer bookmark, Integer chat, LocalDateTime publishedAt, String thumbnail, String species, Integer status) {
         this.id = id;
         this.title = title;
         this.address = address;

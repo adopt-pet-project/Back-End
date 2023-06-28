@@ -14,11 +14,11 @@ public class MyAdoptResponseDto {
     private String context;
     private String author;
     private Integer view;
-    private long like;
+    private Integer like;
     private long publishedAt;
     private String thumb;
 
-    public MyAdoptResponseDto(Integer id, String title, String context, String author, Integer view, long like, LocalDateTime publishedAt, String thumb) {
+    public MyAdoptResponseDto(Integer id, String title, String context, String author, Integer view, Integer like, LocalDateTime publishedAt, String thumb) {
         this.id = id;
         this.title = title;
         this.context = context;
