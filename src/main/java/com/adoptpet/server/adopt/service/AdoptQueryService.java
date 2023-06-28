@@ -1,21 +1,12 @@
 package com.adoptpet.server.adopt.service;
 
-import static com.adoptpet.server.adopt.domain.QAdoptImage.*;
-import static com.adoptpet.server.adopt.domain.QAdopt.*;
-import static com.adoptpet.server.adopt.domain.QAdoptBookmark.*;
-import static com.adoptpet.server.adopt.domain.QChat.*;
 import com.adoptpet.server.adopt.domain.Adopt;
 import com.adoptpet.server.adopt.domain.AdoptStatus;
+import static com.adoptpet.server.adopt.domain.QAdoptAggregation.*;
 import com.adoptpet.server.adopt.dto.response.*;
-
-import static com.adoptpet.server.user.domain.QMember.*;
-import static com.adoptpet.server.user.domain.QProfileImage.*;
-
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +17,11 @@ import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Objects;
 
+import static com.adoptpet.server.adopt.domain.QAdopt.adopt;
+import static com.adoptpet.server.adopt.domain.QAdoptBookmark.adoptBookmark;
+import static com.adoptpet.server.adopt.domain.QAdoptImage.adoptImage;
+import static com.adoptpet.server.user.domain.QMember.member;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -33,36 +29,6 @@ public class AdoptQueryService {
     private final JPAQueryFactory jpaQueryFactory;
     private final EntityManager em;
 
-
-    // 분양 게시글과 관련있는 이미지를 조회하는 메서드
-    public List<AdoptImageResponseDto> selectAdoptImages(Integer saleNo) {
-        return jpaQueryFactory.select(Projections.constructor(AdoptImageResponseDto.class,
-                        adoptImage.pictureNo,
-                        adoptImage.imageUrl
-                        ))
-                .from(adoptImage)
-                .where(adoptImage.saleNo.eq(saleNo))
-                .orderBy(adoptImage.sort.asc())
-                .fetch();
-    }
-
-    // 분양 게시글 소유자인지 확인
-    public boolean isMine(String email, Integer saleNo) {
-        return jpaQueryFactory.select(adopt.saleNo)
-                .from(adopt)
-                .where(adopt.regId.eq(email), adopt.saleNo.eq(saleNo))
-                .fetchFirst() != null;
-    }
-
-    // 분양 게시글의 대표 이미지를 조회하는 메서드
-    public String selectAdoptImage(Integer saleNo) {
-        return jpaQueryFactory.select(adoptImage.imageUrl)
-                .from(adoptImage)
-                .where(adoptImage.saleNo.eq(saleNo))
-                .orderBy(adoptImage.sort.asc())
-                .limit(1)
-                .fetchOne();
-    }
 
     // 분양 게시글 리스트 조회
     public List<AdoptResponseDto> selectAdoptList(Integer saleNo, String keyword, Integer option, String filter) {
@@ -91,20 +57,8 @@ public class AdoptQueryService {
                         adopt.saleNo,
                         adopt.title,
                         adopt.address,
-                        // select subQuery를 이용하여 집계함수를 사용
-                        ExpressionUtils.as(
-                                JPAExpressions.select(adoptBookmark.count())
-                                        .from(adoptBookmark)
-                                        .where(adoptBookmark.adopt.saleNo.eq(adopt.saleNo))
-                                , "bookmark"
-                        ),
-                        // select subQuery를 이용하여 집계함수를 사용
-                        ExpressionUtils.as(
-                                JPAExpressions.select(chat.count())
-                                        .from(chat)
-                                        .where(chat.saleNo.eq(adopt.saleNo))
-                                , "chat"
-                        ),
+                        adoptAggregation.bookmarkCount,
+                        adoptAggregation.chatCount,
                         adopt.regDate,
                         adopt.thumbnail,
                         adopt.species,
@@ -118,29 +72,12 @@ public class AdoptQueryService {
                 .from(adopt)
                 .orderBy(adopt.saleNo.desc())
                 .innerJoin(member).on(adopt.regId.eq(member.email))
+                .innerJoin(adoptAggregation).on(adopt.saleNo.eq(adoptAggregation.saleNo))
                 .where(saleNoLt(saleNo), searchCondition, kindLike(filter))
                 .limit(10)
                 .fetch();
     }
 
-
-    // 현재 분양글이 분양 상태인지 조회하는 메서드
-    public Adopt isAdopting(Integer saleNo) {
-        return jpaQueryFactory.selectFrom(adopt)
-                .where(adopt.saleNo.eq(saleNo), adopt.status.eq(AdoptStatus.ADOPTING))
-                .fetchOne();
-    }
-
-    // 분양글과 관계가 있는 북마크를 지우는 메서드
-    @Transactional
-    public void removeBookmark(Integer saleNo) {
-        jpaQueryFactory.delete(adoptBookmark)
-                .where(adoptBookmark.adopt.saleNo.eq(saleNo))
-                .execute();
-
-        em.flush();
-        em.clear();
-    }
 
 
     // 분양 테이블과 회원 테이블을 조인해서 정보를 가져오는 메서드
@@ -168,18 +105,8 @@ public class AdoptQueryService {
                     Projections.constructor(AdoptDetailResponseDto.Context.class,
                             adopt.content,
                             // select subQuery를 이용하여 집계함수를 사용
-                            ExpressionUtils.as(
-                                    JPAExpressions.select(adoptBookmark.count())
-                                            .from(adoptBookmark)
-                                            .where(adoptBookmark.adopt.saleNo.eq(saleNo))
-                                            , "bookmark"
-                            ),
-                            ExpressionUtils.as(
-                                    JPAExpressions.select(chat.count())
-                                            .from(chat)
-                                            .where(chat.saleNo.eq(saleNo))
-                                    , "chat"
-                            )
+                            adoptAggregation.bookmarkCount,
+                            adoptAggregation.chatCount
                     ),
                     Projections.constructor(AdoptDetailResponseDto.Author.class,
                             member.memberNo,
@@ -196,6 +123,7 @@ public class AdoptQueryService {
                 ))
                 .from(adopt)
                 .join(member).on(adopt.regId.eq(member.email))
+                .innerJoin(adoptAggregation).on(adopt.saleNo.eq(adoptAggregation.saleNo))
                 .where(adopt.saleNo.eq(saleNo))
                 .fetchOne();
 
@@ -209,17 +137,13 @@ public class AdoptQueryService {
                 adopt.content,
                 member.nickname,
                 adopt.viewCnt,
-                ExpressionUtils.as(
-                        JPAExpressions.select(adoptBookmark.count())
-                                .from(adoptBookmark)
-                                .where(adoptBookmark.adopt.saleNo.eq(adopt.saleNo))
-                        , "like"
-                ),
+                adoptAggregation.bookmarkCount,
                 adopt.regDate,
                 adopt.thumbnail
         ))
                 .from(adopt)
                 .join(member).on(adopt.regId.eq(member.email))
+                .join(adoptAggregation).on(adopt.saleNo.eq(adoptAggregation.saleNo))
                 .where(adopt.regId.eq(userDto.getEmail()), adopt.status.eq(AdoptStatus.valueOf(status.toUpperCase())))
                 .fetch();
     }
@@ -232,17 +156,13 @@ public class AdoptQueryService {
                 adopt.content,
                 member.nickname,
                 adopt.viewCnt,
-                ExpressionUtils.as(
-                        JPAExpressions.select(adoptBookmark.count())
-                                .from(adoptBookmark)
-                                .where(adoptBookmark.adopt.saleNo.eq(adopt.saleNo))
-                        , "like"
-                ),
+                adoptAggregation.bookmarkCount,
                 adopt.regDate,
                 adopt.thumbnail
                 ))
                 .from(adopt)
                 .join(member).on(adopt.regId.eq(member.email))
+                .join(adoptAggregation).on(adopt.saleNo.eq(adoptAggregation.saleNo))
                 .where(adopt.saleNo.in(keys))
                 .fetch();
     }
@@ -268,6 +188,44 @@ public class AdoptQueryService {
                 ))
                 .from(adopt)
                 .where(adopt.status.eq(AdoptStatus.ADOPTING))
+                .fetch();
+    }
+
+    // 현재 분양글이 분양 상태인지 조회하는 메서드
+    public Adopt isAdopting(Integer saleNo) {
+        return jpaQueryFactory.selectFrom(adopt)
+                .where(adopt.saleNo.eq(saleNo), adopt.status.eq(AdoptStatus.ADOPTING))
+                .fetchOne();
+    }
+
+    // 분양글과 관계가 있는 북마크를 지우는 메서드
+    @Transactional
+    public void removeBookmark(Integer saleNo) {
+        jpaQueryFactory.delete(adoptBookmark)
+                .where(adoptBookmark.adopt.saleNo.eq(saleNo))
+                .execute();
+
+        em.flush();
+        em.clear();
+    }
+
+    // 분양 게시글 소유자인지 확인
+    public boolean isMine(String email, Integer saleNo) {
+        return jpaQueryFactory.select(adopt.saleNo)
+                .from(adopt)
+                .where(adopt.regId.eq(email), adopt.saleNo.eq(saleNo))
+                .fetchFirst() != null;
+    }
+
+    // 분양 게시글과 관련있는 이미지를 조회하는 메서드
+    public List<AdoptImageResponseDto> selectAdoptImages(Integer saleNo) {
+        return jpaQueryFactory.select(Projections.constructor(AdoptImageResponseDto.class,
+                        adoptImage.pictureNo,
+                        adoptImage.imageUrl
+                ))
+                .from(adoptImage)
+                .where(adoptImage.saleNo.eq(saleNo))
+                .orderBy(adoptImage.sort.asc())
                 .fetch();
     }
 

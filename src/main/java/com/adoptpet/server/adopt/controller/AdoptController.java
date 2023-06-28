@@ -5,9 +5,7 @@ import com.adoptpet.server.adopt.dto.request.AdoptStatusRequestDto;
 import com.adoptpet.server.adopt.dto.request.AdoptUpdateRequestDto;
 import com.adoptpet.server.adopt.dto.response.AdoptDetailResponseDto;
 import com.adoptpet.server.adopt.dto.response.AdoptResponseDto;
-import com.adoptpet.server.adopt.dto.response.AdoptResponseDto2;
 import com.adoptpet.server.adopt.service.AdoptQueryService;
-import com.adoptpet.server.adopt.service.AdoptQueryService2;
 import com.adoptpet.server.adopt.service.AdoptService;
 import com.adoptpet.server.commons.security.dto.SecurityUserDto;
 import com.adoptpet.server.commons.support.StatusResponseDto;
@@ -21,9 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Enumeration;
 import java.util.List;
 
 @Slf4j
@@ -32,8 +27,7 @@ import java.util.List;
 public class AdoptController {
 
     private final AdoptService adoptService;
-    private final AdoptQueryService adoptQueryService;
-    private final AdoptQueryService2 queryService2;
+    private final AdoptQueryService queryService;
 
     // 분양글 등록
     @PostMapping("/adopt")
@@ -89,7 +83,7 @@ public class AdoptController {
                                                                @RequestParam(value = "keyword", required = false) final String keyword,
                                                                @RequestParam(value = "option", required = false) final Integer option,
                                                                @RequestParam(value = "filter", required = false) final String filter) {
-        List<AdoptResponseDto> adoptList = adoptQueryService.selectAdoptList(saleNo, keyword, option, filter);
+        List<AdoptResponseDto> adoptList = queryService.selectAdoptList(saleNo, keyword, option, filter);
         return ResponseEntity.ok(adoptList);
     }
 
