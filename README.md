@@ -53,7 +53,7 @@
 -  [SSE(Sever-Sent-Event)를 이용한 실시간 알림 구현시 문제 해결](https://wimoney.tistory.com/entry/Pet-Hub-SSE-%EC%8B%A4%EC%8B%9C%EA%B0%84-%EC%95%8C%EB%A6%BC-%EA%B5%AC%ED%98%84%EC%8B%9C-%ED%8A%B8%EB%9F%AC%EB%B8%94-%EC%8A%88%ED%8C%85)
 - [이미지가 포함된 게시글 등록시 지연시간 문제 해결](https://wimoney.tistory.com/entry/Pet-Hub-%EC%9D%B4%EB%AF%B8%EC%A7%80%EA%B0%80-%ED%8F%AC%ED%95%A8%EB%90%9C-%EA%B2%8C%EC%8B%9C%EA%B8%80-%EB%93%B1%EB%A1%9D%EC%8B%9C-%EC%A7%80%EC%97%B0%EC%8B%9C%EA%B0%84-%EB%AC%B8%EC%A0%9C-%ED%95%B4%EA%B2%B0)
 - [중복 및 단순 매핑 코드 최소화를 위한 개선 시도](https://wimoney.tistory.com/entry/Pet-Hub-%EC%A4%91%EB%B3%B5-%EB%B0%8F-%EB%8B%A8%EC%88%9C-%EB%A7%A4%ED%95%91-%EC%BD%94%EB%93%9C-%EC%B5%9C%EC%86%8C%ED%99%94%EB%A5%BC-%EC%9C%84%ED%95%9C-%EA%B0%9C%EC%84%A0-%EC%8B%9C%EB%8F%84)
-- [분양글 조회 API 성능 개선기] (https://velog.io/@ch4570/Pet-Hub-%EB%B6%84%EC%96%91%EA%B8%80-API-%EC%A1%B0%ED%9A%8C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0%ED%95%98%EA%B8%B0Feat.-%EC%84%B1%EB%8A%A5%EC%9D%B4-28815%EB%B0%B0%EB%82%98-%EC%A6%9D%EA%B0%80-%ED%95%9C%EB%8B%A4%EA%B3%A0)
+- [분양글 조회 API 성능 개선기](https://velog.io/@ch4570/Pet-Hub-%EB%B6%84%EC%96%91%EA%B8%80-API-%EC%A1%B0%ED%9A%8C-%EC%84%B1%EB%8A%A5-%EA%B0%9C%EC%84%A0%ED%95%98%EA%B8%B0Feat.-%EC%84%B1%EB%8A%A5%EC%9D%B4-28815%EB%B0%B0%EB%82%98-%EC%A6%9D%EA%B0%80-%ED%95%9C%EB%8B%A4%EA%B3%A0)
 
 ### ERD
 
