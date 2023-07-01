@@ -80,8 +80,8 @@ public class AdoptDetailResponseDto {
     @AllArgsConstructor
     public static class Context {
         private String context;
-        private long bookmark;
-        private long chat;
+        private Integer bookmark;
+        private Integer chat;
     }
 
     @Getter
