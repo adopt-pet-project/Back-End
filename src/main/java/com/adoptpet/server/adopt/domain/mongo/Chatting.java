@@ -7,10 +7,8 @@ import java.time.LocalDateTime;
 
 
 @Document(collection = "chatting")
-@Getter @ToString
-@Setter
+@Getter
 @AllArgsConstructor @Builder
-@NoArgsConstructor
 // MongoDB Chatting 모델
 public class Chatting {
 
