@@ -38,7 +38,6 @@ public class AdoptDetailResponseDto {
     }
 
     @Getter
-    @Setter
     @AllArgsConstructor
     @ToString
     public static class Coords {
@@ -49,7 +48,6 @@ public class AdoptDetailResponseDto {
 
 
     @Getter
-    @Setter
     @ToString
     public static class Header {
         private String title;
@@ -64,7 +62,6 @@ public class AdoptDetailResponseDto {
     }
 
     @Getter
-    @Setter
     @ToString
     @AllArgsConstructor
     public static class Metadata {
@@ -75,7 +72,6 @@ public class AdoptDetailResponseDto {
     }
 
     @Getter
-    @Setter
     @ToString
     @AllArgsConstructor
     public static class Context {
@@ -85,7 +81,6 @@ public class AdoptDetailResponseDto {
     }
 
     @Getter
-    @Setter
     @ToString
     @AllArgsConstructor
     public static class Author {
